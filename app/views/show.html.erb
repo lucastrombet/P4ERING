@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="col-md-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Submissions", submissions_path %></li>
+        <li class="breadcrumb-item active">Submission #<%= @submission.id %></li>
+      </ol>
+    </nav>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="h5 mb-0">Submission Details</h3>
+      </div>
+      <div class="card-body">
+        <p><strong>Exercise:</strong> <%= link_to @submission.exercise.title, @submission.exercise %></p>
+        <p><strong>Language:</strong> <%= @submission.exercise.language %></p>
+        <p><strong>Status:</strong> 
+          <span class="badge bg-<%= @submission.status == 'completed' ? 'success' : 'warning' %>">
+            <%= @submission.status.upcase %>
+          </span>
+        </p>
+        <p><strong>Submitted:</strong> <%= @submission.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        
+        <% if @submission.feedback.present? %>
+          <div class="alert alert-info">
+            <strong>Feedback:</strong> <%= @submission.feedback %>
+          </div>
+        <% end %>
+        
+        <h5>Your Code:</h5>
+        <pre class="bg-dark text-light p-3 rounded" style="overflow-x: auto;"><code><%= @submission.code %></code></pre>
+      </div>
+    </div>
+  </div>
+</div>

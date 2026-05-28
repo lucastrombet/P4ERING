@@ -1,0 +1,73 @@
+<div class="row">
+  <div class="col-md-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "Exercises", exercises_path %></li>
+        <li class="breadcrumb-item active"><%= @exercise.title %></li>
+      </ol>
+    </nav>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h4 mb-0"><%= @exercise.title %></h2>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <span class="badge bg-info me-2"><%= @exercise.language %></span>
+          <span class="badge bg-warning text-dark">
+            <% @exercise.difficulty.times do %>★<% end %>
+            <%= @exercise.difficulty_label %>
+          </span>
+        </div>
+        <h5>Description:</h5>
+        <p><%= simple_format(@exercise.description) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header bg-success text-white">
+        <h3 class="h5 mb-0">Submit Your Solution</h3>
+      </div>
+      <div class="card-body">
+        <%= form_with(model: [@exercise, Submission.new], local: true) do |f| %>
+          <div class="mb-3">
+            <%= f.label :code, "Your #{@exercise.language} Code", class: "form-label fw-bold" %>
+            <%= f.text_area :code, rows: 15, class: "form-control font-monospace", 
+                placeholder: "Write your #{@exercise.language} solution here...\n\nExample:\ndef solution():\n    # Your code here\n    pass", required: true %>
+          </div>
+          <%= f.submit "Submit Solution", class: "btn btn-success" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        <h3 class="h5 mb-0">Your Previous Submissions</h3>
+      </div>
+      <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+        <% if @previous_submissions.present? %>
+          <% @previous_submissions.each do |sub| %>
+            <div class="border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between mb-2">
+                <small class="text-muted"><%= time_ago_in_words(sub.created_at) %> ago</small>
+                <span class="badge bg-<%= sub.status == 'completed' ? 'success' : 'warning' %>">
+                  <%= sub.status.upcase %>
+                </span>
+              </div>
+              <pre class="small mb-2" style="background: #f8f9fa; padding: 8px; border-radius: 4px;"><%= truncate(sub.code, length: 150) %></pre>
+              <%= link_to "View Details", sub, class: "btn btn-sm btn-outline-primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted text-center">No submissions yet. Be the first to solve this exercise!</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

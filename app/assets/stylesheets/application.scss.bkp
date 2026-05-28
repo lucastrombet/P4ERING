@@ -1,0 +1,26 @@
+@import "bootstrap";
+
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+pre {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  overflow-x: auto;
+}
+
+.font-monospace {
+  font-family: 'Courier New', Courier, monospace;
+}

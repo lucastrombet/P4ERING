@@ -1,0 +1,43 @@
+<div class="px-4 py-5 my-5 text-center">
+  <%= image_tag "https://cdn-icons-png.flaticon.com/512/5956/5956592.png", width: 120, class: "mb-4" %>
+  <h1 class="display-4 fw-bold text-primary">Welcome to P4ering</h1>
+  <div class="col-lg-6 mx-auto">
+    <p class="lead mb-4">
+      Master programming languages through hands-on exercises. 
+      Practice coding, submit solutions, and track your progress.
+    </p>
+    <% if user_signed_in? %>
+      <%= link_to "Start Practicing", exercises_path, class: "btn btn-primary btn-lg px-4 gap-3" %>
+    <% else %>
+      <%= link_to "Get Started", new_user_registration_path, class: "btn btn-primary btn-lg px-4 gap-3" %>
+      <%= link_to "Login", new_user_session_path, class: "btn btn-outline-secondary btn-lg px-4" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-4">
+    <div class="card h-100 text-center">
+      <div class="card-body">
+        <h3>📚 Multiple Languages</h3>
+        <p>Practice Python, JavaScript, Ruby, Java, C++, and more</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center">
+      <div class="card-body">
+        <h3>💻 Interactive Coding</h3>
+        <p>Write and submit code directly in your browser</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 text-center">
+      <div class="card-body">
+        <h3>📊 Track Progress</h3>
+        <p>View your submission history and improve your skills</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="hero-section">
+  <h1 class="display-4 fw-bold">Welcome to P4ering</h1>
+  <p class="lead">Master programming languages through hands-on exercises and real-world challenges</p>
+  <% if user_signed_in? %>
+    <%= link_to exercises_path, class: "btn btn-light btn-lg px-5" do %>
+      <i class="fas fa-code me-2"></i>Start Practicing
+    <% end %>
+  <% else %>
+    <%= link_to new_user_registration_path, class: "btn btn-light btn-lg px-5 me-3" do %>
+      <i class="fas fa-user-plus me-2"></i>Get Started
+    <% end %>
+    <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg px-5" do %>
+      <i class="fas fa-sign-in-alt me-2"></i>Login
+    <% end %>
+  <% end %>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-code"></i>
+      </div>
+      <h3>Multiple Languages</h3>
+      <p>Practice Python, JavaScript, Ruby, Java, C++ and more programming languages</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-laptop-code"></i>
+      </div>
+      <h3>Interactive Coding</h3>
+      <p>Write, test, and submit code directly in your browser with real-time feedback</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Track Progress</h3>
+      <p>Monitor your learning journey with detailed submission history and analytics</p>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-6">
+    <div class="card shadow-hover">
+      <div class="card-body">
+        <h3 class="card-title text-gradient">Why Choose P4ering?</h3>
+        <ul class="list-unstyled mt-3">
+          <li class="mb-3">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong>Progressive Difficulty:</strong> Start from basics and advance at your own pace
+          </li>
+          <li class="mb-3">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong>Real-world Problems:</strong> Solve practical coding challenges used in tech interviews
+          </li>
+          <li class="mb-3">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong>Instant Feedback:</strong> Get immediate evaluation of your code submissions
+          </li>
+          <li class="mb-3">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong>Community Driven:</strong> Learn from solutions shared by other developers
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card bg-primary text-white shadow-hover">
+      <div class="card-body text-center">
+        <i class="fas fa-rocket fa-3x mb-3"></i>
+        <h3>Ready to Start?</h3>
+        <p class="mb-4">Join thousands of developers improving their coding skills</p>
+        <% if user_signed_in? %>
+          <%= link_to "Browse Exercises →", exercises_path, class: "btn btn-light" %>
+        <% else %>
+          <%= link_to "Create Free Account →", new_user_registration_path, class: "btn btn-light" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
