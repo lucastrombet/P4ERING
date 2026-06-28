@@ -1,0 +1,88 @@
+<!-- app/views/admin/exercises/index.html.erb -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="text-gradient">
+      <i class="fas fa-dumbbell me-2"></i>Exercise Management
+    </h1>
+    <p class="text-muted">Create, edit, and manage programming exercises</p>
+  </div>
+  <%= link_to new_admin_exercise_path, class: "btn btn-primary btn-lg" do %>
+    <i class="fas fa-plus me-2"></i>Create New Exercise
+  <% end %>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Language</th>
+            <th>Difficulty</th>
+            <th>Submissions</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @exercises.each do |exercise| %>
+            <tr>
+              <td><%= exercise.id %></td>
+              <td>
+                <strong><%= exercise.title %></strong>
+                <br>
+                <small class="text-muted"><%= truncate(exercise.description, length: 50) %></small>
+              </td>
+              <td>
+                <span class="badge bg-info">
+                  <i class="fas fa-code me-1"></i><%= exercise.language %>
+                </span>
+              </td>
+              <td>
+                <div class="difficulty-stars">
+                  <% exercise.difficulty.times do %>
+                    <i class="fas fa-star text-warning"></i>
+                  <% end %>
+                  <% (5 - exercise.difficulty).times do %>
+                    <i class="far fa-star text-muted"></i>
+                  <% end %>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-secondary">
+                  <%= exercise.submissions.count %> submissions
+                </span>
+              </td>
+              <td>
+                <small><%= time_ago_in_words(exercise.created_at) %> ago</small>
+              </td>
+              <td>
+                <div class="btn-group" role="group">
+                  <%= link_to edit_admin_exercise_path(exercise), class: "btn btn-sm btn-warning" do %>
+                    <i class="fas fa-edit"></i>
+                  <% end %>
+                  <%= link_to admin_exercise_path(exercise), 
+                      method: :delete,
+                      class: "btn btn-sm btn-danger",
+                      data: { confirm: "Delete '#{exercise.title}'? This will also delete all submissions." } do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    
+    <% if @exercises.empty? %>
+      <div class="text-center py-5">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <h3>No exercises yet</h3>
+        <p class="text-muted">Click the "Create New Exercise" button to get started.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

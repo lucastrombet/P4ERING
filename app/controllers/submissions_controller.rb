@@ -27,8 +27,17 @@ class SubmissionsController < ApplicationController
   end
   
   def run
-    @submission.evaluate_code if @submission.respond_to?(:evaluate_code)
-    redirect_to @submission, notice: 'Code execution completed!'
+    unless @submission.user == current_user || current_user.admin?
+      return redirect_to @submission, alert: 'Not authorized.'
+    end
+
+    if @submission.status == 'evaluating'
+      return redirect_to @submission, alert: 'Submission is already being evaluated.'
+    end
+
+    @submission.update(status: 'pending')
+    EvaluateSubmissionJob.perform_later(@submission.id)
+    redirect_to @submission, notice: 'Evaluation queued. Refresh in a moment to see results.'
   end
   
   private

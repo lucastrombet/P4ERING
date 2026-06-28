@@ -1,0 +1,151 @@
+<!-- app/views/admin/exercises/new.html.erb -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h2 class="h4 mb-0">
+            <i class="fas fa-plus-circle me-2"></i>Create New Exercise
+          </h2>
+        </div>
+        
+        <div class="card-body">
+          <%= form_with(model: [:admin, @exercise], local: true, class: "needs-validation") do |f| %>
+            
+            <% if @exercise.errors.any? %>
+              <div class="alert alert-danger">
+                <h5 class="alert-heading">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Please fix the following errors:
+                </h5>
+                <ul class="mb-0">
+                  <% @exercise.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+            
+            <!-- Title Field -->
+            <div class="mb-4">
+              <%= f.label :title, class: "form-label fw-bold" do %>
+                <i class="fas fa-heading me-1"></i> Exercise Title
+              <% end %>
+              <%= f.text_field :title, 
+                  class: "form-control form-control-lg", 
+                  placeholder: "e.g., Two Sum Problem",
+                  required: true %>
+              <div class="form-text">Give your exercise a clear, descriptive title.</div>
+            </div>
+            
+            <!-- Language Field -->
+            <div class="mb-4">
+              <%= f.label :language, class: "form-label fw-bold" do %>
+                <i class="fas fa-code me-1"></i> Programming Language
+              <% end %>
+              <%= f.select :language, 
+                  Exercise::LANGUAGES.map { |lang| [lang, lang] },
+                  { include_blank: "Select a programming language" },
+                  { class: "form-select form-select-lg", required: true } %>
+              <div class="form-text">Choose the primary language for this exercise.</div>
+            </div>
+            
+            <!-- Difficulty Field -->
+            <div class="mb-4">
+              <%= f.label :difficulty, class: "form-label fw-bold" do %>
+                <i class="fas fa-chart-line me-1"></i> Difficulty Level
+              <% end %>
+              
+              <div class="difficulty-selector">
+                <% (1..5).each do |level| %>
+                  <div class="form-check form-check-inline">
+                    <%= f.radio_button :difficulty, level, 
+                        class: "form-check-input difficulty-radio",
+                        id: "difficulty_#{level}" %>
+                    <%= f.label "difficulty_#{level}", class: "form-check-label" do %>
+                      <span class="difficulty-label difficulty-<%= level %>">
+                        <% level.times do %>
+                          <i class="fas fa-star text-warning"></i>
+                        <% end %>
+                        <% (5 - level).times do %>
+                          <i class="far fa-star text-muted"></i>
+                        <% end %>
+                        <span class="ms-2">
+                          <%= case level
+                              when 1 then "Beginner"
+                              when 2 then "Easy"
+                              when 3 then "Intermediate"
+                              when 4 then "Advanced"
+                              when 5 then "Expert"
+                              end %>
+                        </span>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            
+            <!-- Description Field -->
+            <div class="mb-4">
+              <%= f.label :description, class: "form-label fw-bold" do %>
+                <i class="fas fa-align-left me-1"></i> Exercise Description
+              <% end %>
+              <%= f.text_area :description, 
+                  rows: 10,
+                  class: "form-control description-textarea",
+                  placeholder: "Describe the exercise in detail...\n\nInclude:\n- Problem statement\n- Input/output examples\n- Constraints\n- Expected behavior",
+                  required: true %>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Use Markdown for formatting. Include examples and constraints.
+              </div>
+            </div>
+            
+            <!-- Starter Code Field -->
+            <div class="mb-4">
+              <%= f.label :starter_code, class: "form-label fw-bold" do %>
+                <i class="fas fa-file-code me-1"></i> Starter Code
+                <span class="text-muted fw-normal">(optional)</span>
+              <% end %>
+              <%= f.text_area :starter_code,
+                  rows: 12,
+                  class: "form-control font-monospace",
+                  placeholder: "Paste the skeleton code students will see when they click \"Load Starter Code\"." %>
+              <div class="form-text">
+                Students can load this into the editor with one click on the exercise page.
+              </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+              <div>
+                <%= link_to admin_exercises_path, class: "btn btn-secondary" do %>
+                  <i class="fas fa-arrow-left me-1"></i> Cancel
+                <% end %>
+              </div>
+              <div>
+                <%= f.button type: :submit, class: "btn btn-primary btn-lg" do %>
+                  <i class="fas fa-save me-1"></i> Create Exercise
+                <% end %>
+              </div>
+            </div>
+            
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Toggle template code area
+  document.getElementById('addTemplateCode').addEventListener('change', function() {
+    document.getElementById('templateCodeArea').style.display = this.checked ? 'block' : 'none';
+  });
+  
+  // Toggle test cases area
+  document.getElementById('addTestCases').addEventListener('change', function() {
+    document.getElementById('testCasesArea').style.display = this.checked ? 'block' : 'none';
+  });
+</script>

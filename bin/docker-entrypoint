@@ -3,6 +3,13 @@
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+
+  # Seed only when the exercises table is empty (first boot with a fresh database)
+  exercise_count=$(./bin/rails runner "puts Exercise.count" 2>/dev/null || echo "0")
+  if [ "$exercise_count" -eq "0" ]; then
+    echo "Empty database detected — running seeds..."
+    ./bin/rails db:seed
+  fi
 fi
 
 exec "${@}"

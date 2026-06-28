@@ -1,84 +1,484 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-#
-#
+# Idempotent seed file — safe to run multiple times.
+# Run manually:  bin/rails db:seed
+# Run via setup: bin/rails db:setup  (create + schema + seed)
+
+# ── Admin user ──────────────────────────────────────────────────────────────
 admin = User.find_or_initialize_by(email: 'admin@p4ering.com')
 if admin.new_record?
-  admin.name = 'Administrator'
-  admin.password = 'admin123'
+  admin.name                  = 'Administrator'
+  admin.password              = 'admin123'
   admin.password_confirmation = 'admin123'
-  admin.admin = true
+  admin.admin                 = true
   admin.save!
-  puts "Admin user created: admin@p4ering.com / admin123"
+  puts "Created admin user: admin@p4ering.com / admin123"
+else
+  puts "Admin user already exists — skipping"
 end
 
-# Create sample exercises
-exercises = [
+# ── Starter code skeletons (from https://github.com/p4lang/tutorials) ────────
+BASIC_FORWARDING_SKELETON = <<~'P4'
+  /* -*- P4_16 -*- */
+  #include <core.p4>
+  #include <v1model.p4>
+
+  const bit<16> TYPE_IPV4 = 0x800;
+
+  typedef bit<9>  egressSpec_t;
+  typedef bit<48> macAddr_t;
+  typedef bit<32> ip4Addr_t;
+
+  header ethernet_t {
+      macAddr_t dstAddr;
+      macAddr_t srcAddr;
+      bit<16>   etherType;
+  }
+
+  header ipv4_t {
+      bit<4>    version;
+      bit<4>    ihl;
+      bit<8>    diffserv;
+      bit<16>   totalLen;
+      bit<16>   identification;
+      bit<3>    flags;
+      bit<13>   fragOffset;
+      bit<8>    ttl;
+      bit<8>    protocol;
+      bit<16>   hdrChecksum;
+      ip4Addr_t srcAddr;
+      ip4Addr_t dstAddr;
+  }
+
+  struct metadata { /* empty */ }
+
+  struct headers {
+      ethernet_t ethernet;
+      ipv4_t     ipv4;
+  }
+
+  // ── Parser ───────────────────────────────────────────────────────────────
+  parser MyParser(packet_in packet,
+                  out headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata) {
+      state start {
+          // TODO: extract Ethernet, then branch on etherType
+          transition accept;
+      }
+  }
+
+  control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
+      apply { }
+  }
+
+  // ── Ingress ──────────────────────────────────────────────────────────────
+  control MyIngress(inout headers hdr,
+                    inout metadata meta,
+                    inout standard_metadata_t standard_metadata) {
+
+      action drop() {
+          mark_to_drop(standard_metadata);
+      }
+
+      action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
+          // TODO: set egress port, update MAC addresses, decrement TTL
+      }
+
+      table ipv4_lpm {
+          key     = { hdr.ipv4.dstAddr: lpm; }
+          actions = { ipv4_forward; drop; NoAction; }
+          size    = 1024;
+          default_action = NoAction();
+      }
+
+      apply {
+          // TODO: apply ipv4_lpm only when the IPv4 header is valid
+          ipv4_lpm.apply();
+      }
+  }
+
+  control MyEgress(inout headers hdr,
+                   inout metadata meta,
+                   inout standard_metadata_t standard_metadata) {
+      apply { }
+  }
+
+  control MyComputeChecksum(inout headers hdr, inout metadata meta) {
+      apply {
+          update_checksum(
+              hdr.ipv4.isValid(),
+              { hdr.ipv4.version, hdr.ipv4.ihl, hdr.ipv4.diffserv,
+                hdr.ipv4.totalLen, hdr.ipv4.identification,
+                hdr.ipv4.flags, hdr.ipv4.fragOffset, hdr.ipv4.ttl,
+                hdr.ipv4.protocol, hdr.ipv4.srcAddr, hdr.ipv4.dstAddr },
+              hdr.ipv4.hdrChecksum,
+              HashAlgorithm.csum16);
+      }
+  }
+
+  // ── Deparser ─────────────────────────────────────────────────────────────
+  control MyDeparser(packet_out packet, in headers hdr) {
+      apply {
+          // TODO: emit ethernet then ipv4
+      }
+  }
+
+  V1Switch(
+      MyParser(), MyVerifyChecksum(), MyIngress(),
+      MyEgress(), MyComputeChecksum(), MyDeparser()
+  ) main;
+P4
+
+BASIC_TUNNEL_SKELETON = <<~'P4'
+  /* -*- P4_16 -*- */
+  #include <core.p4>
+  #include <v1model.p4>
+
+  const bit<16> TYPE_MYTUNNEL = 0x1212;
+  const bit<16> TYPE_IPV4     = 0x800;
+
+  typedef bit<9>  egressSpec_t;
+  typedef bit<48> macAddr_t;
+  typedef bit<32> ip4Addr_t;
+
+  header ethernet_t {
+      macAddr_t dstAddr;
+      macAddr_t srcAddr;
+      bit<16>   etherType;
+  }
+
+  header myTunnel_t {
+      bit<16> proto_id;
+      bit<16> dst_id;
+  }
+
+  header ipv4_t {
+      bit<4>    version;
+      bit<4>    ihl;
+      bit<8>    diffserv;
+      bit<16>   totalLen;
+      bit<16>   identification;
+      bit<3>    flags;
+      bit<13>   fragOffset;
+      bit<8>    ttl;
+      bit<8>    protocol;
+      bit<16>   hdrChecksum;
+      ip4Addr_t srcAddr;
+      ip4Addr_t dstAddr;
+  }
+
+  struct metadata { /* empty */ }
+
+  struct headers {
+      ethernet_t ethernet;
+      myTunnel_t myTunnel;
+      ipv4_t     ipv4;
+  }
+
+  // ── Parser ───────────────────────────────────────────────────────────────
+  // TODO: parse myTunnel header when etherType == TYPE_MYTUNNEL (0x1212),
+  //       then conditionally parse IPv4 when proto_id == TYPE_IPV4
+  parser MyParser(packet_in packet,
+                  out headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata) {
+      state start { transition parse_ethernet; }
+
+      state parse_ethernet {
+          packet.extract(hdr.ethernet);
+          transition select(hdr.ethernet.etherType) {
+              TYPE_IPV4: parse_ipv4;
+              default:   accept;
+          }
+      }
+
+      state parse_ipv4 {
+          packet.extract(hdr.ipv4);
+          transition accept;
+      }
+  }
+
+  control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
+      apply { }
+  }
+
+  // ── Ingress ──────────────────────────────────────────────────────────────
+  control MyIngress(inout headers hdr,
+                    inout metadata meta,
+                    inout standard_metadata_t standard_metadata) {
+
+      action drop() { mark_to_drop(standard_metadata); }
+
+      action ipv4_forward(macAddr_t dstAddr, egressSpec_t port) {
+          standard_metadata.egress_spec = port;
+          hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+          hdr.ethernet.dstAddr = dstAddr;
+          hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+      }
+
+      table ipv4_lpm {
+          key     = { hdr.ipv4.dstAddr: lpm; }
+          actions = { ipv4_forward; drop; NoAction; }
+          size    = 1024;
+          default_action = drop();
+      }
+
+      // TODO: declare action myTunnel_forward(egressSpec_t port)
+      // TODO: declare table myTunnel_exact matching on myTunnel.dst_id (exact)
+
+      apply {
+          // TODO: if tunnel header is valid apply myTunnel_exact,
+          //       otherwise fall through to ipv4_lpm
+          if (hdr.ipv4.isValid()) {
+              ipv4_lpm.apply();
+          }
+      }
+  }
+
+  control MyEgress(inout headers hdr,
+                   inout metadata meta,
+                   inout standard_metadata_t standard_metadata) {
+      apply { }
+  }
+
+  control MyComputeChecksum(inout headers hdr, inout metadata meta) {
+      apply {
+          update_checksum(
+              hdr.ipv4.isValid(),
+              { hdr.ipv4.version, hdr.ipv4.ihl, hdr.ipv4.diffserv,
+                hdr.ipv4.totalLen, hdr.ipv4.identification,
+                hdr.ipv4.flags, hdr.ipv4.fragOffset, hdr.ipv4.ttl,
+                hdr.ipv4.protocol, hdr.ipv4.srcAddr, hdr.ipv4.dstAddr },
+              hdr.ipv4.hdrChecksum,
+              HashAlgorithm.csum16);
+      }
+  }
+
+  // ── Deparser ─────────────────────────────────────────────────────────────
+  control MyDeparser(packet_out packet, in headers hdr) {
+      apply {
+          packet.emit(hdr.ethernet);
+          // TODO: emit myTunnel header
+          packet.emit(hdr.ipv4);
+      }
+  }
+
+  V1Switch(
+      MyParser(), MyVerifyChecksum(), MyIngress(),
+      MyEgress(), MyComputeChecksum(), MyDeparser()
+  ) main;
+P4
+
+SOURCE_ROUTING_SKELETON = <<~'P4'
+  /* -*- P4_16 -*- */
+  #include <core.p4>
+  #include <v1model.p4>
+
+  const bit<16> TYPE_IPV4       = 0x800;
+  const bit<16> TYPE_SRCROUTING = 0x1234;
+
+  #define MAX_HOPS 9
+
+  typedef bit<9>  egressSpec_t;
+  typedef bit<48> macAddr_t;
+  typedef bit<32> ip4Addr_t;
+
+  header ethernet_t {
+      macAddr_t dstAddr;
+      macAddr_t srcAddr;
+      bit<16>   etherType;
+  }
+
+  header srcRoute_t {
+      bit<1>  bos;   // bottom-of-stack flag
+      bit<15> port;  // output port for this hop
+  }
+
+  header ipv4_t {
+      bit<4>    version;
+      bit<4>    ihl;
+      bit<8>    diffserv;
+      bit<16>   totalLen;
+      bit<16>   identification;
+      bit<3>    flags;
+      bit<13>   fragOffset;
+      bit<8>    ttl;
+      bit<8>    protocol;
+      bit<16>   hdrChecksum;
+      ip4Addr_t srcAddr;
+      ip4Addr_t dstAddr;
+  }
+
+  struct metadata { /* empty */ }
+
+  struct headers {
+      ethernet_t           ethernet;
+      srcRoute_t[MAX_HOPS] srcRoutes;
+      ipv4_t               ipv4;
+  }
+
+  // ── Parser ───────────────────────────────────────────────────────────────
+  parser MyParser(packet_in packet,
+                  out headers hdr,
+                  inout metadata meta,
+                  inout standard_metadata_t standard_metadata) {
+
+      state start { transition parse_ethernet; }
+
+      state parse_ethernet {
+          packet.extract(hdr.ethernet);
+          // TODO: transition to parse_srcRouting when etherType == TYPE_SRCROUTING
+          transition accept;
+      }
+
+      state parse_srcRouting {
+          // TODO: extract next srcRoutes entry;
+          //       loop while bos == 0, then transition to parse_ipv4
+          transition accept;
+      }
+
+      state parse_ipv4 {
+          packet.extract(hdr.ipv4);
+          transition accept;
+      }
+  }
+
+  control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
+      apply { }
+  }
+
+  // ── Ingress ──────────────────────────────────────────────────────────────
+  control MyIngress(inout headers hdr,
+                    inout metadata meta,
+                    inout standard_metadata_t standard_metadata) {
+
+      action drop() { mark_to_drop(standard_metadata); }
+
+      action srcRoute_nhop() {
+          // TODO: set standard_metadata.egress_spec from hdr.srcRoutes[0].port
+          //       and pop the top entry: hdr.srcRoutes.pop_front(1)
+      }
+
+      action srcRoute_finish() {
+          hdr.ethernet.etherType = TYPE_IPV4;
+      }
+
+      action update_ttl() {
+          hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+      }
+
+      apply {
+          if (hdr.srcRoutes[0].isValid()) {
+              // TODO: if this is the last hop (bos == 1) call srcRoute_finish()
+              // TODO: call srcRoute_nhop() to forward and pop the stack
+              if (hdr.ipv4.isValid()) { update_ttl(); }
+          } else {
+              drop();
+          }
+      }
+  }
+
+  control MyEgress(inout headers hdr,
+                   inout metadata meta,
+                   inout standard_metadata_t standard_metadata) {
+      apply { }
+  }
+
+  control MyComputeChecksum(inout headers hdr, inout metadata meta) {
+      apply { }
+  }
+
+  // ── Deparser ─────────────────────────────────────────────────────────────
+  control MyDeparser(packet_out packet, in headers hdr) {
+      apply {
+          packet.emit(hdr.ethernet);
+          packet.emit(hdr.srcRoutes);
+          packet.emit(hdr.ipv4);
+      }
+  }
+
+  V1Switch(
+      MyParser(), MyVerifyChecksum(), MyIngress(),
+      MyEgress(), MyComputeChecksum(), MyDeparser()
+  ) main;
+P4
+
+# ── P4 Exercises ─────────────────────────────────────────────────────────────
+p4_exercises = [
   {
-    title: "Hello World",
-    description: "Write a program that prints 'Hello, World!' to the console.\n\nExample output:\nHello, World!",
-    language: "Python",
-    difficulty: 1
+    title:        "Basic Forwarding",
+    difficulty:   2,
+    starter_code: BASIC_FORWARDING_SKELETON,
+    description:  <<~DESC
+      Implement Layer 3 IPv4 forwarding on a BMv2 software switch.
+
+      Complete the skeleton P4 program so that the switch forwards IPv4 packets by:
+
+      1. Parsing Ethernet and IPv4 headers from incoming packets
+      2. Looking up the destination IP address in an LPM table (ipv4_lpm)
+      3. Calling ipv4_forward to set the output port, update source/destination MACs, and decrement the TTL
+      4. Deparsing the headers back onto the outgoing packet in the correct order
+
+      The skeleton already defines the header types, metadata struct, and the table/action signatures. Complete the 4 TODO sections marked in the starter code.
+
+      Reference: https://github.com/p4lang/tutorials/tree/master/exercises/basic
+    DESC
   },
   {
-    title: "FizzBuzz Challenge",
-    description: "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number. For multiples of 5, print 'Buzz'. For numbers that are multiples of both 3 and 5, print 'FizzBuzz'.",
-    language: "JavaScript",
-    difficulty: 2
+    title:        "Basic Tunneling",
+    difficulty:   3,
+    starter_code: BASIC_TUNNEL_SKELETON,
+    description:  <<~DESC
+      Extend an existing IPv4 router to support a custom tunneling protocol.
+
+      When a packet arrives with EtherType 0x1212 (TYPE_MYTUNNEL), the switch must forward it based on the myTunnel header's dst_id field instead of the IP destination address. When proto_id inside myTunnel equals 0x0800 the inner IPv4 header should also be parsed.
+
+      Complete the 4 TODO sections in the starter code:
+
+      1. Update the parser to extract myTunnel when EtherType == 0x1212, then conditionally parse IPv4
+      2. Declare the myTunnel_forward action that sets egress_spec from a control-plane parameter
+      3. Declare the myTunnel_exact table doing exact matching on myTunnel.dst_id
+      4. Update the ingress apply block: route via myTunnel_exact when the tunnel header is valid, fall through to ipv4_lpm otherwise
+      5. Emit the myTunnel header in the deparser
+
+      Reference: https://github.com/p4lang/tutorials/tree/master/exercises/basic_tunnel
+    DESC
   },
   {
-    title: "Fibonacci Sequence",
-    description: "Write a function that returns the nth number in the Fibonacci sequence. The Fibonacci sequence starts with 0, 1, 1, 2, 3, 5, 8, ...",
-    language: "Ruby",
-    difficulty: 3
-  },
-  {
-    title: "Palindrome Checker",
-    description: "Write a function that checks if a given string is a palindrome (reads the same forwards and backwards). Ignore case and non-alphanumeric characters.\n\nExample:\n'racecar' -> true\n'hello' -> false",
-    language: "Python",
-    difficulty: 2
-  },
-  {
-    title: "Binary Search Implementation",
-    description: "Implement a binary search algorithm to find an element in a sorted array. Return the index of the element if found, otherwise return -1.",
-    language: "Java",
-    difficulty: 4
-  },
-  {
-    title: "Reverse a String",
-    description: "Write a function that reverses a string without using built-in reverse functions.\n\nExample:\nInput: 'hello'\nOutput: 'olleh'",
-    language: "JavaScript",
-    difficulty: 1
-  },
-  {
-    title: "Factorial Calculator",
-    description: "Write a recursive function to calculate the factorial of a number n (n!). Factorial of n is the product of all positive integers less than or equal to n.\n\nExample:\n5! = 5 * 4 * 3 * 2 * 1 = 120",
-    language: "Ruby",
-    difficulty: 2
-  },
-  {
-    title: "Two Sum Problem",
-    description: "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target. You may assume that each input would have exactly one solution.",
-    language: "Python",
-    difficulty: 3
+    title:        "Source Routing",
+    difficulty:   4,
+    starter_code: SOURCE_ROUTING_SKELETON,
+    description:  <<~DESC
+      Implement source routing: the sending host encodes the full forwarding path as a stack of port numbers embedded in the packet header. Each switch pops one entry and forwards to that port.
+
+      The srcRoute_t header has two fields: bos (1-bit bottom-of-stack flag) and port (15-bit output port). Up to 9 hops are supported (MAX_HOPS = 9).
+
+      Complete the 3 TODO sections in the starter code:
+
+      1. Parser: transition to parse_srcRouting when EtherType == 0x1234; loop extracting srcRoutes entries until bos == 1, then parse IPv4
+      2. srcRoute_nhop action: set standard_metadata.egress_spec from hdr.srcRoutes[0].port and pop the top entry with hdr.srcRoutes.pop_front(1)
+      3. Apply block: call srcRoute_finish() (restore EtherType to IPv4) when bos == 1, then call srcRoute_nhop()
+
+      Test by sending a packet with a port sequence such as [2, 3, 2, 1] through a 3-switch triangle topology and verifying it arrives at the correct host.
+
+      Reference: https://github.com/p4lang/tutorials/tree/master/exercises/source_routing
+    DESC
   }
 ]
 
-exercises.each do |exercise|
-  ex = Exercise.find_or_initialize_by(title: exercise[:title])
+p4_exercises.each do |attrs|
+  ex = Exercise.find_or_initialize_by(title: attrs[:title])
+  ex.language     = 'P4'
+  ex.difficulty   = attrs[:difficulty]
+  ex.description  = attrs[:description].strip
+  ex.starter_code = attrs[:starter_code].strip
   if ex.new_record?
-    ex.description = exercise[:description]
-    ex.language = exercise[:language]
-    ex.difficulty = exercise[:difficulty]
     ex.save!
-    puts "Created exercise: #{exercise[:title]}"
+    puts "Created exercise: #{attrs[:title]}"
+  elsif ex.changed?
+    ex.save!
+    puts "Updated exercise: #{attrs[:title]}"
+  else
+    puts "Exercise '#{attrs[:title]}' unchanged — skipping"
   end
 end
 

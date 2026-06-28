@@ -72,6 +72,19 @@
       
       <%= yield %>
     </main>
+
+        <!-- Add footer -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 P4ering. Learning Computer Networks can be fun.</p>
+        <p>
+          <a href="#"><i class="fab fa-github"></i> GitHub</a> |
+          <a href="#"><i class="fab fa-twitter"></i> Twitter</a> |
+          <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+        </p>
+      </div>
+    </footer>
+
     
     <%= javascript_include_tag "bootstrap" %>
   </body>

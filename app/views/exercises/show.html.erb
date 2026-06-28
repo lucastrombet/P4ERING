@@ -29,20 +29,41 @@
 <div class="row">
   <div class="col-md-7">
     <div class="card">
-      <div class="card-header bg-success text-white">
+      <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
         <h3 class="h5 mb-0">Submit Your Solution</h3>
+        <% if @exercise.starter_code.present? %>
+          <button type="button" class="btn btn-sm btn-light"
+                  onclick="loadStarterCode()"
+                  title="Replace editor content with the starter code template">
+            <i class="fas fa-file-code me-1"></i> Load Starter Code
+          </button>
+        <% end %>
       </div>
       <div class="card-body">
         <%= form_with(model: [@exercise, Submission.new], local: true) do |f| %>
           <div class="mb-3">
             <%= f.label :code, "Your #{@exercise.language} Code", class: "form-label fw-bold" %>
-            <%= f.text_area :code, rows: 15, class: "form-control font-monospace", 
-                placeholder: "Write your #{@exercise.language} solution here...\n\nExample:\ndef solution():\n    # Your code here\n    pass", required: true %>
+            <%= f.text_area :code, rows: 15, class: "form-control font-monospace",
+                id: "code-editor",
+                placeholder: "Write your #{@exercise.language} solution here..." %>
           </div>
           <%= f.submit "Submit Solution", class: "btn btn-success" %>
         <% end %>
       </div>
     </div>
+
+    <% if @exercise.starter_code.present? %>
+      <script>
+        function loadStarterCode() {
+          var editor = document.getElementById('code-editor');
+          if (editor.value.trim() !== '' &&
+              !confirm('This will replace your current code with the starter template. Continue?')) {
+            return;
+          }
+          editor.value = <%= raw @exercise.starter_code.to_json %>;
+        }
+      </script>
+    <% end %>
   </div>
   
   <div class="col-md-5">

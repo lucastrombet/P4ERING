@@ -21,6 +21,8 @@ gem 'devise', '>= 4.9'
 
 gem "sprockets-rails"
 
+gem "dotenv-rails", groups: [:development, :test]
+
 # Bootstrap for styling
 gem 'bootstrap', '>= 5.3.0'
 gem 'sassc-rails', '>= 2.1.2'

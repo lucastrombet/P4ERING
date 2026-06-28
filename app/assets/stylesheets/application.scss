@@ -662,3 +662,194 @@ footer {
     height: 300px;
   }
 }
+
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 0.625rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Dropdown logout item
+.dropdown-item.text-danger {
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626 !important;
+    transform: translateX(5px);
+  }
+
+  i {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover i {
+    transform: translateX(3px);
+  }
+}
+
+// Sidebar styles (if using sidebar layout)
+.sidebar {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 2rem;
+
+  .avatar-placeholder {
+    i {
+      font-size: 4rem;
+    }
+  }
+
+  .nav-link {
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #f3f4f6;
+      transform: translateX(5px);
+    }
+
+    i {
+      width: 1.5rem;
+    }
+  }
+}
+
+// Floating logout button (fixed position)
+.floating-logout {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+
+  .btn-logout {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// Confirm dialog customization
+.swal2-popup {
+  border-radius: 16px !important;
+
+  .swal2-confirm.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    border-radius: 8px;
+  }
+}
+
+
+// app/assets/stylesheets/application.scss - Add these styles
+
+// Difficulty Selector Styling
+.difficulty-selector {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  
+  .form-check {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: white;
+      transform: translateX(5px);
+    }
+  }
+  
+  .difficulty-label {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .difficulty-radio:checked + .difficulty-label {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    padding: 0.5rem 1rem;
+  }
+}
+
+// Description Textarea
+.description-textarea {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  
+  &:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+}
+
+// Table Actions
+.btn-group {
+  .btn {
+    margin: 0 2px;
+    border-radius: 6px !important;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Form Animations
+.form-control, .form-select {
+  transition: all 0.3s ease;
+  
+  &:focus {
+    transform: translateY(-2px);
+  }
+}
+
+// Card Hover Effect
+.card {
+  .card-header {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+  }
+}

@@ -4,7 +4,7 @@ class Exercise < ApplicationRecord
   validates :title, :description, :language, presence: true
   validates :difficulty, presence: true, inclusion: { in: 1..5 }
   
-  LANGUAGES = ['Python', 'JavaScript', 'Ruby', 'Java', 'C++', 'Go', 'Rust']
+  LANGUAGES = ['P4', 'Python', 'JavaScript', 'Ruby', 'Java', 'C++', 'Go', 'Rust']
   
   def difficulty_label
     case difficulty

@@ -1,18 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>P4ering - Master Programming Languages</title>
+    <title>P4ering - Programming Exercises Platform</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -62,18 +54,25 @@
         </div>
       </div>
     </nav>
-
     
-    <!-- Add footer -->
-    <footer>
-      <div class="container">
-        <p>&copy; 2024 P4ering. Master programming languages through practice.</p>
-        <p>
-          <a href="#"><i class="fab fa-github"></i> GitHub</a> |
-          <a href="#"><i class="fab fa-twitter"></i> Twitter</a> |
-          <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-        </p>
-      </div>
-    </footer>
+    <main class="container mt-4">
+      <% if notice %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+      
+      <% if alert %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+      
+      <%= yield %>
+    </main>
+    
+    <%= javascript_include_tag "bootstrap" %>
   </body>
 </html>

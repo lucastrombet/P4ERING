@@ -10,12 +10,23 @@ Rails.application.routes.draw do
   root to: 'home#index'
 
   resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+  resources :users, path: 'admin/users', as: :admin_users, only: [:index, :new, :create, :edit, :update, :destroy]
+  post 'admin/users/create', to: 'users#create', as: :admin_user_create
+
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#index'
+    resources :users, except: [:show]
+    resources :exercises, except: [:show]  # Add this line
+  end
+
+  #devise_for :users
+
   resources :exercises do
     resources :submissions, only: [:new, :create]
   end
   resources :submissions, only: [:index, :show]
 
-  get 'admin/dashboard', to: 'admin#dashboard'
+  #get 'admin/dashboard', to: 'admin#dashboard'
   get 'exercises/:exercise_id/run', to: 'submissions#run', as: 'run_exercise'
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
