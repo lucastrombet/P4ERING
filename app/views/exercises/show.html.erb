@@ -21,10 +21,30 @@
         </div>
         <h5>Description:</h5>
         <p><%= simple_format(@exercise.description) %></p>
+
+        <% if @exercise.traffic_generators.any? %>
+          <h5 class="mt-3">Traffic Generators</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <% @exercise.traffic_generators.each do |tg| %>
+              <div class="border rounded p-2 bg-light">
+                <span class="fw-semibold"><%= tg.name %></span>
+                <span class="badge <%= tg.protocol == 'UDP' ? 'bg-warning text-dark' : 'bg-primary' %> ms-1"><%= tg.protocol %></span>
+                <div class="mt-1"><code class="small"><%= tg.to_iperf_command("<server>") %></code></div>
+                <% if tg.description.present? %>
+                  <div class="small text-muted mt-1"><%= tg.description %></div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
 </div>
+
+<% if @exercise.has_topology? %>
+  <%= render 'topology_viewer', exercise: @exercise %>
+<% end %>
 
 <div class="row">
   <div class="col-md-7">
@@ -40,15 +60,34 @@
         <% end %>
       </div>
       <div class="card-body">
-        <%= form_with(model: [@exercise, Submission.new], local: true) do |f| %>
+        <%= form_with(model: [@exercise, Submission.new], local: true, data: { turbo: false }, id: "submission-form") do |f| %>
           <div class="mb-3">
             <%= f.label :code, "Your #{@exercise.language} Code", class: "form-label fw-bold" %>
             <%= f.text_area :code, rows: 15, class: "form-control font-monospace",
                 id: "code-editor",
                 placeholder: "Write your #{@exercise.language} solution here..." %>
           </div>
-          <%= f.submit "Submit Solution", class: "btn btn-success" %>
+          <div class="d-flex gap-2">
+            <%= f.submit "Submit Solution", class: "btn btn-success" %>
+            <button type="button"
+                    class="btn btn-outline-info"
+                    title="Run your code through the sandbox and see the logs — without creating a submission"
+                    onclick="submitTestRun()">
+              <i class="fas fa-flask me-1"></i> Test Code
+            </button>
+          </div>
         <% end %>
+
+        <%= form_with url: exercise_test_run_path(@exercise), method: :post,
+            local: true, data: { turbo: false }, id: "test-run-form" do %>
+          <input type="hidden" name="submission[code]" id="test-run-code">
+        <% end %>
+        <script>
+          function submitTestRun() {
+            document.getElementById('test-run-code').value = document.getElementById('code-editor').value;
+            document.getElementById('test-run-form').submit();
+          }
+        </script>
       </div>
     </div>
 

@@ -402,13 +402,51 @@ SOURCE_ROUTING_SKELETON = <<~'P4'
   ) main;
 P4
 
+# ── Topology configs (P4Docker connection model) ─────────────────────────────
+BASIC_FORWARDING_TOPOLOGY = JSON.generate(
+  switch: {
+    name:        "sw1",
+    thrift_port: 50001,
+    image:       "dnredson/p4d"
+  },
+  connections: [
+    {
+      port:       1,
+      host_name:  "h1",
+      host_image: "dnredson/net",
+      host_ip:    "10.0.1.2/24",
+      host_mac:   "00:00:00:00:01:02",
+      sw_ip:      "10.0.1.1/24",
+      sw_mac:     "00:00:00:00:01:01"
+    },
+    {
+      port:       2,
+      host_name:  "h2",
+      host_image: "dnredson/net",
+      host_ip:    "10.0.2.2/24",
+      host_mac:   "00:00:00:00:02:02",
+      sw_ip:      "10.0.2.1/24",
+      sw_mac:     "00:00:00:00:02:01"
+    }
+  ],
+  forwarding_rules: [
+    "table_add MyIngress.ipv4_lpm ipv4_forward 10.0.1.2 => 00:00:00:00:01:02 1",
+    "table_add MyIngress.ipv4_lpm ipv4_forward 10.0.2.2 => 00:00:00:00:02:02 2"
+  ],
+  traffic_test: {
+    from:    "h1",
+    command: "ping -c 3 -W 2 10.0.2.2"
+  }
+)
+
 # ── P4 Exercises ─────────────────────────────────────────────────────────────
 p4_exercises = [
   {
-    title:        "Basic Forwarding",
-    difficulty:   2,
-    starter_code: BASIC_FORWARDING_SKELETON,
-    description:  <<~DESC
+    title:           "Basic Forwarding",
+    difficulty:      2,
+    starter_code:    BASIC_FORWARDING_SKELETON,
+    topology_config: BASIC_FORWARDING_TOPOLOGY,
+    description:     <<~DESC
       Implement Layer 3 IPv4 forwarding on a BMv2 software switch.
 
       Complete the skeleton P4 program so that the switch forwards IPv4 packets by:
@@ -467,10 +505,11 @@ p4_exercises = [
 
 p4_exercises.each do |attrs|
   ex = Exercise.find_or_initialize_by(title: attrs[:title])
-  ex.language     = 'P4'
-  ex.difficulty   = attrs[:difficulty]
-  ex.description  = attrs[:description].strip
-  ex.starter_code = attrs[:starter_code].strip
+  ex.language        = 'P4'
+  ex.difficulty      = attrs[:difficulty]
+  ex.description     = attrs[:description].strip
+  ex.starter_code    = attrs[:starter_code].strip
+  ex.topology_config = attrs[:topology_config]
   if ex.new_record?
     ex.save!
     puts "Created exercise: #{attrs[:title]}"
@@ -479,6 +518,76 @@ p4_exercises.each do |attrs|
     puts "Updated exercise: #{attrs[:title]}"
   else
     puts "Exercise '#{attrs[:title]}' unchanged — skipping"
+  end
+end
+
+# ── Traffic Generators ───────────────────────────────────────────────────────
+traffic_generators = [
+  {
+    name:             'TCP Baseline',
+    description:      'Fluxo TCP simples para verificar conectividade e throughput básico.',
+    protocol:         'TCP',
+    duration:         10,
+    port:             5201,
+    bandwidth:        nil,
+    parallel_streams: 1,
+    packet_length:    nil,
+    interval:         1,
+    reverse:          false,
+    tos:              nil
+  },
+  {
+    name:             'UDP Video Stream',
+    description:      'Simula tráfego de vídeo com taxa constante de 5 Mbps via UDP.',
+    protocol:         'UDP',
+    duration:         30,
+    port:             5201,
+    bandwidth:        '5M',
+    parallel_streams: 1,
+    packet_length:    '1400',
+    interval:         1,
+    reverse:          false,
+    tos:              nil
+  },
+  {
+    name:             'TCP High Bandwidth',
+    description:      'Teste de alta carga com 4 streams TCP paralelos para saturar o pipeline.',
+    protocol:         'TCP',
+    duration:         30,
+    port:             5201,
+    bandwidth:        '100M',
+    parallel_streams: 4,
+    packet_length:    nil,
+    interval:         5,
+    reverse:          false,
+    tos:              nil
+  },
+  {
+    name:             'UDP DSCP AF11',
+    description:      'Tráfego UDP com marcação DSCP AF11 (0x28) para testar QoS no plano de dados.',
+    protocol:         'UDP',
+    duration:         20,
+    port:             5201,
+    bandwidth:        '10M',
+    parallel_streams: 1,
+    packet_length:    '512',
+    interval:         1,
+    reverse:          false,
+    tos:              '0x28'
+  }
+]
+
+traffic_generators.each do |attrs|
+  tg = TrafficGenerator.find_or_initialize_by(name: attrs[:name])
+  tg.assign_attributes(attrs)
+  if tg.new_record?
+    tg.save!
+    puts "Created traffic generator: #{attrs[:name]}"
+  elsif tg.changed?
+    tg.save!
+    puts "Updated traffic generator: #{attrs[:name]}"
+  else
+    puts "Traffic generator '#{attrs[:name]}' unchanged — skipping"
   end
 end
 

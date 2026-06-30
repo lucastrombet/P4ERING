@@ -1,0 +1,265 @@
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-project-diagram me-2"></i><strong>Network Topology</strong></span>
+        <span class="badge bg-secondary small font-monospace"><%= exercise.topology_config.then { |t| JSON.parse(t)['switch']['name'] rescue 'topology' } %></span>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="container-fluid g-0">
+          <div class="row g-0">
+
+            <%# ── Cytoscape canvas ── %>
+            <div class="col-md-9" style="border-right:1px solid #dee2e6; position:relative;">
+              <div id="topo-cy-<%= exercise.id %>"
+                   style="width:100%; height:400px; background:#f0f4f8;"></div>
+
+              <%# zoom controls (matching P4Docker's + / - buttons) %>
+              <div style="position:absolute; top:10px; right:18px; display:flex; gap:4px; z-index:10;">
+                <button onclick="window._topoCy<%= exercise.id %>.zoom(window._topoCy<%= exercise.id %>.zoom()*1.25); window._topoCy<%= exercise.id %>.center();"
+                        class="btn btn-sm btn-light border" title="Zoom in">+</button>
+                <button onclick="window._topoCy<%= exercise.id %>.zoom(window._topoCy<%= exercise.id %>.zoom()/1.25); window._topoCy<%= exercise.id %>.center();"
+                        class="btn btn-sm btn-light border" title="Zoom out">−</button>
+                <button onclick="window._topoCy<%= exercise.id %>.fit(undefined, 40);"
+                        class="btn btn-sm btn-light border" title="Fit to view">&#x26F6;</button>
+              </div>
+            </div>
+
+            <%# ── Info panel (mirrors P4Docker's #info-box) ── %>
+            <div class="col-md-3 p-3 d-flex flex-column">
+              <div class="small text-muted fw-semibold mb-2">
+                <i class="fas fa-info-circle me-1"></i> Info
+              </div>
+              <div id="topo-info-<%= exercise.id %>"
+                   class="small p-2 rounded flex-grow-1"
+                   style="background:#fff; border:1px solid #dee2e6; min-height:180px; overflow-y:auto;">
+                <span class="text-muted">Click a node or link…</span>
+              </div>
+
+              <%# legend %>
+              <div class="mt-3 small text-muted">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span style="display:inline-block;width:18px;height:18px;background:#0d6efd;border-radius:3px;"></span>
+                  P4 Switch (BMv2)
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span style="display:inline-block;width:18px;height:18px;background:#198754;border-radius:50%;"></span>
+                  Host container
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script>
+(function () {
+  var EX_ID = '<%= exercise.id %>';
+  var topo;
+
+  try {
+    topo = <%= raw exercise.topology_config %>;
+  } catch (e) {
+    return;
+  }
+
+  var sw    = topo.switch      || {};
+  var conns = topo.connections || [];
+  var info  = document.getElementById('topo-info-' + EX_ID);
+
+  // ── Build Cytoscape elements ─────────────────────────────────────────────
+
+  var elements = [];
+
+  // Switch node (placed at origin; layout will centre it)
+  elements.push({
+    data: {
+      id:    '__sw__',
+      label: sw.name || 'sw1',
+      kind:  'switch',
+      raw:   JSON.stringify(sw)
+    },
+    position: { x: 0, y: 0 }
+  });
+
+  // Hosts arranged in a circle around the switch
+  var n = conns.length;
+  conns.forEach(function (conn, i) {
+    var angle  = (2 * Math.PI * i / Math.max(n, 1)) - Math.PI / 2;
+    var radius = Math.max(170, n * 60);
+    elements.push({
+      data: {
+        id:    conn.host_name,
+        label: conn.host_name,
+        kind:  'host',
+        raw:   JSON.stringify(conn)
+      },
+      position: {
+        x: Math.round(Math.cos(angle) * radius),
+        y: Math.round(Math.sin(angle) * radius)
+      }
+    });
+    elements.push({
+      data: {
+        id:     'edge_p' + conn.port,
+        source: conn.host_name,
+        target: '__sw__',
+        label:  'Port ' + conn.port,
+        raw:    JSON.stringify(conn)
+      }
+    });
+  });
+
+  // ── Init Cytoscape ───────────────────────────────────────────────────────
+
+  var cy = cytoscape({
+    container: document.getElementById('topo-cy-' + EX_ID),
+    elements:  elements,
+
+    style: [
+      // Switch — blue rectangle (matches P4Docker switch node style)
+      {
+        selector: 'node[kind="switch"]',
+        style: {
+          'shape':            'rectangle',
+          'width':            130,
+          'height':           60,
+          'background-color': '#0d6efd',
+          'border-width':     2,
+          'border-color':     '#084298',
+          'label':            'data(label)',
+          'color':            '#ffffff',
+          'font-size':        14,
+          'font-weight':      'bold',
+          'text-valign':      'center',
+          'text-halign':      'center'
+        }
+      },
+      // Host — green ellipse (matches P4Docker host node style)
+      {
+        selector: 'node[kind="host"]',
+        style: {
+          'shape':            'ellipse',
+          'width':            80,
+          'height':           80,
+          'background-color': '#198754',
+          'border-width':     2,
+          'border-color':     '#0f5132',
+          'label':            'data(label)',
+          'color':            '#ffffff',
+          'font-size':        13,
+          'font-weight':      'bold',
+          'text-valign':      'center',
+          'text-halign':      'center'
+        }
+      },
+      // Edges — grey lines with port label (matches P4Docker connection lines)
+      {
+        selector: 'edge',
+        style: {
+          'width':                   2,
+          'line-color':              '#6c757d',
+          'label':                   'data(label)',
+          'font-size':               11,
+          'color':                   '#343a40',
+          'text-rotation':           'autorotate',
+          'text-background-color':   '#f0f4f8',
+          'text-background-opacity': 0.95,
+          'text-background-padding': '3px',
+          'curve-style':             'straight',
+          'target-arrow-shape':      'none'
+        }
+      },
+      // Selection highlight
+      {
+        selector: ':selected',
+        style: {
+          'background-color': '#ffc107',
+          'border-color':     '#997404',
+          'line-color':       '#ffc107',
+          'color':            '#000000'
+        }
+      }
+    ],
+
+    layout:             { name: 'preset' },
+    userZoomingEnabled: true,
+    userPanningEnabled: true,
+    minZoom:            0.25,
+    maxZoom:            4
+  });
+
+  cy.fit(undefined, 50);
+
+  // Expose instance for zoom buttons
+  window['_topoCy' + EX_ID] = cy;
+
+  // ── Info panel helpers ───────────────────────────────────────────────────
+
+  function row(label, value) {
+    if (!value) return '';
+    return '<div class="d-flex justify-content-between border-bottom py-1 gap-2">' +
+      '<span class="text-muted text-nowrap">' + label + '</span>' +
+      '<code class="text-end" style="word-break:break-all;font-size:0.78rem;">' + value + '</code>' +
+      '</div>';
+  }
+
+  function section(title) {
+    return '<div class="text-muted small fw-semibold mt-2 mb-1 border-top pt-1">' + title + '</div>';
+  }
+
+  // ── Click: switch ────────────────────────────────────────────────────────
+  cy.on('tap', 'node[kind="switch"]', function (e) {
+    var d = JSON.parse(e.target.data('raw'));
+    info.innerHTML =
+      '<strong><i class="fas fa-server me-1" style="color:#0d6efd;"></i>' + (d.name || 'sw1') + '</strong>' +
+      '<span class="badge bg-primary ms-2 small">P4 Switch</span>' +
+      row('Image',       d.image || 'dnredson/p4d') +
+      row('Thrift port', String(d.thrift_port || 50001));
+  });
+
+  // ── Click: host ──────────────────────────────────────────────────────────
+  cy.on('tap', 'node[kind="host"]', function (e) {
+    var c = JSON.parse(e.target.data('raw'));
+    info.innerHTML =
+      '<strong><i class="fas fa-desktop me-1" style="color:#198754;"></i>' + c.host_name + '</strong>' +
+      '<span class="badge bg-success ms-2 small">Host</span>' +
+      row('Image',     c.host_image || '') +
+      row('IP / CIDR', c.host_ip   || '') +
+      row('MAC',       c.host_mac  || '') +
+      section('Connected to switch') +
+      row('Port',      String(c.port || '')) +
+      row('SW IP',     c.sw_ip  || '') +
+      row('SW MAC',    c.sw_mac || '');
+  });
+
+  // ── Click: edge ──────────────────────────────────────────────────────────
+  cy.on('tap', 'edge', function (e) {
+    var c = JSON.parse(e.target.data('raw'));
+    info.innerHTML =
+      '<strong><i class="fas fa-ethernet me-1" style="color:#6c757d;"></i>Port ' + c.port + '</strong>' +
+      '<span class="badge bg-secondary ms-2 small">Link</span>' +
+      section('Host side') +
+      row('IP / CIDR', c.host_ip  || '') +
+      row('MAC',       c.host_mac || '') +
+      section('Switch side') +
+      row('IP / CIDR', c.sw_ip    || '') +
+      row('MAC',       c.sw_mac   || '') +
+      (c.bandwidth ? row('Bandwidth', c.bandwidth) : '') +
+      (c.delay     ? row('Delay',     c.delay)     : '');
+  });
+
+  // ── Click: canvas background → clear info ───────────────────────────────
+  cy.on('tap', function (e) {
+    if (e.target === cy) {
+      info.innerHTML = '<span class="text-muted">Click a node or link…</span>';
+    }
+  });
+})();
+</script>

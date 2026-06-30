@@ -1,0 +1,433 @@
+<div class="mb-4">
+  <label class="form-label fw-bold">
+    <i class="fas fa-project-diagram me-1"></i> P4Docker Topology
+    <span class="text-muted fw-normal">(optional — enables Phase 2 sandbox)</span>
+  </label>
+
+  <%# Hidden field submitted with the form — JS keeps it in sync %>
+  <%= f.hidden_field :topology_config, id: "topology_json_output" %>
+
+  <div class="form-check form-switch mb-3">
+    <input class="form-check-input" type="checkbox" id="topology_enabled">
+    <label class="form-check-label fw-semibold" for="topology_enabled">Enable topology</label>
+  </div>
+
+  <div id="topology_fields" style="display:none;">
+
+    <%# ── Switch ──────────────────────────────────────────────────────────── %>
+    <div class="card mb-3 border-dark">
+      <div class="card-header bg-dark text-white">
+        <i class="fas fa-server me-1"></i> Switch
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Name</label>
+            <input type="text" class="form-control form-control-sm" id="topo_sw_name"
+                   maxlength="11" placeholder="sw1" value="sw1">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Thrift Port (API)</label>
+            <input type="number" class="form-control form-control-sm" id="topo_sw_thrift"
+                   placeholder="50001" value="50001">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Image</label>
+            <input type="text" class="form-control form-control-sm" id="topo_sw_image"
+                   placeholder="dnredson/p4d" value="dnredson/p4d">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Connections ─────────────────────────────────────────────────────── %>
+    <div class="card mb-3 border-secondary">
+      <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-plug me-1"></i> Connections — Host ↔ Switch Port</span>
+        <button type="button" class="btn btn-sm btn-light" onclick="topoAddConnection()">
+          <i class="fas fa-plus me-1"></i> Add Host
+        </button>
+      </div>
+
+      <%# Card-per-connection — much more readable than a cramped table %>
+      <div class="card-body pb-1" id="connections_body">
+        <%# connection cards inserted by JS %>
+      </div>
+
+      <div class="card-footer text-muted small">
+        Each card is one host connected to a numbered switch port (veth pair).
+        Host interface inside container: <code>p4eth1</code> · Switch interface: <code>eth{port}</code>.
+      </div>
+    </div>
+
+    <%# ── Live topology preview ───────────────────────────────────────────── %>
+    <div class="card mb-3 border-primary">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-project-diagram me-1"></i> Topology Preview</span>
+        <div class="d-flex gap-1">
+          <button type="button" id="admin_topo_zoom_in"  class="btn btn-sm btn-light" title="Zoom in">+</button>
+          <button type="button" id="admin_topo_zoom_out" class="btn btn-sm btn-light" title="Zoom out">−</button>
+          <button type="button" id="admin_topo_zoom_fit" class="btn btn-sm btn-light" title="Fit to view">&#x26F6;</button>
+        </div>
+      </div>
+      <div style="background:#f0f4f8; position:relative;">
+        <div id="topo-cy-preview" style="width:100%; height:320px;"></div>
+        <div id="topo-preview-empty"
+             class="d-flex flex-column align-items-center justify-content-center text-muted"
+             style="height:160px; display:none;">
+          <i class="fas fa-project-diagram fa-2x mb-2"></i>
+          <span class="small">Add connections above to preview the network topology</span>
+        </div>
+      </div>
+      <div class="card-footer d-flex gap-3 small text-muted">
+        <span><span style="display:inline-block;width:14px;height:14px;background:#0d6efd;border-radius:2px;vertical-align:middle;"></span> P4 Switch</span>
+        <span><span style="display:inline-block;width:14px;height:14px;background:#198754;border-radius:50%;vertical-align:middle;"></span> Host</span>
+        <span class="text-muted">Click a node or edge for details.</span>
+      </div>
+    </div>
+
+    <%# ── Control plane entries ───────────────────────────────────────────── %>
+    <div class="card mb-3 border-info">
+      <div class="card-header bg-info text-white">
+        <i class="fas fa-route me-1"></i> Control Plane Entries
+      </div>
+      <div class="card-body">
+        <textarea class="form-control font-monospace form-control-sm" id="topo_rules" rows="4"
+                  placeholder="table_add MyIngress.ipv4_lpm ipv4_forward 10.0.1.2 => 00:00:00:00:01:02 1&#10;table_add MyIngress.ipv4_lpm ipv4_forward 10.0.2.2 => 00:00:00:00:02:02 2"></textarea>
+        <div class="form-text">One rule per line — piped to <code>simple_switch_CLI --thrift-port &lt;port&gt;</code>. Semicolons are also accepted as separators.</div>
+      </div>
+    </div>
+
+    <%# ── Traffic test ────────────────────────────────────────────────────── %>
+    <div class="card mb-3 border-success">
+      <div class="card-header bg-success text-white">
+        <i class="fas fa-paper-plane me-1"></i> Traffic Test
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Sender host</label>
+            <input type="text" class="form-control form-control-sm" id="topo_traffic_from"
+                   placeholder="h1">
+          </div>
+          <div class="col-md-9">
+            <label class="form-label small fw-semibold">Command (runs inside sender container)</label>
+            <input type="text" class="form-control form-control-sm font-monospace" id="topo_traffic_cmd"
+                   placeholder="ping -c 3 -W 2 10.0.2.2">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# ── Live JSON preview ───────────────────────────────────────────────── %>
+    <div class="card mb-3 border-0 bg-light">
+      <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+        <small class="text-muted"><i class="fas fa-code me-1"></i> Generated JSON (read-only preview)</small>
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                onclick="document.getElementById('topo_json_preview').classList.toggle('d-none')">
+          Toggle
+        </button>
+      </div>
+      <div class="d-none" id="topo_json_preview">
+        <pre class="m-0 p-3 small font-monospace"
+             style="background:#1e1e1e;color:#d4d4d4;max-height:260px;overflow-y:auto;border-radius:0 0 .375rem .375rem;"
+             id="topo_json_preview_text"></pre>
+      </div>
+    </div>
+
+  </div><%# /topology_fields %>
+</div>
+
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script>
+(function () {
+  var HOST_IMAGES = ['dnredson/net', 'dnredson/trafficTools', 'dnredson/mqtt', 'ubuntu', 'alpine:3.19'];
+
+  // ── Cytoscape preview instance ─────────────────────────────────────────────
+  var _adminCy = null;
+
+  var CY_STYLE = [
+    {
+      selector: 'node[kind="switch"]',
+      style: {
+        'shape': 'rectangle', 'width': 120, 'height': 54,
+        'background-color': '#0d6efd', 'border-width': 2, 'border-color': '#084298',
+        'label': 'data(label)', 'color': '#fff',
+        'font-size': 14, 'font-weight': 'bold',
+        'text-valign': 'center', 'text-halign': 'center'
+      }
+    },
+    {
+      selector: 'node[kind="host"]',
+      style: {
+        'shape': 'ellipse', 'width': 76, 'height': 76,
+        'background-color': '#198754', 'border-width': 2, 'border-color': '#0f5132',
+        'label': 'data(label)', 'color': '#fff',
+        'font-size': 12, 'font-weight': 'bold',
+        'text-valign': 'center', 'text-halign': 'center'
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 2, 'line-color': '#6c757d',
+        'label': 'data(label)', 'font-size': 10, 'color': '#343a40',
+        'text-rotation': 'autorotate',
+        'text-background-color': '#f0f4f8', 'text-background-opacity': 0.95,
+        'text-background-padding': '2px',
+        'curve-style': 'straight', 'target-arrow-shape': 'none'
+      }
+    },
+    {
+      selector: ':selected',
+      style: {
+        'background-color': '#ffc107', 'border-color': '#997404',
+        'line-color': '#ffc107', 'color': '#000'
+      }
+    }
+  ];
+
+  function refreshTopoPreview() {
+    var container = document.getElementById('topo-cy-preview');
+    var emptyMsg  = document.getElementById('topo-preview-empty');
+    if (!container) return;
+
+    if (!document.getElementById('topology_enabled').checked) {
+      if (_adminCy) { _adminCy.destroy(); _adminCy = null; }
+      return;
+    }
+
+    var swName = document.getElementById('topo_sw_name').value.trim() || 'sw1';
+
+    var conns = [];
+    document.querySelectorAll('#connections_body .conn-row').forEach(function (card) {
+      var get = function (f) { return card.querySelector('[data-f="' + f + '"]').value.trim(); };
+      conns.push({
+        port:      parseInt(get('port')) || (conns.length + 1),
+        host_name: get('host_name') || ('h' + (conns.length + 1)),
+        host_ip:   get('host_ip'),
+        host_mac:  get('host_mac'),
+        sw_ip:     get('sw_ip'),
+        sw_mac:    get('sw_mac'),
+        bandwidth: get('bandwidth'),
+        delay:     get('delay')
+      });
+    });
+
+    if (conns.length === 0) {
+      container.style.display = 'none';
+      emptyMsg.style.display  = 'flex';
+      if (_adminCy) { _adminCy.destroy(); _adminCy = null; }
+      return;
+    }
+    container.style.display = '';
+    emptyMsg.style.display  = 'none';
+
+    var elements = [];
+    elements.push({ data: { id: '__sw__', label: swName, kind: 'switch' }, position: { x: 0, y: 0 } });
+
+    var n = conns.length;
+    conns.forEach(function (c, i) {
+      var angle  = (2 * Math.PI * i / Math.max(n, 1)) - Math.PI / 2;
+      var radius = Math.max(150, n * 55);
+      elements.push({
+        data:     { id: 'h_' + c.port, label: c.host_name, kind: 'host', raw: JSON.stringify(c) },
+        position: { x: Math.round(Math.cos(angle) * radius), y: Math.round(Math.sin(angle) * radius) }
+      });
+      elements.push({ data: { id: 'e_' + c.port, source: 'h_' + c.port, target: '__sw__', label: 'Port ' + c.port } });
+    });
+
+    if (_adminCy) { _adminCy.destroy(); }
+    _adminCy = cytoscape({
+      container: container, elements: elements, style: CY_STYLE,
+      layout: { name: 'preset' }, userZoomingEnabled: true, userPanningEnabled: true,
+      minZoom: 0.2, maxZoom: 4
+    });
+    _adminCy.fit(undefined, 40);
+  }
+
+  document.getElementById('admin_topo_zoom_in').addEventListener('click', function () {
+    if (_adminCy) { _adminCy.zoom(_adminCy.zoom() * 1.25); _adminCy.center(); }
+  });
+  document.getElementById('admin_topo_zoom_out').addEventListener('click', function () {
+    if (_adminCy) { _adminCy.zoom(_adminCy.zoom() / 1.25); _adminCy.center(); }
+  });
+  document.getElementById('admin_topo_zoom_fit').addEventListener('click', function () {
+    if (_adminCy) { _adminCy.fit(undefined, 40); }
+  });
+
+  // ── serialize form → JSON → hidden field ──────────────────────────────────
+  function serialize() {
+    if (!document.getElementById('topology_enabled').checked) {
+      document.getElementById('topology_json_output').value = '';
+      document.getElementById('topo_json_preview_text').textContent = '';
+      refreshTopoPreview();
+      return;
+    }
+
+    var connections = [];
+    document.querySelectorAll('#connections_body .conn-row').forEach(function (card) {
+      var get = function (f) { return card.querySelector('[data-f="' + f + '"]').value.trim(); };
+      connections.push({
+        port:       parseInt(get('port')) || 1,
+        host_name:  get('host_name'),
+        host_image: get('host_image'),
+        host_ip:    get('host_ip'),
+        host_mac:   get('host_mac'),
+        sw_ip:      get('sw_ip'),
+        sw_mac:     get('sw_mac'),
+        bandwidth:  get('bandwidth') || null,
+        delay:      get('delay')     || null
+      });
+    });
+
+    var rules = document.getElementById('topo_rules').value
+      .replace(/;/g, '\n').split('\n')
+      .map(function (s) { return s.trim(); })
+      .filter(function (s) { return s.length > 0; });
+
+    var topo = {
+      switch: {
+        name:        document.getElementById('topo_sw_name').value.trim()  || 'sw1',
+        thrift_port: parseInt(document.getElementById('topo_sw_thrift').value) || 50001,
+        image:       document.getElementById('topo_sw_image').value.trim() || 'dnredson/p4d'
+      },
+      connections:      connections,
+      forwarding_rules: rules,
+      traffic_test: {
+        from:    document.getElementById('topo_traffic_from').value.trim(),
+        command: document.getElementById('topo_traffic_cmd').value.trim()
+      }
+    };
+
+    var json = JSON.stringify(topo, null, 2);
+    document.getElementById('topology_json_output').value = json;
+    document.getElementById('topo_json_preview_text').textContent = json;
+
+    refreshTopoPreview();
+  }
+
+  // ── add a connection card ─────────────────────────────────────────────────
+  window.topoAddConnection = function (data) {
+    data = data || {};
+    var rowNum = document.querySelectorAll('#connections_body .conn-row').length + 1;
+    var port   = data.port || rowNum;
+
+    var imgOptions = HOST_IMAGES.map(function (img) {
+      var sel = ((data.host_image || 'dnredson/net') === img) ? ' selected' : '';
+      return '<option value="' + img + '"' + sel + '>' + img + '</option>';
+    }).join('');
+
+    var card = document.createElement('div');
+    card.className = 'card mb-2 conn-row';
+    card.style.borderLeft = '4px solid #198754';
+    card.innerHTML =
+      '<div class="card-header py-2 d-flex align-items-center justify-content-between bg-light">' +
+        '<div class="d-flex align-items-center gap-2">' +
+          '<span class="text-muted small fw-semibold text-nowrap">Port</span>' +
+          '<input type="number" class="form-control form-control-sm text-center fw-bold" data-f="port"' +
+                 ' value="' + port + '" min="1" style="width:60px;">' +
+          '<span class="mx-1 text-muted">—</span>' +
+          '<input type="text" class="form-control form-control-sm fw-semibold" data-f="host_name"' +
+                 ' value="' + (data.host_name || 'h' + port) + '" maxlength="11" placeholder="h1" style="width:90px;">' +
+          '<span class="badge bg-success ms-1">Host</span>' +
+        '</div>' +
+        '<button type="button" class="btn btn-sm btn-outline-danger"' +
+                ' onclick="this.closest(\'.conn-row\').remove(); serialize();">' +
+          '<i class="fas fa-times me-1"></i>Remove' +
+        '</button>' +
+      '</div>' +
+      '<div class="card-body py-3">' +
+        '<div class="row g-3">' +
+          '<div class="col-12 col-md-4">' +
+            '<label class="form-label small fw-semibold mb-1">Host Image</label>' +
+            '<select class="form-select form-select-sm" data-f="host_image">' + imgOptions + '</select>' +
+          '</div>' +
+          '<div class="col-6 col-md-4">' +
+            '<label class="form-label small fw-semibold mb-1">Host IP / CIDR</label>' +
+            '<input type="text" class="form-control form-control-sm font-monospace" data-f="host_ip"' +
+                   ' value="' + (data.host_ip || '') + '" placeholder="10.0.' + port + '.2/24">' +
+          '</div>' +
+          '<div class="col-6 col-md-4">' +
+            '<label class="form-label small fw-semibold mb-1">Host MAC</label>' +
+            '<input type="text" class="form-control form-control-sm font-monospace" data-f="host_mac"' +
+                   ' value="' + (data.host_mac || '') + '" placeholder="00:00:00:00:0' + port + ':02">' +
+          '</div>' +
+          '<div class="col-6 col-md-4">' +
+            '<label class="form-label small fw-semibold mb-1">Switch Port IP / CIDR</label>' +
+            '<input type="text" class="form-control form-control-sm font-monospace" data-f="sw_ip"' +
+                   ' value="' + (data.sw_ip || '') + '" placeholder="10.0.' + port + '.1/24">' +
+          '</div>' +
+          '<div class="col-6 col-md-4">' +
+            '<label class="form-label small fw-semibold mb-1">Switch Port MAC</label>' +
+            '<input type="text" class="form-control form-control-sm font-monospace" data-f="sw_mac"' +
+                   ' value="' + (data.sw_mac || '') + '" placeholder="00:00:00:00:0' + port + ':01">' +
+          '</div>' +
+          '<div class="col-6 col-md-2">' +
+            '<label class="form-label small fw-semibold mb-1">Bandwidth</label>' +
+            '<input type="text" class="form-control form-control-sm" data-f="bandwidth"' +
+                   ' value="' + (data.bandwidth || '') + '" placeholder="5mbit">' +
+          '</div>' +
+          '<div class="col-6 col-md-2">' +
+            '<label class="form-label small fw-semibold mb-1">Delay</label>' +
+            '<input type="text" class="form-control form-control-sm" data-f="delay"' +
+                   ' value="' + (data.delay || '') + '" placeholder="10ms">' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    card.querySelectorAll('input, select').forEach(function (el) {
+      el.addEventListener('input', serialize);
+    });
+    document.getElementById('connections_body').appendChild(card);
+    serialize();
+  };
+
+  window.serialize = serialize;
+
+  // ── load existing JSON into form ──────────────────────────────────────────
+  function load(json) {
+    if (!json || !json.trim()) return;
+    var topo;
+    try { topo = JSON.parse(json); } catch (e) { return; }
+
+    document.getElementById('topology_enabled').checked = true;
+    document.getElementById('topology_fields').style.display = 'block';
+
+    var sw = topo.switch || {};
+    document.getElementById('topo_sw_name').value   = sw.name        || 'sw1';
+    document.getElementById('topo_sw_thrift').value = sw.thrift_port || 50001;
+    document.getElementById('topo_sw_image').value  = sw.image       || 'dnredson/p4d';
+
+    (topo.connections || []).forEach(topoAddConnection);
+
+    document.getElementById('topo_rules').value =
+      (topo.forwarding_rules || []).join('\n');
+
+    var tt = topo.traffic_test || {};
+    document.getElementById('topo_traffic_from').value = tt.from    || '';
+    document.getElementById('topo_traffic_cmd').value  = tt.command || '';
+
+    serialize();
+  }
+
+  // ── toggle enable/disable ─────────────────────────────────────────────────
+  document.getElementById('topology_enabled').addEventListener('change', function () {
+    document.getElementById('topology_fields').style.display = this.checked ? 'block' : 'none';
+    if (this.checked && document.querySelectorAll('#connections_body .conn-row').length === 0) {
+      topoAddConnection();
+      topoAddConnection();
+    }
+    serialize();
+  });
+
+  // ── wire up non-row fields ────────────────────────────────────────────────
+  ['topo_sw_name','topo_sw_thrift','topo_sw_image','topo_rules','topo_traffic_from','topo_traffic_cmd']
+    .forEach(function (id) {
+      document.getElementById(id).addEventListener('input', serialize);
+    });
+
+  // ── bootstrap: load any existing value ───────────────────────────────────
+  load(document.getElementById('topology_json_output').value);
+})();
+</script>
