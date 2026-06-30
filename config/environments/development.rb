@@ -70,6 +70,12 @@ Rails.application.configure do
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
 
+  # p4exec execution service — enables live output via ActionCable.
+  # Override by exporting these vars before starting the server.
+  # Leave EXEC_SERVICE_URL unset to fall back to the built-in Docker path (no live output).
+  ENV['P4EXEC_SERVICE_URL']  ||= 'http://127.0.0.1:4567'
+  ENV['RAILS_CALLBACK_HOST'] ||= 'localhost:3000'
+
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
 

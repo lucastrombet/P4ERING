@@ -591,4 +591,226 @@ traffic_generators.each do |attrs|
   end
 end
 
+# ── Packet Spoofing exercise ──────────────────────────────────────────────────
+PACKET_SPOOFING_SKELETON = <<~'P4'
+  /* -*- P4_16 -*- */
+  #include <core.p4>
+  #include <v1model.p4>
+
+  typedef bit<9>  egressSpec_t;
+  typedef bit<48> macAddr_t;
+  typedef bit<32> ip4Addr_t;
+
+  header ethernet_t {
+      macAddr_t dstAddr;
+      macAddr_t srcAddr;
+      bit<16>   etherType;
+  }
+
+  header ipv4_t {
+      bit<4>    version;
+      bit<4>    ihl;
+      bit<8>    diffserv;
+      bit<16>   totalLen;
+      bit<16>   identification;
+      bit<3>    flags;
+      bit<13>   fragOffset;
+      bit<8>    ttl;
+      bit<8>    protocol;
+      bit<16>   hdrChecksum;
+      ip4Addr_t srcAddr;
+      ip4Addr_t dstAddr;
+  }
+
+  struct metadata_t {}
+
+  struct headers_t {
+      ethernet_t ethernet;
+      ipv4_t     ipv4;
+  }
+
+  // ── Parser ───────────────────────────────────────────────────────────────
+  parser MyParser(packet_in packet,
+                  out headers_t hdr,
+                  inout metadata_t meta,
+                  inout standard_metadata_t standard_metadata) {
+      state start {
+          packet.extract(hdr.ethernet);
+          transition select(hdr.ethernet.etherType) {
+              0x0800: parse_ipv4;
+              default: accept;
+          }
+      }
+      state parse_ipv4 {
+          packet.extract(hdr.ipv4);
+          transition accept;
+      }
+  }
+
+  control MyVerifyChecksum(inout headers_t hdr, inout metadata_t meta) {
+      apply { }
+  }
+
+  // ── Ingress ──────────────────────────────────────────────────────────────
+  control MyIngress(inout headers_t hdr,
+                    inout metadata_t meta,
+                    inout standard_metadata_t standard_metadata) {
+
+      action drop() {
+          mark_to_drop(standard_metadata);
+      }
+
+      // Rewrite dst IP and dst MAC, then forward out the given port.
+      // Implements DNAT: packets aimed at h2 (10.0.1.2) are redirected to h3.
+      action rewrite_and_forward(ip4Addr_t new_dst_ip, macAddr_t new_dst_mac, egressSpec_t port) {
+          hdr.ipv4.dstAddr              = new_dst_ip;
+          hdr.ethernet.dstAddr          = new_dst_mac;
+          standard_metadata.egress_spec = port;
+          hdr.ipv4.ttl                  = hdr.ipv4.ttl - 1;
+      }
+
+      // Forward without IP rewrite — used for return traffic (h3 → h1).
+      action just_forward(macAddr_t dst_mac, egressSpec_t port) {
+          hdr.ethernet.dstAddr          = dst_mac;
+          standard_metadata.egress_spec = port;
+          hdr.ipv4.ttl                  = hdr.ipv4.ttl - 1;
+      }
+
+      table routing {
+          key = { hdr.ipv4.dstAddr: lpm; }
+          actions = { rewrite_and_forward; just_forward; drop; }
+          default_action = drop();
+      }
+
+      apply {
+          if (hdr.ipv4.isValid()) {
+              routing.apply();
+          }
+      }
+  }
+
+  control MyEgress(inout headers_t hdr,
+                   inout metadata_t meta,
+                   inout standard_metadata_t standard_metadata) {
+      apply { }
+  }
+
+  control MyComputeChecksum(inout headers_t hdr, inout metadata_t meta) {
+      apply {
+          update_checksum(
+              hdr.ipv4.isValid(),
+              { hdr.ipv4.version, hdr.ipv4.ihl, hdr.ipv4.diffserv,
+                hdr.ipv4.totalLen, hdr.ipv4.identification,
+                hdr.ipv4.flags, hdr.ipv4.fragOffset, hdr.ipv4.ttl,
+                hdr.ipv4.protocol, hdr.ipv4.srcAddr, hdr.ipv4.dstAddr },
+              hdr.ipv4.hdrChecksum,
+              HashAlgorithm.csum16);
+      }
+  }
+
+  // ── Deparser ─────────────────────────────────────────────────────────────
+  control MyDeparser(packet_out packet, in headers_t hdr) {
+      apply {
+          packet.emit(hdr.ethernet);
+          packet.emit(hdr.ipv4);
+      }
+  }
+
+  V1Switch(
+      MyParser(), MyVerifyChecksum(), MyIngress(),
+      MyEgress(), MyComputeChecksum(), MyDeparser()
+  ) main;
+P4
+
+PACKET_SPOOFING_TOPOLOGY = JSON.generate(
+  switch: {
+    name:        "sw1",
+    thrift_port: 50001,
+    image:       "dnredson/p4d"
+  },
+  connections: [
+    {
+      port:       1,
+      host_name:  "h1",
+      host_image: "dnredson/net",
+      host_ip:    "10.0.1.1/24",
+      host_mac:   "08:00:00:01:01:01",
+      sw_ip:      "10.0.1.254/24",
+      sw_mac:     "08:00:00:01:00:01"
+    },
+    {
+      port:       2,
+      host_name:  "h2",
+      host_image: "dnredson/net",
+      host_ip:    "10.0.1.2/24",
+      host_mac:   "08:00:00:01:01:02",
+      sw_ip:      "10.0.1.253/24",
+      sw_mac:     "08:00:00:01:00:02"
+    },
+    {
+      port:       3,
+      host_name:  "h3",
+      host_image: "dnredson/net",
+      host_ip:    "10.0.2.1/24",
+      host_mac:   "08:00:00:02:01:01",
+      sw_ip:      "10.0.2.254/24",
+      sw_mac:     "08:00:00:02:00:01"
+    }
+  ],
+  forwarding_rules: [
+    "table_add MyIngress.routing rewrite_and_forward 10.0.1.2/32 => 0x0a000201 08:00:00:02:01:01 3",
+    "table_add MyIngress.routing just_forward 10.0.1.1/32 => 08:00:00:01:01:01 1"
+  ],
+  traffic_test: {
+    from:    "h1",
+    command: "ping -c 3 -W 2 10.0.1.2"
+  }
+)
+
+ex = Exercise.find_or_initialize_by(title: "Packet Spoofing")
+ex.language        = "P4"
+ex.difficulty      = 3
+ex.starter_code    = PACKET_SPOOFING_SKELETON.strip
+ex.topology_config = PACKET_SPOOFING_TOPOLOGY
+ex.description     = <<~DESC.strip
+  Packet Spoofing (Destination NAT) demonstrates how a P4 switch can transparently
+  redirect traffic by rewriting IP and MAC headers entirely in the data plane.
+
+  Topology — three hosts, one switch:
+    h1  10.0.1.1/24  →  sw1 port 1   (traffic source / generator)
+    h2  10.0.1.2/24  →  sw1 port 2   (spoofed destination)
+    h3  10.0.2.1/24  →  sw1 port 3   (real delivery target)
+
+  h1 sends ICMP packets addressed to h2 (10.0.1.2). The switch intercepts every
+  such packet and applies DNAT via the routing table:
+    • dst IP  is rewritten  10.0.1.2  →  10.0.2.1
+    • dst MAC is rewritten  h2's MAC  →  h3's MAC (08:00:00:02:01:01)
+    • packet  is forwarded  out port 3 toward h3
+
+  h3 receives the spoofed packet with its own IP as destination and replies to
+  h1's source address. The return path uses a second rule that forwards h1-bound
+  traffic from port 3 back out port 1 without any IP rewrite.
+
+  The IPv4 checksum is recomputed after every DNAT rewrite so receiving hosts
+  accept the modified packet without errors.
+
+  Forwarding rules loaded at runtime:
+    table_add MyIngress.routing rewrite_and_forward 10.0.1.2/32 => 0x0a000201 08:00:00:02:01:01 3
+    table_add MyIngress.routing just_forward        10.0.1.1/32 => 08:00:00:01:01:01 1
+
+  Traffic test: ping -c 3 -W 2 10.0.1.2 from h1.
+  A correct implementation shows replies arriving from 10.0.2.1 (h3), confirming
+  that the switch transparently redirected every flow without h2 ever seeing a packet.
+DESC
+
+if ex.new_record?
+  ex.save!
+  puts "Created exercise: Packet Spoofing"
+elsif ex.changed?
+  ex.save!
+  puts "Updated exercise: Packet Spoofing"
+else
+  puts "Exercise 'Packet Spoofing' unchanged — skipping"
+end
+
 puts "Seed completed!"

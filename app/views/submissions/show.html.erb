@@ -1,3 +1,17 @@
+<% if @submission.status.in?(%w[pending evaluating]) %>
+  <%= turbo_stream_from "submission_#{@submission.id}" %>
+<% end %>
+
+<% if @submission.test_run? %>
+  <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+    <i class="fas fa-flask fa-lg"></i>
+    <div>
+      <strong>Test Run</strong> — this is not a submission. Your code ran through the sandbox so you can review the logs.
+      <%= link_to "Back to exercise", @submission.exercise, class: "alert-link ms-2" %>
+    </div>
+  </div>
+<% end %>
+
 <nav aria-label="breadcrumb" class="mb-4">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><%= link_to "My Submissions", submissions_path %></li>
@@ -8,6 +22,9 @@
 
 <div class="row">
   <div class="col-md-8">
+    <%# Packet captures — empty placeholder replaced live via Turbo Streams on done %>
+    <%= render 'packet_captures', submission: @submission %>
+
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Submitted Code</h5>
@@ -20,41 +37,42 @@
   </div>
 
   <div class="col-md-4">
-    <div class="card mb-3">
-      <div class="card-header">Result</div>
-      <div class="card-body">
-        <% badge = case @submission.status
-                   when 'completed'  then 'success'
-                   when 'failed'     then 'danger'
-                   when 'evaluating' then 'warning'
-                   else                   'secondary'
-                   end %>
-        <p class="mb-2">
-          <span class="badge bg-<%= badge %> fs-6"><%= @submission.status.upcase %></span>
-        </p>
-        <p class="text-muted small mb-0">
-          Submitted <%= time_ago_in_words(@submission.created_at) %> ago
-        </p>
-      </div>
-    </div>
+    <%# Status card — replaced live via Turbo Streams when done %>
+    <%= render 'status_card', submission: @submission %>
 
-    <% if @submission.feedback.present? %>
-      <div class="card mb-3">
-        <div class="card-header">Feedback</div>
-        <div class="card-body">
-          <pre class="mb-0 small" style="white-space: pre-wrap; word-break: break-word;"><%= @submission.feedback %></pre>
+    <%# Live output panel — visible while evaluating, removed via Turbo Streams on done %>
+    <% if @submission.status.in?(%w[pending evaluating]) %>
+      <div id="exec-live-log-<%= @submission.id %>" class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2 bg-dark text-white">
+          <i class="fas fa-terminal"></i>
+          <span class="small fw-semibold">Live Output</span>
+          <span class="ms-auto d-flex align-items-center gap-2">
+            <span class="badge bg-warning text-dark small">
+              <i class="fas fa-circle-notch fa-spin me-1"></i>Running
+            </span>
+            <button type="button"
+                    class="btn btn-sm btn-outline-light py-0 px-1"
+                    title="Reconnect stream"
+                    data-action="click->exec-log#refresh">
+              <i class="fas fa-sync-alt" style="font-size:0.7rem;"></i>
+            </button>
+          </span>
+        </div>
+        <div class="card-body p-0">
+          <pre data-controller="exec-log"
+               id="exec-log-<%= @submission.id %>"
+               class="m-0 p-3 small font-monospace"
+               style="background:#1e1e1e; color:#d4d4d4; height:320px; overflow-y:auto;
+                      border-radius: 0 0 .375rem .375rem; white-space:pre-wrap;
+                      word-break:break-word;"></pre>
         </div>
       </div>
     <% end %>
 
-    <% if @submission.status == 'evaluating' %>
-      <div class="alert alert-warning">
-        <i class="fas fa-spinner fa-spin me-2"></i>
-        Evaluation in progress. Refresh to check status.
-      </div>
-    <% end %>
+    <%# Feedback sections — populated live via Turbo Streams on done %>
+    <%= render 'feedback_sections', submission: @submission %>
 
-    <div class="d-grid gap-2">
+    <div class="d-grid gap-2 mt-2">
       <%= link_to @submission.exercise, class: "btn btn-outline-secondary" do %>
         <i class="fas fa-redo me-1"></i> Try Again
       <% end %>

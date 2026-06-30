@@ -1,6 +1,8 @@
 require 'open3'
 require 'timeout'
 require 'json'
+require 'net/http'
+require 'uri'
 
 class EvaluateSubmissionJob < ApplicationJob
   queue_as :default
@@ -10,6 +12,11 @@ class EvaluateSubmissionJob < ApplicationJob
   COMPILE_TIMEOUT  = 30
   TOPOLOGY_TIMEOUT = 90   # seconds the topology containers stay alive
   TRAFFIC_TIMEOUT  = 20   # seconds allowed for the traffic_test command
+
+  EXEC_INTERNAL_TOKEN = ENV.fetch('P4EXEC_INTERNAL_TOKEN', 'p4exec-dev-token')
+
+  # Read at job-run time so development.rb ||= assignments take effect.
+  def exec_service_url = ENV['P4EXEC_SERVICE_URL']
 
   def perform(submission_id)
     submission = Submission.find_by(id: submission_id)
@@ -23,9 +30,53 @@ class EvaluateSubmissionJob < ApplicationJob
       return
     end
 
-    run_p4_sandbox(submission)
+    if exec_service_url.present?
+      delegate_to_exec_service(submission)
+    else
+      run_p4_sandbox(submission)
+    end
   rescue => e
     submission&.update(status: 'failed', feedback: "Sandbox error: #{e.message}")
+  end
+
+  private
+
+  # ── Execution service delegation (Phase A+) ────────────────────────────────
+
+  def delegate_to_exec_service(submission)
+    job_id       = "p4t_#{submission.id}"
+    callback_url = Rails.application.routes.url_helpers
+                        .internal_exec_callback_url(
+                          host:     ENV.fetch('RAILS_CALLBACK_HOST', 'localhost:3000'),
+                          protocol: 'http'
+                        )
+
+    body = {
+      job_id:       job_id,
+      callback_url: callback_url,
+      code:         submission.code,
+      topology:     submission.exercise.parsed_topology
+    }.to_json
+
+    uri  = URI("#{exec_service_url}/execute")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.open_timeout = 5
+    http.read_timeout = 10
+
+    req = Net::HTTP::Post.new(uri.path, {
+      'Content-Type'      => 'application/json',
+      'X-Internal-Token'  => EXEC_INTERNAL_TOKEN
+    })
+    req.body = body
+
+    resp = http.request(req)
+
+    unless resp.code.to_i == 202
+      raise "Execution service returned HTTP #{resp.code}: #{resp.body}"
+    end
+
+    Rails.logger.info("[p4exec] Job #{job_id} accepted by execution service")
+    # Result will arrive asynchronously via POST /internal/exec_callback
   end
 
   private
@@ -58,8 +109,11 @@ class EvaluateSubmissionJob < ApplicationJob
 
       if topology.present?
         result = run_topology_sandbox(submission.id, out_dir, json_name, topology)
-        submission.update!(status: 'completed',
-          feedback: build_topology_feedback(compile_log, result))
+        submission.update!(
+          status:           'completed',
+          feedback:         build_topology_feedback(compile_log, result),
+          packet_captures:  result[:packet_captures]&.to_json
+        )
       else
         switch_log = run_switch_only(out_dir, json_name)
         submission.update!(status: 'completed',
@@ -243,6 +297,14 @@ class EvaluateSubmissionJob < ApplicationJob
 
       sleep 1
 
+      # ── Start tcpdump on every host (best-effort, -c 200 auto-stops) ──
+      seen_td = Set.new
+      conns.each do |conn|
+        next unless seen_td.add?(conn['host_name'])
+        system('docker', 'exec', "#{prefix}_#{conn['host_name']}", 'sh', '-c',
+               'tcpdump -i p4eth1 -n -e -tt -l -c 200 > /tmp/cap.txt 2>/dev/null &')
+      end
+
       # ── Run traffic test ───────────────────────────────────────────────
       traffic = topo['traffic_test']
       if traffic && traffic['from'].present? && traffic['command'].present?
@@ -252,6 +314,16 @@ class EvaluateSubmissionJob < ApplicationJob
         end
         result[:traffic_log] = (stdout.to_s + stderr.to_s).strip
       end
+
+      # ── Collect packet captures ────────────────────────────────────────
+      sleep 0.5  # let tcpdump flush final packets
+      captures = {}
+      conns.map { |c| c['host_name'] }.uniq.each do |host_name|
+        out, = Open3.capture3('docker', 'exec', "#{prefix}_#{host_name}",
+                              'sh', '-c', 'cat /tmp/cap.txt 2>/dev/null')
+        captures[host_name] = out.strip if out.strip.present?
+      end
+      result[:packet_captures] = captures unless captures.empty?
 
       # ── Collect switch log ─────────────────────────────────────────────
       switch_log_path = File.join(out_dir, 'switch.log')

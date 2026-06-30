@@ -9,7 +9,7 @@ class ExercisesController < ApplicationController
   
   def show
     @submission = Submission.new
-    @previous_submissions = current_user.submissions.where(exercise: @exercise).order(created_at: :desc)
+    @previous_submissions = current_user.submissions.where(exercise: @exercise, test_run: false).order(created_at: :desc)
   end
   
   def new

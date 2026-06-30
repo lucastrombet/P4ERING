@@ -1,31 +1,47 @@
 class SubmissionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_exercise, only: [:new, :create]
+  before_action :set_exercise, only: [:new, :create, :test_run]
   before_action :set_submission, only: [:show, :run]
-  
+
   def index
-    @submissions = current_user.submissions.includes(:exercise).order(created_at: :desc)
+    @submissions = current_user.submissions
+                               .where(test_run: false)
+                               .includes(:exercise)
+                               .order(created_at: :desc)
   end
-  
+
   def show
   end
-  
+
   def new
     @submission = Submission.new
   end
-  
+
   def create
     @submission = current_user.submissions.new(submission_params)
     @submission.exercise = @exercise
-    @submission.status = 'pending'
-    
+    @submission.status   = 'pending'
+
     if @submission.save
       redirect_to @submission, notice: 'Code submitted successfully!'
     else
       render :new, status: :unprocessable_entity
     end
   end
-  
+
+  def test_run
+    @submission = current_user.submissions.new(submission_params)
+    @submission.exercise = @exercise
+    @submission.status   = 'pending'
+    @submission.test_run = true
+
+    if @submission.save
+      redirect_to @submission, notice: 'Test run started — results will appear below.'
+    else
+      redirect_to @exercise, alert: @submission.errors.full_messages.to_sentence
+    end
+  end
+
   def run
     unless @submission.user == current_user || current_user.admin?
       return redirect_to @submission, alert: 'Not authorized.'
@@ -39,17 +55,17 @@ class SubmissionsController < ApplicationController
     EvaluateSubmissionJob.perform_later(@submission.id)
     redirect_to @submission, notice: 'Evaluation queued. Refresh in a moment to see results.'
   end
-  
+
   private
-  
+
   def set_exercise
     @exercise = Exercise.find(params[:exercise_id])
   end
-  
+
   def set_submission
     @submission = Submission.find(params[:id])
   end
-  
+
   def submission_params
     params.require(:submission).permit(:code)
   end

@@ -102,6 +102,34 @@
               </div>
             </div>
             
+            <!-- Traffic Generators Field -->
+            <div class="mb-4">
+              <%= f.label :traffic_generator_ids, class: "form-label fw-bold" do %>
+                <i class="fas fa-network-wired me-1"></i> Traffic Generators
+                <span class="text-muted fw-normal">(optional)</span>
+              <% end %>
+              <% if TrafficGenerator.any? %>
+                <div class="border rounded p-3" style="max-height: 220px; overflow-y: auto;">
+                  <%= f.collection_check_boxes :traffic_generator_ids,
+                      TrafficGenerator.order(:name), :id, :name do |b| %>
+                    <div class="form-check">
+                      <%= b.check_box class: "form-check-input" %>
+                      <%= b.label class: "form-check-label" do %>
+                        <span class="fw-semibold"><%= b.object.name %></span>
+                        <span class="badge <%= b.object.protocol == 'UDP' ? 'bg-warning text-dark' : 'bg-primary' %> ms-1"><%= b.object.protocol %></span>
+                        <code class="small text-muted ms-2"><%= b.object.to_iperf_command("<server>") %></code>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="alert alert-warning py-2 mb-0">
+                  No generators registered.
+                  <%= link_to "Create a generator", new_admin_traffic_generator_path %> first.
+                </div>
+              <% end %>
+            </div>
+
             <!-- Starter Code Field -->
             <div class="mb-4">
               <%= f.label :starter_code, class: "form-label fw-bold" do %>
@@ -117,6 +145,8 @@
               </div>
             </div>
             
+            <%= render 'topology_form', f: f %>
+
             <!-- Form Actions -->
             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
               <div>

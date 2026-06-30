@@ -43,6 +43,11 @@
                   <% end %>
                 </li>
                 <li class="nav-item">
+                  <%= link_to admin_traffic_generators_path, class: "nav-link" do %>
+                    <i class="fas fa-network-wired me-1"></i> Generators
+                  <% end %>
+                </li>
+                <li class="nav-item">
                   <%= link_to admin_dashboard_path, class: "nav-link" do %>
                     <i class="fas fa-chart-line me-1"></i> Admin
                   <% end %>
@@ -140,6 +145,5 @@
       </div>
     </footer>
     
-    <%= javascript_include_tag "bootstrap" %>
   </body>
 </html>

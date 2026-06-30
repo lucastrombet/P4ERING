@@ -1,0 +1,22 @@
+<div id="submission-feedback-<%= submission.id %>">
+  <% if submission.feedback.present? %>
+    <% submission.feedback.split(/(?=── )/).reject(&:blank?).each do |block| %>
+      <% title = block.match(/──\s(.+?)\s──/)&.[](1) %>
+      <% body  = block.sub(/──.+──\n?\n?/, '').strip %>
+      <% is_error = title&.downcase&.include?('error') || (submission.status == 'failed' && title&.downcase&.include?('compil')) %>
+      <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2
+                    <%= is_error ? 'bg-danger text-white' : 'bg-dark text-white' %>">
+          <i class="fas <%= is_error ? 'fa-times-circle' : 'fa-check-circle' %>"></i>
+          <span class="small fw-semibold"><%= title %></span>
+        </div>
+        <% if body.present? %>
+          <div class="card-body p-0">
+            <pre class="m-0 p-3 small font-monospace"
+                 style="background:#1e1e1e; color:#d4d4d4; white-space:pre-wrap; word-break:break-word; border-radius: 0 0 .375rem .375rem; max-height:400px; overflow-y:auto;"><%= body %></pre>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

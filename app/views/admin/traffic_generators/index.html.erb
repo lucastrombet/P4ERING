@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Traffic Generators</h1>
+  <%= link_to new_admin_traffic_generator_path, class: "btn btn-primary" do %>
+    <i class="fas fa-plus me-1"></i> New Generator
+  <% end %>
+</div>
+
+<% if @traffic_generators.empty? %>
+  <div class="alert alert-info text-center">
+    No generators registered yet.
+  </div>
+<% else %>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Name</th>
+          <th>Protocol</th>
+          <th>Duration</th>
+          <th>Port</th>
+          <th>Bandwidth</th>
+          <th>iperf3 Command</th>
+          <th>Exercises</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @traffic_generators.each do |tg| %>
+          <tr>
+            <td class="fw-semibold"><%= tg.name %></td>
+            <td>
+              <span class="badge <%= tg.protocol == 'UDP' ? 'bg-warning text-dark' : 'bg-primary' %>">
+                <%= tg.protocol %>
+              </span>
+            </td>
+            <td><%= tg.duration %>s</td>
+            <td><%= tg.port %></td>
+            <td><%= tg.bandwidth.presence || '—' %></td>
+            <td><code class="small"><%= tg.to_iperf_command("<server>") %></code></td>
+            <td><span class="badge bg-secondary"><%= tg.exercises.count %></span></td>
+            <td class="text-end">
+              <%= link_to edit_admin_traffic_generator_path(tg), class: "btn btn-sm btn-outline-warning me-1" do %>
+                <i class="fas fa-edit"></i>
+              <% end %>
+              <%= button_to admin_traffic_generator_path(tg), method: :delete,
+                  class: "btn btn-sm btn-outline-danger",
+                  form: { data: { turbo_confirm: "Remove this generator?" } } do %>
+                <i class="fas fa-trash"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

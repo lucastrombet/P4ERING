@@ -1,0 +1,101 @@
+<div id="packet-captures-<%= submission.id %>">
+  <% caps = submission.parsed_packet_captures %>
+  <% if caps.present? %>
+    <div class="card mb-3">
+      <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
+        <i class="fas fa-fish"></i>
+        <span class="small fw-semibold">Packet Captures</span>
+        <span class="badge bg-secondary ms-auto small"><%= caps.values.sum { |t| t.lines.count { |l| l =~ /\A\d+\.\d+/ } } %> pkts</span>
+      </div>
+
+      <div data-controller="tabs">
+      <%# Tabs — one per host %>
+      <ul class="nav nav-tabs nav-fill px-2 pt-2 bg-dark" role="tablist">
+        <% caps.each_with_index do |(host_name, _), i| %>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link <%= 'active' if i == 0 %> text-white-50"
+                    id="cap-tab-<%= submission.id %>-<%= host_name %>"
+                    data-tabs-target="btn"
+                    data-action="click->tabs#show"
+                    data-tab-pane="cap-pane-<%= submission.id %>-<%= host_name %>"
+                    type="button" role="tab">
+              <i class="fas fa-server me-1"></i><%= host_name %>
+            </button>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="tab-content">
+        <% caps.each_with_index do |(host_name, raw), i| %>
+          <div class="tab-pane fade <%= 'show active' if i == 0 %>"
+               id="cap-pane-<%= submission.id %>-<%= host_name %>"
+               data-tabs-target="pane"
+               role="tabpanel">
+
+            <%# Filter input %>
+            <div class="px-2 pt-2 pb-1" style="background:#1e1e1e;">
+              <input type="text"
+                     class="form-control form-control-sm font-monospace"
+                     style="background:#2d2d2d; color:#d4d4d4; border-color:#444;"
+                     placeholder="Filter (IP, protocol, keyword...)"
+                     data-controller="wireshark"
+                     data-wireshark-target="filter"
+                     data-action="input->wireshark#filter"
+                     data-table-id="cap-table-<%= submission.id %>-<%= host_name %>">
+            </div>
+
+            <% packets = parse_tcpdump_output(raw) %>
+            <% if packets.empty? %>
+              <p class="text-muted small p-3 mb-0">No packets captured on <%= host_name %></p>
+            <% else %>
+              <div style="overflow-x:auto; max-height:340px; overflow-y:auto;">
+                <table class="table table-sm table-hover mb-0 font-monospace small"
+                       id="cap-table-<%= submission.id %>-<%= host_name %>"
+                       style="font-size:0.72rem;">
+                  <thead style="position:sticky; top:0; background:#2d2d2d; color:#ccc; z-index:1;">
+                    <tr>
+                      <th class="ps-2" style="width:2.5rem;">#</th>
+                      <th style="width:5rem;">Time</th>
+                      <th>Source</th>
+                      <th>Destination</th>
+                      <th style="width:4rem;">Proto</th>
+                      <th style="width:3rem;">Len</th>
+                      <th>Info</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% packets.each do |pkt| %>
+                      <tr class="<%= proto_row_class(pkt[:proto]) %>" style="cursor:default;">
+                        <td class="ps-2 text-muted"><%= pkt[:no] %></td>
+                        <td class="text-muted"><%= pkt[:time] %></td>
+                        <td title="<%= pkt[:src_mac] %>"><%= pkt[:src] %></td>
+                        <td title="<%= pkt[:dst_mac] %>"><%= pkt[:dst] %></td>
+                        <td><span class="badge bg-dark text-light border"><%= pkt[:proto] %></span></td>
+                        <td class="text-muted"><%= pkt[:length] %></td>
+                        <td class="text-truncate" style="max-width:280px;" title="<%= pkt[:info] %>"><%= pkt[:info] %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% end %>
+
+            <%# Raw output toggle %>
+            <div class="px-2 py-1 border-top" style="background:#1a1a1a;">
+              <button class="btn btn-link btn-sm text-secondary p-0"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#raw-cap-<%= submission.id %>-<%= host_name %>">
+                <i class="fas fa-code me-1"></i>raw tcpdump
+              </button>
+              <div class="collapse" id="raw-cap-<%= submission.id %>-<%= host_name %>">
+                <pre class="m-0 p-2 small font-monospace"
+                     style="background:#111; color:#8bc34a; max-height:200px; overflow-y:auto; white-space:pre-wrap;"><%= raw %></pre>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,81 @@
+<% if traffic_generator.errors.any? %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% traffic_generator.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="row g-3">
+  <div class="col-md-8">
+    <%= f.label :name, "Name", class: "form-label fw-bold" %>
+    <%= f.text_field :name, class: "form-control", placeholder: "e.g. UDP Video Stream", required: true %>
+  </div>
+
+  <div class="col-md-4">
+    <%= f.label :protocol, "Protocol", class: "form-label fw-bold" %>
+    <%= f.select :protocol, TrafficGenerator::PROTOCOLS,
+        {}, { class: "form-select", required: true } %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :description, "Description", class: "form-label fw-bold" %>
+    <%= f.text_area :description, rows: 3, class: "form-control",
+        placeholder: "Describe the traffic pattern and when to use it." %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :duration, "Duration (s) -t", class: "form-label fw-bold" %>
+    <%= f.number_field :duration, class: "form-control", min: 1, required: true %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :port, "Port -p", class: "form-label fw-bold" %>
+    <%= f.number_field :port, class: "form-control", min: 1, max: 65535, required: true %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :bandwidth, "Bandwidth -b", class: "form-label fw-bold" %>
+    <%= f.text_field :bandwidth, class: "form-control", placeholder: "e.g. 10M, 1G" %>
+    <div class="form-text">Leave blank for unlimited (TCP).</div>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :parallel_streams, "Parallel Streams -P", class: "form-label fw-bold" %>
+    <%= f.number_field :parallel_streams, class: "form-control", min: 1 %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :packet_length, "Packet Length -l", class: "form-label fw-bold" %>
+    <%= f.text_field :packet_length, class: "form-control", placeholder: "e.g. 1400, 64K" %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :interval, "Report Interval -i", class: "form-label fw-bold" %>
+    <%= f.number_field :interval, class: "form-control", min: 1 %>
+  </div>
+
+  <div class="col-md-3">
+    <%= f.label :tos, "ToS / DSCP -S", class: "form-label fw-bold" %>
+    <%= f.text_field :tos, class: "form-control", placeholder: "e.g. 0x10, 0x28" %>
+  </div>
+
+  <div class="col-md-3 d-flex align-items-end">
+    <div class="form-check mb-2">
+      <%= f.check_box :reverse, class: "form-check-input" %>
+      <%= f.label :reverse, class: "form-check-label" do %>
+        <strong>Reverse -R</strong>
+        <div class="text-muted small">Server sends, client receives</div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if traffic_generator.persisted? %>
+  <div class="mt-4 p-3 bg-light rounded">
+    <p class="mb-1 small text-muted fw-bold">Generated iperf3 command:</p>
+    <code class="small"><%= traffic_generator.to_iperf_command("<server>") %></code>
+  </div>
+<% end %>

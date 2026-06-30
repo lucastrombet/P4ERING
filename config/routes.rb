@@ -16,18 +16,28 @@ Rails.application.routes.draw do
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
     resources :users, except: [:show]
-    resources :exercises, except: [:show]  # Add this line
+    resources :exercises, except: [:show]
+    resources :traffic_generators, except: [:show]
   end
 
   #devise_for :users
 
   resources :exercises do
     resources :submissions, only: [:new, :create]
+    post 'test', to: 'submissions#test_run', as: :test_run
   end
   resources :submissions, only: [:index, :show]
 
   #get 'admin/dashboard', to: 'admin#dashboard'
   get 'exercises/:exercise_id/run', to: 'submissions#run', as: 'run_exercise'
+
+  # ActionCable WebSocket endpoint
+  mount ActionCable.server => '/cable'
+
+  # Internal callback from p4exec execution service
+  namespace :internal do
+    post 'exec_callback', to: 'exec_callbacks#create'
+  end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

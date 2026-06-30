@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_27_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_30_070800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "exercise_traffic_generators", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "exercise_id", null: false
+    t.bigint "traffic_generator_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id", "traffic_generator_id"], name: "index_exercise_traffic_generators_unique", unique: true
+    t.index ["exercise_id"], name: "index_exercise_traffic_generators_on_exercise_id"
+    t.index ["traffic_generator_id"], name: "index_exercise_traffic_generators_on_traffic_generator_id"
+  end
 
   create_table "exercises", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -21,6 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_000001) do
     t.string "language"
     t.text "starter_code"
     t.string "title"
+    t.text "topology_config"
     t.datetime "updated_at", null: false
   end
 
@@ -29,11 +40,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_000001) do
     t.datetime "created_at", null: false
     t.bigint "exercise_id", null: false
     t.text "feedback"
+    t.text "packet_captures"
     t.string "status"
+    t.boolean "test_run", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["exercise_id"], name: "index_submissions_on_exercise_id"
     t.index ["user_id"], name: "index_submissions_on_user_id"
+  end
+
+  create_table "traffic_generators", force: :cascade do |t|
+    t.string "bandwidth"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "duration", default: 10, null: false
+    t.integer "interval", default: 1
+    t.string "name", null: false
+    t.string "packet_length"
+    t.integer "parallel_streams", default: 1
+    t.integer "port", default: 5201, null: false
+    t.string "protocol", default: "TCP", null: false
+    t.boolean "reverse", default: false, null: false
+    t.string "tos"
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -50,6 +79,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_27_000001) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "exercise_traffic_generators", "exercises"
+  add_foreign_key "exercise_traffic_generators", "traffic_generators"
   add_foreign_key "submissions", "exercises"
   add_foreign_key "submissions", "users"
 end

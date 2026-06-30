@@ -1,0 +1,23 @@
+<div id="submission-status-card-<%= submission.id %>" class="card mb-3">
+  <div class="card-header">Result</div>
+  <div class="card-body">
+    <% badge = case submission.status
+               when 'completed'  then 'success'
+               when 'failed'     then 'danger'
+               when 'evaluating' then 'warning'
+               else                   'secondary'
+               end %>
+    <p class="mb-2">
+      <% if submission.status == 'evaluating' %>
+        <span class="badge bg-warning fs-6">
+          <i class="fas fa-spinner fa-spin me-1"></i> EVALUATING
+        </span>
+      <% else %>
+        <span class="badge bg-<%= badge %> fs-6"><%= submission.status.upcase %></span>
+      <% end %>
+    </p>
+    <p class="text-muted small mb-0">
+      Submitted <%= time_ago_in_words(submission.created_at) %> ago
+    </p>
+  </div>
+</div>
