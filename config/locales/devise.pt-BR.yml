@@ -1,0 +1,100 @@
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+pt-BR:
+  devise:
+    confirmations:
+      confirmed: "Seu email foi confirmado com sucesso."
+      send_instructions: "Você receberá um email com instruções para confirmar seu endereço de email em alguns minutos."
+      send_paranoid_instructions: "Se o seu endereço de email existir em nossa base de dados, você receberá um email com instruções para confirmar seu endereço de email em alguns minutos."
+    failure:
+      already_authenticated: "Você já está autenticado."
+      inactive: "Sua conta ainda não foi ativada."
+      invalid: "%{authentication_keys} ou senha inválidos."
+      locked: "Sua conta está bloqueada."
+      last_attempt: "Você tem mais uma tentativa antes que sua conta seja bloqueada."
+      not_found_in_database: "%{authentication_keys} ou senha inválidos."
+      timeout: "Sua sessão expirou. Faça login novamente para continuar."
+      unauthenticated: "Você precisa fazer login ou se cadastrar antes de continuar."
+      unconfirmed: "Você precisa confirmar seu endereço de email antes de continuar."
+    mailer:
+      confirmation_instructions:
+        subject: "Instruções de confirmação"
+      reset_password_instructions:
+        subject: "Instruções para redefinir senha"
+      unlock_instructions:
+        subject: "Instruções de desbloqueio"
+      email_changed:
+        subject: "Email alterado"
+      password_change:
+        subject: "Senha alterada"
+    omniauth_callbacks:
+      failure: "Não foi possível autenticá-lo a partir de %{kind} porque \"%{reason}\"."
+      success: "Autenticado com sucesso a partir da conta %{kind}."
+    passwords:
+      no_token: "Você não pode acessar esta página sem vir de um email de redefinição de senha. Se você veio de um email de redefinição de senha, certifique-se de ter usado a URL completa fornecida."
+      send_instructions: "Você receberá um email com instruções sobre como redefinir sua senha em alguns minutos."
+      send_paranoid_instructions: "Se o seu endereço de email existir em nossa base de dados, você receberá um link de recuperação de senha em seu email em alguns minutos."
+      updated: "Sua senha foi alterada com sucesso. Você agora está autenticado."
+      updated_not_active: "Sua senha foi alterada com sucesso."
+      new:
+        forgot_your_password: "Esqueceu sua senha?"
+        send_me_reset_password_instructions: "Enviar instruções de redefinição de senha"
+      edit:
+        change_your_password: "Altere sua senha"
+        new_password: "Nova senha"
+        confirm_new_password: "Confirme a nova senha"
+        minimum_password_length: "(mínimo de %{count} caracteres)"
+        change_my_password: "Alterar minha senha"
+    registrations:
+      destroyed: "Até logo! Sua conta foi cancelada com sucesso. Esperamos vê-lo novamente em breve."
+      signed_up: "Bem-vindo! Você se cadastrou com sucesso."
+      signed_up_but_inactive: "Você se cadastrou com sucesso. No entanto, não foi possível efetuar o login porque sua conta ainda não foi ativada."
+      signed_up_but_locked: "Você se cadastrou com sucesso. No entanto, não foi possível efetuar o login porque sua conta está bloqueada."
+      signed_up_but_unconfirmed: "Uma mensagem com um link de confirmação foi enviada para o seu endereço de email. Siga o link para ativar sua conta."
+      update_needs_confirmation: "Você atualizou sua conta com sucesso, mas precisamos verificar seu novo endereço de email. Verifique seu email e siga o link de confirmação."
+      updated: "Sua conta foi atualizada com sucesso."
+      updated_but_not_signed_in: "Sua conta foi atualizada com sucesso, mas como sua senha foi alterada, você precisa fazer login novamente."
+      new:
+        sign_up: "Cadastre-se no P4ering"
+        submit: "Cadastrar"
+        minimum_password_length: "mínimo de %{count} caracteres"
+      edit:
+        title: "Editar %{name}"
+        currently_waiting_confirmation: "Aguardando confirmação para: %{email}"
+        leave_blank_if_not_changing_password: "(deixe em branco se não quiser alterá-la)"
+        minimum_password_length: "mínimo de %{count} caracteres"
+        need_current_password_to_confirm: "(precisamos da sua senha atual para confirmar as alterações)"
+        submit: "Atualizar"
+        cancel_my_account: "Cancelar minha conta"
+        unhappy: "Insatisfeito?"
+        cancel_my_account_confirm: "Você tem certeza?"
+        back: "Voltar"
+    sessions:
+      signed_in: "Login efetuado com sucesso."
+      signed_out: "Logout efetuado com sucesso."
+      already_signed_out: "Logout efetuado com sucesso."
+      new:
+        sign_in: "Entrar"
+        remember_me: "Lembrar de mim"
+    unlocks:
+      send_instructions: "Você receberá um email com instruções para desbloquear sua conta em alguns minutos."
+      send_paranoid_instructions: "Se a sua conta existir, você receberá um email com instruções para desbloqueá-la em alguns minutos."
+      unlocked: "Sua conta foi desbloqueada com sucesso. Faça login para continuar."
+    shared:
+      links:
+        sign_in: "Entrar"
+        sign_up: "Cadastre-se"
+        forgot_your_password: "Esqueceu sua senha?"
+        didn_t_receive_confirmation_instructions: "Não recebeu as instruções de confirmação?"
+        didn_t_receive_unlock_instructions: "Não recebeu as instruções de desbloqueio?"
+        sign_in_with_provider: "Entrar com %{provider}"
+  errors:
+    messages:
+      already_confirmed: "já foi confirmado, tente fazer login"
+      confirmation_period_expired: "precisa ser confirmado dentro de %{period}, solicite um novo"
+      expired: "expirou, solicite um novo"
+      not_found: "não encontrado"
+      not_locked: "não estava bloqueado"
+      not_saved:
+        one: "1 erro impediu que este %{resource} fosse salvo:"
+        other: "%{count} erros impediram que este %{resource} fosse salvo:"

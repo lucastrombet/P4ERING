@@ -1,0 +1,363 @@
+pt-BR:
+  layout:
+    title: "P4ering - Aprenda Planos de Dados Programáveis com P4"
+    nav:
+      exercises: "Exercícios"
+      my_submissions: "Minhas Submissões"
+      exercise_management: "Gerenciar Exercícios"
+      generators: "Geradores"
+      admin: "Admin"
+      users: "Usuários"
+      profile_settings: "Configurações do Perfil"
+      logout: "Sair"
+      logout_confirm: "Tem certeza que deseja sair?"
+      login: "Entrar"
+      sign_up: "Cadastrar"
+      locale:
+        en: "English"
+        pt-BR: "Português (BR)"
+    footer:
+      tagline: "Aprenda planos de dados programáveis na prática."
+      github: "GitHub"
+      twitter: "Twitter"
+      contact: "Contato"
+
+  home:
+    index:
+      welcome: "Bem-vindo ao P4ering"
+      subtitle: "Aprenda P4 programando pipelines reais de encaminhamento de pacotes e executando-os em switches BMv2 ao vivo"
+      start_practicing: "Começar a Praticar"
+      get_started: "Começar"
+      features:
+        topologies:
+          title: "Topologias de Rede Reais"
+          body: "Cada exercício inicia hosts Docker e switches BMv2 reais interligados, então seu pipeline P4 roda contra uma rede de verdade — não uma simulação"
+        compile:
+          title: "Compile e Execute Instantaneamente"
+          body: "Escreva código P4_16 no navegador e veja-o compilar com o p4c e executar ao vivo — com saída do compilador, regras de encaminhamento e testes de tráfego em tempo real"
+        inspect:
+          title: "Inspecione Cada Pacote"
+          body: "Revise as capturas de pacotes e os logs do switch de cada execução para ver exatamente como seu plano de dados tratou o tráfego"
+      why:
+        title: "Por Que Escolher o P4ering?"
+        difficulty:
+          title: "Dificuldade Progressiva"
+          body: "Avance do encaminhamento básico até tunelamento, roteamento por origem e spoofing de pacotes (DNAT) no seu próprio ritmo"
+        data_plane:
+          title: "Comportamento Real do Plano de Dados"
+          body: "Carregue suas próprias regras de encaminhamento em um switch BMv2 ao vivo e envie tráfego real através dele"
+        feedback:
+          title: "Feedback Instantâneo"
+          body: "Acompanhe a compilação, o carregamento de regras e os testes de tráfego em tempo real enquanto sua submissão roda"
+        history:
+          title: "Histórico Completo de Submissões"
+          body: "Revise tentativas anteriores, seus logs e capturas de pacotes a qualquer momento"
+      ready:
+        title: "Pronto para Começar?"
+        body: "Entre em um plano de dados programável de verdade e comece a escrever P4"
+        browse_exercises: "Ver Exercícios →"
+        create_account: "Criar Conta Grátis →"
+
+  exercises:
+    difficulty:
+      beginner: "Iniciante"
+      easy: "Fácil"
+      intermediate: "Intermediário"
+      advanced: "Avançado"
+      expert: "Especialista"
+    index:
+      title: "Exercícios de Programação"
+      difficulty: "Dificuldade"
+      start_exercise: "Iniciar Exercício →"
+      no_exercises: "Nenhum exercício disponível ainda. Volte em breve!"
+    show:
+      description: "Descrição"
+      traffic_generators: "Geradores de Tráfego"
+      submit_your_solution: "Envie Sua Solução"
+      load_starter_code_title: "Substituir o conteúdo do editor pelo modelo de código inicial"
+      load_starter_code: "Carregar Código Inicial"
+      your_code: "Seu Código %{language}"
+      code_placeholder: "Escreva sua solução em %{language} aqui..."
+      submit_solution: "Enviar Solução"
+      test_code_title: "Execute seu código no sandbox e veja os logs — sem criar uma submissão"
+      test_code: "Testar Código"
+      confirm_replace_code: "Isso substituirá seu código atual pelo modelo inicial. Continuar?"
+      previous_submissions: "Suas Submissões Anteriores"
+      time_ago: "há %{time}"
+      view_details: "Ver Detalhes"
+      no_submissions: "Nenhuma submissão ainda. Seja o primeiro a resolver este exercício!"
+    topology_viewer:
+      network_topology: "Topologia de Rede"
+      zoom_in: "Aumentar zoom"
+      zoom_out: "Diminuir zoom"
+      fit_to_view: "Ajustar à tela"
+      info: "Informações"
+      click_hint: "Clique em um nó ou link…"
+      legend_switch: "Switch P4 (BMv2)"
+      legend_host: "Contêiner host"
+      js:
+        port: "Porta"
+        p4_switch: "Switch P4"
+        host: "Host"
+        link: "Link"
+        image: "Imagem"
+        thrift_port: "Porta Thrift"
+        ip_cidr: "IP / CIDR"
+        mac: "MAC"
+        connected_to_switch: "Conectado ao switch"
+        sw_ip: "IP do switch"
+        sw_mac: "MAC do switch"
+        host_side: "Lado do host"
+        switch_side: "Lado do switch"
+        bandwidth: "Banda"
+        delay: "Atraso"
+
+  submissions:
+    status:
+      pending: "Pendente"
+      evaluating: "Avaliando"
+      completed: "Concluído"
+      failed: "Falhou"
+    index:
+      title: "Minhas Submissões"
+      browse_exercises: "Ver Exercícios"
+      no_submissions: "Você ainda não enviou nenhuma solução."
+      start_an_exercise: "Comece um exercício"
+      to_get_going: "para começar!"
+      exercise: "Exercício"
+      language: "Linguagem"
+      status: "Status"
+      submitted: "Enviado"
+      time_ago: "há %{time}"
+      view: "Ver"
+    show:
+      test_run: "Execução de Teste"
+      test_run_body: "isto não é uma submissão. Seu código rodou no sandbox para que você possa revisar os logs."
+      back_to_exercise: "Voltar ao exercício"
+      submission_number: "Submissão #%{id}"
+      submitted_code: "Código Enviado"
+      live_output: "Saída ao Vivo"
+      running: "Executando"
+      reconnect_stream: "Reconectar transmissão"
+      try_again: "Tentar Novamente"
+    status_card:
+      result: "Resultado"
+      submitted_time_ago: "Enviado há %{time}"
+    packet_captures:
+      packet_captures: "Capturas de Pacotes"
+      packets_count:
+        one: "%{count} pacote"
+        other: "%{count} pacotes"
+      filter_placeholder: "Filtrar (IP, protocolo, palavra-chave...)"
+      no_packets: "Nenhum pacote capturado em %{host}"
+      columns:
+        time: "Hora"
+        source: "Origem"
+        destination: "Destino"
+        proto: "Proto"
+        len: "Tam"
+        info: "Info"
+      raw_tcpdump: "tcpdump bruto"
+
+  activerecord:
+    models:
+      user: "Usuário"
+    attributes:
+      user:
+        name: "Nome"
+        email: "Email"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+        current_password: "Senha atual"
+        remember_me: "Lembrar de mim"
+
+  admin:
+    dashboard:
+      index:
+        title: "Painel de Administração"
+        total_users: "Total de Usuários"
+        exercises: "Exercícios"
+        submissions: "Submissões"
+        completed: "Concluídas"
+        quick_actions: "Ações Rápidas"
+        create_new_exercise: "Criar Novo Exercício"
+        add_new_user: "Adicionar Novo Usuário"
+        recent_submissions: "Submissões Recentes"
+        completed_lowercase: "concluiu"
+    exercises:
+      index:
+        title: "Gerenciar Exercícios"
+        subtitle: "Crie, edite e gerencie exercícios de programação"
+        create_new_exercise: "Criar Novo Exercício"
+        columns:
+          title: "Título"
+          language: "Linguagem"
+          difficulty: "Dificuldade"
+          submissions: "Submissões"
+          created: "Criado"
+          actions: "Ações"
+        submissions_count:
+          one: "%{count} submissão"
+          other: "%{count} submissões"
+        confirm_delete: "Excluir '%{title}'? Isso também excluirá todas as submissões."
+        no_exercises: "Nenhum exercício ainda"
+        no_exercises_hint: 'Clique no botão "Criar Novo Exercício" para começar.'
+      new:
+        title: "Criar Novo Exercício"
+        submit: "Criar Exercício"
+      edit:
+        title: "Editar Exercício"
+        submit: "Atualizar Exercício"
+        delete: "Excluir"
+        confirm_delete: "Tem certeza que deseja excluir este exercício?"
+      form:
+        errors_heading: "Corrija os seguintes erros:"
+        title_label: "Título do Exercício"
+        title_placeholder: "ex: Problema da Soma de Dois Números"
+        title_hint: "Dê ao seu exercício um título claro e descritivo."
+        language_label: "Linguagem de Programação"
+        language_placeholder: "Selecione uma linguagem de programação"
+        language_hint: "Escolha a linguagem principal deste exercício."
+        difficulty_label: "Nível de Dificuldade"
+        description_label: "Descrição do Exercício"
+        description_placeholder: "Descreva o exercício em detalhes...\n\nInclua:\n- Enunciado do problema\n- Exemplos de entrada/saída\n- Restrições\n- Comportamento esperado"
+        description_hint: "Use Markdown para formatação. Inclua exemplos e restrições."
+        traffic_generators_label: "Geradores de Tráfego"
+        optional: "opcional"
+        no_generators: "Nenhum gerador cadastrado."
+        create_a_generator: "Crie um gerador"
+        first: "primeiro"
+        starter_code_label: "Código Inicial"
+        starter_code_placeholder: 'Cole o código esqueleto que os alunos verão ao clicar em "Carregar Código Inicial".'
+        starter_code_hint: "Os alunos podem carregar isso no editor com um clique na página do exercício."
+        cancel: "Cancelar"
+      topology_form:
+        title: "Topologia P4Docker"
+        subtitle: "opcional — habilita o sandbox da Fase 2"
+        enable_topology: "Habilitar topologia"
+        switch: "Switch"
+        name: "Nome"
+        thrift_port_api: "Porta Thrift (API)"
+        image: "Imagem"
+        connections_header: "Conexões — Host ↔ Porta do Switch"
+        add_host: "Adicionar Host"
+        connections_hint_html: "Cada cartão representa um host conectado a uma porta numerada do switch (par veth). Interface do host dentro do contêiner: %{host_iface} · Interface do switch: %{switch_iface}."
+        topology_preview: "Pré-visualização da Topologia"
+        add_connections_hint: "Adicione conexões acima para pré-visualizar a topologia de rede"
+        click_node_hint: "Clique em um nó ou aresta para ver detalhes."
+        control_plane_entries: "Entradas do Plano de Controle"
+        rules_hint_html: "Uma regra por linha — enviada via %{cmd}. Ponto e vírgula também é aceito como separador."
+        traffic_test: "Teste de Tráfego"
+        sender_host: "Host remetente"
+        command_label: "Comando (executado dentro do contêiner remetente)"
+        generated_json: "JSON Gerado (pré-visualização somente leitura)"
+        toggle: "Alternar"
+        remove: "Remover"
+        host_image: "Imagem do Host"
+        host_ip_cidr: "IP / CIDR do Host"
+        host_mac: "MAC do Host"
+        switch_port_ip_cidr: "IP / CIDR da Porta do Switch"
+        switch_port_mac: "MAC da Porta do Switch"
+    traffic_generators:
+      index:
+        title: "Geradores de Tráfego"
+        new_generator: "Novo Gerador"
+        no_generators: "Nenhum gerador cadastrado ainda."
+        columns:
+          name: "Nome"
+          protocol: "Protocolo"
+          duration: "Duração"
+          port: "Porta"
+          bandwidth: "Banda"
+          iperf3_command: "Comando iperf3"
+          exercises: "Exercícios"
+        confirm_remove: "Remover este gerador?"
+      new:
+        title: "Novo Gerador de Tráfego"
+        submit: "Criar Gerador"
+      edit:
+        title: "Editar Gerador: %{name}"
+        remove: "Remover"
+        submit: "Salvar Alterações"
+      form:
+        name: "Nome"
+        name_placeholder: "ex: UDP Video Stream"
+        protocol: "Protocolo"
+        description: "Descrição"
+        description_placeholder: "Descreva o padrão de tráfego e quando usá-lo."
+        duration: "Duração (s) -t"
+        port: "Porta -p"
+        bandwidth: "Banda -b"
+        bandwidth_hint: "Deixe em branco para ilimitado (TCP)."
+        parallel_streams: "Fluxos Paralelos -P"
+        packet_length: "Tamanho do Pacote -l"
+        interval: "Intervalo de Relatório -i"
+        tos: "ToS / DSCP -S"
+        reverse: "Reverso -R"
+        reverse_hint: "Servidor envia, cliente recebe"
+        generated_command: "Comando iperf3 gerado:"
+        cancel: "Cancelar"
+
+  users:
+    index:
+      title: "Gerenciar Usuários"
+      create_new_user: "Criar Novo Usuário"
+      role: "Papel"
+      submissions: "Submissões"
+      joined: "Ingressou em"
+      actions: "Ações"
+      not_set: "Não definido"
+      admin: "Admin"
+      user: "Usuário"
+      edit: "Editar"
+      delete: "Excluir"
+      confirm_delete: "Tem certeza que deseja excluir este usuário?"
+    new:
+      title: "Criar Novo Usuário"
+      errors_heading: "Erros impediram que este usuário fosse salvo:"
+      admin_privileges: "Privilégios de Administrador"
+      default_password_html: "A senha padrão será definida como: %{password}"
+      submit: "Criar Novo Usuário"
+      cancel: "Cancelar"
+    edit:
+      title: "Editar Usuário"
+      admin_privileges: "Privilégios de Administrador"
+      submit: "Atualizar Usuário"
+      cancel: "Cancelar"
+
+  datetime:
+    distance_in_words:
+      half_a_minute: "meio minuto"
+      less_than_x_seconds:
+        one: "menos de 1 segundo"
+        other: "menos de %{count} segundos"
+      x_seconds:
+        one: "1 segundo"
+        other: "%{count} segundos"
+      less_than_x_minutes:
+        one: "menos de um minuto"
+        other: "menos de %{count} minutos"
+      x_minutes:
+        one: "1 minuto"
+        other: "%{count} minutos"
+      about_x_hours:
+        one: "aproximadamente 1 hora"
+        other: "aproximadamente %{count} horas"
+      x_days:
+        one: "1 dia"
+        other: "%{count} dias"
+      about_x_months:
+        one: "aproximadamente 1 mês"
+        other: "aproximadamente %{count} meses"
+      x_months:
+        one: "1 mês"
+        other: "%{count} meses"
+      about_x_years:
+        one: "aproximadamente 1 ano"
+        other: "aproximadamente %{count} anos"
+      over_x_years:
+        one: "mais de 1 ano"
+        other: "mais de %{count} anos"
+      almost_x_years:
+        one: "quase 1 ano"
+        other: "quase %{count} anos"
