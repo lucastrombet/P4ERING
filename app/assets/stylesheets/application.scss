@@ -44,12 +44,17 @@ body {
   .navbar-brand {
     font-size: 1.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent !important;
     letter-spacing: -0.5px;
-    
+
+    .navbar-brand-icon {
+      margin-right: -2px;
+    }
+
+    .navbar-brand-suffix {
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff;
+    }
+
     &:hover {
       transform: scale(1.05);
       transition: transform 0.3s ease;

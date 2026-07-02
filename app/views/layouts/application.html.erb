@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>P4ering - Master Programming Languages</title>
+    <title>P4ering - Learn P4 Programmable Data Planes</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -19,7 +19,9 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <%= link_to "P4ering", root_path, class: "navbar-brand fw-bold" %>
+        <%= link_to root_path, class: "navbar-brand fw-bold d-flex align-items-center" do %>
+          <%= image_tag "p4-logo.svg", alt: "P4", height: "28", class: "navbar-brand-icon" %><span class="navbar-brand-suffix">ering</span>
+        <% end %>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -136,7 +138,7 @@
     
     <footer>
       <div class="container">
-        <p>&copy; 2024 P4ering. Master programming languages through practice.</p>
+        <p>&copy; 2024 <%= image_tag "p4-logo.svg", alt: "P4", height: "18", class: "align-middle" %>ering. Learn programmable data planes through practice.</p>
         <p>
           <a href="#"><i class="fab fa-github"></i> GitHub</a> |
           <a href="#"><i class="fab fa-twitter"></i> Twitter</a> |

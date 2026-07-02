@@ -1,6 +1,6 @@
 <div class="hero-section">
   <h1 class="display-4 fw-bold">Welcome to P4ering</h1>
-  <p class="lead">Master programming languages through hands-on exercises and real-world challenges</p>
+  <p class="lead">Learn P4 by programming real packet-forwarding pipelines and running them on live BMv2 switches</p>
   <% if user_signed_in? %>
     <%= link_to exercises_path, class: "btn btn-light btn-lg px-5" do %>
       <i class="fas fa-code me-2"></i>Start Practicing
@@ -19,10 +19,10 @@
   <div class="col-md-4">
     <div class="feature-card">
       <div class="feature-icon">
-        <i class="fas fa-code"></i>
+        <i class="fas fa-project-diagram"></i>
       </div>
-      <h3>Multiple Languages</h3>
-      <p>Practice Python, JavaScript, Ruby, Java, C++ and more programming languages</p>
+      <h3>Real Network Topologies</h3>
+      <p>Every exercise spins up real Docker hosts and BMv2 switches wired together, so your P4 pipeline runs against an actual network — not a simulation</p>
     </div>
   </div>
   <div class="col-md-4">
@@ -30,17 +30,17 @@
       <div class="feature-icon">
         <i class="fas fa-laptop-code"></i>
       </div>
-      <h3>Interactive Coding</h3>
-      <p>Write, test, and submit code directly in your browser with real-time feedback</p>
+      <h3>Compile &amp; Run Instantly</h3>
+      <p>Write P4_16 code in your browser and watch it compile with p4c and execute live — with streaming compiler output, forwarding rules, and traffic tests</p>
     </div>
   </div>
   <div class="col-md-4">
     <div class="feature-card">
       <div class="feature-icon">
-        <i class="fas fa-chart-line"></i>
+        <i class="fas fa-satellite-dish"></i>
       </div>
-      <h3>Track Progress</h3>
-      <p>Monitor your learning journey with detailed submission history and analytics</p>
+      <h3>Inspect Every Packet</h3>
+      <p>Review packet captures and switch logs from each run to see exactly how your data plane handled the traffic</p>
     </div>
   </div>
 </div>
@@ -53,19 +53,19 @@
         <ul class="list-unstyled mt-3">
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Progressive Difficulty:</strong> Start from basics and advance at your own pace
+            <strong>Progressive Difficulty:</strong> Move from basic forwarding to tunneling, source routing, and packet spoofing (DNAT) at your own pace
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Real-world Problems:</strong> Solve practical coding challenges used in tech interviews
+            <strong>Real Data-Plane Behavior:</strong> Load your own forwarding rules onto a live BMv2 switch and send real traffic through it
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Instant Feedback:</strong> Get immediate evaluation of your code submissions
+            <strong>Instant Feedback:</strong> Watch compilation, rule loading, and traffic tests stream live as your submission runs
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Community Driven:</strong> Learn from solutions shared by other developers
+            <strong>Full Submission History:</strong> Revisit past attempts, their logs, and packet captures at any time
           </li>
         </ul>
       </div>
@@ -76,7 +76,7 @@
       <div class="card-body text-center">
         <i class="fas fa-rocket fa-3x mb-3"></i>
         <h3>Ready to Start?</h3>
-        <p class="mb-4">Join thousands of developers improving their coding skills</p>
+        <p class="mb-4">Jump into a real programmable data plane and start writing P4</p>
         <% if user_signed_in? %>
           <%= link_to "Browse Exercises →", exercises_path, class: "btn btn-light" %>
         <% else %>
