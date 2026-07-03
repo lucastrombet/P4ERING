@@ -9,14 +9,11 @@ class Exercise < ApplicationRecord
 
   LANGUAGES = ['P4'].freeze
 
+  DIFFICULTY_KEYS = { 1 => :beginner, 2 => :easy, 3 => :intermediate, 4 => :advanced, 5 => :expert }.freeze
+
   def difficulty_label
-    case difficulty
-    when 1 then 'Beginner'
-    when 2 then 'Easy'
-    when 3 then 'Intermediate'
-    when 4 then 'Advanced'
-    when 5 then 'Expert'
-    end
+    key = DIFFICULTY_KEYS[difficulty]
+    key && I18n.t("exercises.difficulty.#{key}")
   end
 
   def has_topology?

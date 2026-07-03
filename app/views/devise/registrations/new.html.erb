@@ -1,4 +1,4 @@
-<h2>Sign Up for P4ering</h2>
+<h2><%= t(".sign_up") %></h2>
 
 <div class="row">
   <div class="col-md-6">
@@ -18,7 +18,7 @@
       <div class="mb-3">
         <%= f.label :password, class: "form-label" %>
         <% if @minimum_password_length %>
-          <small class="text-muted">(<%= @minimum_password_length %> characters minimum)</small>
+          <small class="text-muted">(<%= t(".minimum_password_length", count: @minimum_password_length) %>)</small>
         <% end %>
         <%= f.password_field :password, autocomplete: "new-password", class: "form-control", required: true %>
       </div>
@@ -29,7 +29,7 @@
       </div>
       
       <div class="mb-3">
-        <%= f.submit "Sign Up", class: "btn btn-primary" %>
+        <%= f.submit t(".submit"), class: "btn btn-primary" %>
       </div>
     <% end %>
     

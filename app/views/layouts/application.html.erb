@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>P4ering - Learn P4 Programmable Data Planes</title>
+    <title><%= t("layout.title") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,7 +12,10 @@
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- Flag Icons (language switcher) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.2.3/css/flag-icons.min.css">
+
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -30,33 +33,33 @@
             <% if user_signed_in? %>
               <li class="nav-item">
                 <%= link_to exercises_path, class: "nav-link" do %>
-                  <i class="fas fa-code me-1"></i> Exercises
+                  <i class="fas fa-code me-1"></i> <%= t("layout.nav.exercises") %>
                 <% end %>
               </li>
               <li class="nav-item">
                 <%= link_to submissions_path, class: "nav-link" do %>
-                  <i class="fas fa-history me-1"></i> My Submissions
+                  <i class="fas fa-history me-1"></i> <%= t("layout.nav.my_submissions") %>
                 <% end %>
               </li>
               <% if current_user.admin? %>
                 <li class="nav-item">
                   <%= link_to admin_exercises_path, class: "nav-link" do %>
-                    <i class="fas fa-code me-1"></i> Exercise Management
+                    <i class="fas fa-code me-1"></i> <%= t("layout.nav.exercise_management") %>
                   <% end %>
                 </li>
                 <li class="nav-item">
                   <%= link_to admin_traffic_generators_path, class: "nav-link" do %>
-                    <i class="fas fa-network-wired me-1"></i> Generators
+                    <i class="fas fa-network-wired me-1"></i> <%= t("layout.nav.generators") %>
                   <% end %>
                 </li>
                 <li class="nav-item">
                   <%= link_to admin_dashboard_path, class: "nav-link" do %>
-                    <i class="fas fa-chart-line me-1"></i> Admin
+                    <i class="fas fa-chart-line me-1"></i> <%= t("layout.nav.admin") %>
                   <% end %>
                 </li>
                 <li class="nav-item">
                   <%= link_to users_path, class: "nav-link" do %>
-                    <i class="fas fa-users me-1"></i> Users
+                    <i class="fas fa-users me-1"></i> <%= t("layout.nav.users") %>
                   <% end %>
                 </li>
               <% end %>
@@ -68,20 +71,20 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
                     <%= link_to edit_user_registration_path, class: "dropdown-item" do %>
-                      <i class="fas fa-user-edit me-2"></i> Profile Settings
+                      <i class="fas fa-user-edit me-2"></i> <%= t("layout.nav.profile_settings") %>
                     <% end %>
                   </li>
                   <li>
                     <%= link_to submissions_path, class: "dropdown-item" do %>
-                      <i class="fas fa-tasks me-2"></i> My Submissions
+                      <i class="fas fa-tasks me-2"></i> <%= t("layout.nav.my_submissions") %>
                     <% end %>
                   </li>
                   <li><hr class="dropdown-divider"></li>
                   <li>
-                    <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger", 
+                    <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger",
                         form: { style: "display: inline-block; width: 100%;" },
-                        data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to logout?" } do %>
-                      <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        data: { turbo_method: :delete, turbo_confirm: t("layout.nav.logout_confirm") } do %>
+                      <i class="fas fa-sign-out-alt me-2"></i> <%= t("layout.nav.logout") %>
                     <% end %>
                   </li>
                 </ul>
@@ -89,15 +92,33 @@
             <% else %>
               <li class="nav-item">
                 <%= link_to new_user_session_path, class: "nav-link" do %>
-                  <i class="fas fa-sign-in-alt me-1"></i> Login
+                  <i class="fas fa-sign-in-alt me-1"></i> <%= t("layout.nav.login") %>
                 <% end %>
               </li>
               <li class="nav-item">
                 <%= link_to new_user_registration_path, class: "nav-link btn btn-outline-light ms-2" do %>
-                  <i class="fas fa-user-plus me-1"></i> Sign Up
+                  <i class="fas fa-user-plus me-1"></i> <%= t("layout.nav.sign_up") %>
                 <% end %>
               </li>
             <% end %>
+            <li class="nav-item dropdown ms-lg-2">
+              <a class="nav-link dropdown-toggle" href="#" id="localeDropdown" role="button" data-bs-toggle="dropdown"
+                 title="<%= t("layout.nav.locale.#{I18n.locale}") %>">
+                <span class="<%= locale_flag_class(I18n.locale) %>"></span>
+                <span class="visually-hidden"><%= t("layout.nav.locale.#{I18n.locale}") %></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <% I18n.available_locales.each do |locale| %>
+                  <li>
+                    <%= link_to set_locale_path(locale: locale),
+                        class: "dropdown-item d-flex align-items-center gap-2 #{'active' if I18n.locale == locale}" do %>
+                      <span class="<%= locale_flag_class(locale) %>"></span>
+                      <span><%= t("layout.nav.locale.#{locale}") %></span>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -129,7 +150,7 @@
             class: "btn-logout",
             data: {
               turbo_method: :delete,
-              turbo_confirm: "Are you sure you want to logout?"
+              turbo_confirm: t("layout.nav.logout_confirm")
             } do %>
           <i class="fas fa-sign-out-alt"></i>
         <% end %>
@@ -138,11 +159,11 @@
     
     <footer>
       <div class="container">
-        <p>&copy; 2024 <%= image_tag "p4-logo.svg", alt: "P4", height: "18", class: "align-middle" %>ering. Learn programmable data planes through practice.</p>
+        <p>&copy; 2024 <%= image_tag "p4-logo.svg", alt: "P4", height: "18", class: "align-middle" %>ering. <%= t("layout.footer.tagline") %></p>
         <p>
-          <a href="#"><i class="fab fa-github"></i> GitHub</a> |
-          <a href="#"><i class="fab fa-twitter"></i> Twitter</a> |
-          <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+          <a href="#"><i class="fab fa-github"></i> <%= t("layout.footer.github") %></a> |
+          <a href="#"><i class="fab fa-twitter"></i> <%= t("layout.footer.twitter") %></a> |
+          <a href="#"><i class="fas fa-envelope"></i> <%= t("layout.footer.contact") %></a>
         </p>
       </div>
     </footer>

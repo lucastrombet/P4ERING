@@ -1,16 +1,16 @@
 <div class="hero-section">
-  <h1 class="display-4 fw-bold">Welcome to P4ering</h1>
-  <p class="lead">Learn P4 by programming real packet-forwarding pipelines and running them on live BMv2 switches</p>
+  <h1 class="display-4 fw-bold"><%= t(".welcome") %></h1>
+  <p class="lead"><%= t(".subtitle") %></p>
   <% if user_signed_in? %>
     <%= link_to exercises_path, class: "btn btn-light btn-lg px-5" do %>
-      <i class="fas fa-code me-2"></i>Start Practicing
+      <i class="fas fa-code me-2"></i><%= t(".start_practicing") %>
     <% end %>
   <% else %>
     <%= link_to new_user_registration_path, class: "btn btn-light btn-lg px-5 me-3" do %>
-      <i class="fas fa-user-plus me-2"></i>Get Started
+      <i class="fas fa-user-plus me-2"></i><%= t(".get_started") %>
     <% end %>
     <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg px-5" do %>
-      <i class="fas fa-sign-in-alt me-2"></i>Login
+      <i class="fas fa-sign-in-alt me-2"></i><%= t("layout.nav.login") %>
     <% end %>
   <% end %>
 </div>
@@ -21,8 +21,8 @@
       <div class="feature-icon">
         <i class="fas fa-project-diagram"></i>
       </div>
-      <h3>Real Network Topologies</h3>
-      <p>Every exercise spins up real Docker hosts and BMv2 switches wired together, so your P4 pipeline runs against an actual network — not a simulation</p>
+      <h3><%= t(".features.topologies.title") %></h3>
+      <p><%= t(".features.topologies.body") %></p>
     </div>
   </div>
   <div class="col-md-4">
@@ -30,8 +30,8 @@
       <div class="feature-icon">
         <i class="fas fa-laptop-code"></i>
       </div>
-      <h3>Compile &amp; Run Instantly</h3>
-      <p>Write P4_16 code in your browser and watch it compile with p4c and execute live — with streaming compiler output, forwarding rules, and traffic tests</p>
+      <h3><%= t(".features.compile.title") %></h3>
+      <p><%= t(".features.compile.body") %></p>
     </div>
   </div>
   <div class="col-md-4">
@@ -39,8 +39,8 @@
       <div class="feature-icon">
         <i class="fas fa-satellite-dish"></i>
       </div>
-      <h3>Inspect Every Packet</h3>
-      <p>Review packet captures and switch logs from each run to see exactly how your data plane handled the traffic</p>
+      <h3><%= t(".features.inspect.title") %></h3>
+      <p><%= t(".features.inspect.body") %></p>
     </div>
   </div>
 </div>
@@ -49,23 +49,23 @@
   <div class="col-md-6">
     <div class="card shadow-hover">
       <div class="card-body">
-        <h3 class="card-title text-gradient">Why Choose P4ering?</h3>
+        <h3 class="card-title text-gradient"><%= t(".why.title") %></h3>
         <ul class="list-unstyled mt-3">
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Progressive Difficulty:</strong> Move from basic forwarding to tunneling, source routing, and packet spoofing (DNAT) at your own pace
+            <strong><%= t(".why.difficulty.title") %>:</strong> <%= t(".why.difficulty.body") %>
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Real Data-Plane Behavior:</strong> Load your own forwarding rules onto a live BMv2 switch and send real traffic through it
+            <strong><%= t(".why.data_plane.title") %>:</strong> <%= t(".why.data_plane.body") %>
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Instant Feedback:</strong> Watch compilation, rule loading, and traffic tests stream live as your submission runs
+            <strong><%= t(".why.feedback.title") %>:</strong> <%= t(".why.feedback.body") %>
           </li>
           <li class="mb-3">
             <i class="fas fa-check-circle text-success me-2"></i>
-            <strong>Full Submission History:</strong> Revisit past attempts, their logs, and packet captures at any time
+            <strong><%= t(".why.history.title") %>:</strong> <%= t(".why.history.body") %>
           </li>
         </ul>
       </div>
@@ -75,12 +75,12 @@
     <div class="card bg-primary text-white shadow-hover">
       <div class="card-body text-center">
         <i class="fas fa-rocket fa-3x mb-3"></i>
-        <h3>Ready to Start?</h3>
-        <p class="mb-4">Jump into a real programmable data plane and start writing P4</p>
+        <h3><%= t(".ready.title") %></h3>
+        <p class="mb-4"><%= t(".ready.body") %></p>
         <% if user_signed_in? %>
-          <%= link_to "Browse Exercises →", exercises_path, class: "btn btn-light" %>
+          <%= link_to t(".ready.browse_exercises"), exercises_path, class: "btn btn-light" %>
         <% else %>
-          <%= link_to "Create Free Account →", new_user_registration_path, class: "btn btn-light" %>
+          <%= link_to t(".ready.create_account"), new_user_registration_path, class: "btn btn-light" %>
         <% end %>
       </div>
     </div>

@@ -4,8 +4,8 @@
     <div class="card mb-3">
       <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
         <i class="fas fa-fish"></i>
-        <span class="small fw-semibold">Packet Captures</span>
-        <span class="badge bg-secondary ms-auto small"><%= caps.values.sum { |t| t.lines.count { |l| l =~ /\A\d+\.\d+/ } } %> pkts</span>
+        <span class="small fw-semibold"><%= t(".packet_captures") %></span>
+        <span class="badge bg-secondary ms-auto small"><%= t(".packets_count", count: caps.values.sum { |t| t.lines.count { |l| l =~ /\A\d+\.\d+/ } }) %></span>
       </div>
 
       <div data-controller="tabs">
@@ -37,7 +37,7 @@
               <input type="text"
                      class="form-control form-control-sm font-monospace"
                      style="background:#2d2d2d; color:#d4d4d4; border-color:#444;"
-                     placeholder="Filter (IP, protocol, keyword...)"
+                     placeholder="<%= t(".filter_placeholder") %>"
                      data-controller="wireshark"
                      data-wireshark-target="filter"
                      data-action="input->wireshark#filter"
@@ -46,7 +46,7 @@
 
             <% packets = parse_tcpdump_output(raw) %>
             <% if packets.empty? %>
-              <p class="text-muted small p-3 mb-0">No packets captured on <%= host_name %></p>
+              <p class="text-muted small p-3 mb-0"><%= t(".no_packets", host: host_name) %></p>
             <% else %>
               <div style="overflow-x:auto; max-height:340px; overflow-y:auto;">
                 <table class="table table-sm table-hover mb-0 font-monospace small"
@@ -55,12 +55,12 @@
                   <thead style="position:sticky; top:0; background:#2d2d2d; color:#ccc; z-index:1;">
                     <tr>
                       <th class="ps-2" style="width:2.5rem;">#</th>
-                      <th style="width:5rem;">Time</th>
-                      <th>Source</th>
-                      <th>Destination</th>
-                      <th style="width:4rem;">Proto</th>
-                      <th style="width:3rem;">Len</th>
-                      <th>Info</th>
+                      <th style="width:5rem;"><%= t(".columns.time") %></th>
+                      <th><%= t(".columns.source") %></th>
+                      <th><%= t(".columns.destination") %></th>
+                      <th style="width:4rem;"><%= t(".columns.proto") %></th>
+                      <th style="width:3rem;"><%= t(".columns.len") %></th>
+                      <th><%= t(".columns.info") %></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -85,7 +85,7 @@
               <button class="btn btn-link btn-sm text-secondary p-0"
                       data-bs-toggle="collapse"
                       data-bs-target="#raw-cap-<%= submission.id %>-<%= host_name %>">
-                <i class="fas fa-code me-1"></i>raw tcpdump
+                <i class="fas fa-code me-1"></i><%= t(".raw_tcpdump") %>
               </button>
               <div class="collapse" id="raw-cap-<%= submission.id %>-<%= host_name %>">
                 <pre class="m-0 p-2 small font-monospace"

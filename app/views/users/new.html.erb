@@ -1,11 +1,11 @@
-<h1>Create New User</h1>
+<h1><%= t(".title") %></h1>
 
 <div class="row">
   <div class="col-md-6">
     <%= form_with(model: @user, url: admin_user_create_path, method: :post, local: true) do |f| %>
       <% if @user.errors.any? %>
         <div class="alert alert-danger">
-          <h5>Errors prevented this user from being saved:</h5>
+          <h5><%= t(".errors_heading") %></h5>
           <ul>
             <% @user.errors.full_messages.each do |message| %>
               <li><%= message %></li>
@@ -13,30 +13,30 @@
           </ul>
         </div>
       <% end %>
-      
+
       <div class="mb-3">
         <%= f.label :name, class: "form-label" %>
         <%= f.text_field :name, class: "form-control", required: true %>
       </div>
-      
+
       <div class="mb-3">
         <%= f.label :email, class: "form-label" %>
         <%= f.email_field :email, class: "form-control", required: true %>
       </div>
-      
+
       <div class="mb-3 form-check">
         <%= f.check_box :admin, class: "form-check-input" %>
-        <%= f.label :admin, "Admin Privileges", class: "form-check-label" %>
+        <%= f.label :admin, t(".admin_privileges"), class: "form-check-label" %>
       </div>
-      
+
       <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>
-        Default password will be set to: <strong>password123</strong>
+        <%= t(".default_password_html", password: content_tag(:strong, "password123")) %>
       </div>
-      
+
       <div class="d-flex gap-2">
-        <%= f.submit "Create New User", class: "btn btn-primary" %>
-        <%= link_to "Cancel", admin_users_path, class: "btn btn-secondary" %>
+        <%= f.submit t(".submit"), class: "btn btn-primary" %>
+        <%= link_to t(".cancel"), admin_users_path, class: "btn btn-secondary" %>
       </div>
     <% end %>
   </div>

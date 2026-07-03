@@ -1,37 +1,37 @@
-<h1 class="mb-4">Admin Dashboard</h1>
+<h1 class="mb-4"><%= t(".title") %></h1>
 
 <div class="row mb-4">
   <div class="col-md-3">
     <div class="card text-white bg-primary">
       <div class="card-body">
-        <h5 class="card-title">Total Users</h5>
+        <h5 class="card-title"><%= t(".total_users") %></h5>
         <p class="card-text display-4"><%= @users.count %></p>
       </div>
     </div>
   </div>
-  
+
   <div class="col-md-3">
     <div class="card text-white bg-success">
       <div class="card-body">
-        <h5 class="card-title">Exercises</h5>
+        <h5 class="card-title"><%= t(".exercises") %></h5>
         <p class="card-text display-4"><%= @exercises.count %></p>
       </div>
     </div>
   </div>
-  
+
   <div class="col-md-3">
     <div class="card text-white bg-info">
       <div class="card-body">
-        <h5 class="card-title">Submissions</h5>
+        <h5 class="card-title"><%= t(".submissions") %></h5>
         <p class="card-text display-4"><%= @total_submissions %></p>
       </div>
     </div>
   </div>
-  
+
   <div class="col-md-3">
     <div class="card text-white bg-warning">
       <div class="card-body">
-        <h5 class="card-title">Completed</h5>
+        <h5 class="card-title"><%= t(".completed") %></h5>
         <p class="card-text display-4"><%= @completed_submissions %></p>
       </div>
     </div>
@@ -42,30 +42,30 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h4>Quick Actions</h4>
+        <h4><%= t(".quick_actions") %></h4>
       </div>
       <div class="card-body">
-        <%= link_to "Create New Exercise", new_exercise_path, class: "btn btn-primary btn-sm me-2" %>
-        <%= link_to "Add New User", new_user_path, class: "btn btn-success btn-sm" %>
+        <%= link_to t(".create_new_exercise"), new_exercise_path, class: "btn btn-primary btn-sm me-2" %>
+        <%= link_to t(".add_new_user"), new_user_path, class: "btn btn-success btn-sm" %>
       </div>
     </div>
   </div>
-  
+
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h4>Recent Submissions</h4>
+        <h4><%= t(".recent_submissions") %></h4>
       </div>
       <div class="card-body" style="max-height: 400px; overflow-y: auto;">
         <% @submissions.each do |submission| %>
           <div class="border-bottom pb-2 mb-2">
             <strong><%= submission.user.name || submission.user.email %></strong>
-            completed 
+            <%= t(".completed_lowercase") %>
             <strong><%= link_to submission.exercise.title, submission.exercise %></strong>
             <br>
-            <small class="text-muted"><%= time_ago_in_words(submission.created_at) %> ago</small>
+            <small class="text-muted"><%= t("exercises.show.time_ago", time: time_ago_in_words(submission.created_at)) %></small>
             <span class="badge bg-<%= submission.status == 'completed' ? 'success' : 'warning' %> float-end">
-              <%= submission.status %>
+              <%= t("submissions.status.#{submission.status}") %>
             </span>
           </div>
         <% end %>

@@ -1,7 +1,7 @@
 <div class="mb-4">
   <label class="form-label fw-bold">
-    <i class="fas fa-project-diagram me-1"></i> P4Docker Topology
-    <span class="text-muted fw-normal">(optional — enables Phase 2 sandbox)</span>
+    <i class="fas fa-project-diagram me-1"></i> <%= t(".title") %>
+    <span class="text-muted fw-normal">(<%= t(".subtitle") %>)</span>
   </label>
 
   <%# Hidden field submitted with the form — JS keeps it in sync %>
@@ -9,7 +9,7 @@
 
   <div class="form-check form-switch mb-3">
     <input class="form-check-input" type="checkbox" id="topology_enabled">
-    <label class="form-check-label fw-semibold" for="topology_enabled">Enable topology</label>
+    <label class="form-check-label fw-semibold" for="topology_enabled"><%= t(".enable_topology") %></label>
   </div>
 
   <div id="topology_fields" style="display:none;">
@@ -17,22 +17,22 @@
     <%# ── Switch ──────────────────────────────────────────────────────────── %>
     <div class="card mb-3 border-dark">
       <div class="card-header bg-dark text-white">
-        <i class="fas fa-server me-1"></i> Switch
+        <i class="fas fa-server me-1"></i> <%= t(".switch") %>
       </div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-4">
-            <label class="form-label small fw-semibold">Name</label>
+            <label class="form-label small fw-semibold"><%= t(".name") %></label>
             <input type="text" class="form-control form-control-sm" id="topo_sw_name"
                    maxlength="11" placeholder="sw1" value="sw1">
           </div>
           <div class="col-md-4">
-            <label class="form-label small fw-semibold">Thrift Port (API)</label>
+            <label class="form-label small fw-semibold"><%= t(".thrift_port_api") %></label>
             <input type="number" class="form-control form-control-sm" id="topo_sw_thrift"
                    placeholder="50001" value="50001">
           </div>
           <div class="col-md-4">
-            <label class="form-label small fw-semibold">Image</label>
+            <label class="form-label small fw-semibold"><%= t(".image") %></label>
             <input type="text" class="form-control form-control-sm" id="topo_sw_image"
                    placeholder="dnredson/p4d" value="dnredson/p4d">
           </div>
@@ -43,9 +43,9 @@
     <%# ── Connections ─────────────────────────────────────────────────────── %>
     <div class="card mb-3 border-secondary">
       <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <span><i class="fas fa-plug me-1"></i> Connections — Host ↔ Switch Port</span>
+        <span><i class="fas fa-plug me-1"></i> <%= t(".connections_header") %></span>
         <button type="button" class="btn btn-sm btn-light" onclick="topoAddConnection()">
-          <i class="fas fa-plus me-1"></i> Add Host
+          <i class="fas fa-plus me-1"></i> <%= t(".add_host") %>
         </button>
       </div>
 
@@ -55,19 +55,18 @@
       </div>
 
       <div class="card-footer text-muted small">
-        Each card is one host connected to a numbered switch port (veth pair).
-        Host interface inside container: <code>p4eth1</code> · Switch interface: <code>eth{port}</code>.
+        <%= t(".connections_hint_html", host_iface: content_tag(:code, "p4eth1"), switch_iface: content_tag(:code, "eth{port}")) %>
       </div>
     </div>
 
     <%# ── Live topology preview ───────────────────────────────────────────── %>
     <div class="card mb-3 border-primary">
       <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <span><i class="fas fa-project-diagram me-1"></i> Topology Preview</span>
+        <span><i class="fas fa-project-diagram me-1"></i> <%= t(".topology_preview") %></span>
         <div class="d-flex gap-1">
-          <button type="button" id="admin_topo_zoom_in"  class="btn btn-sm btn-light" title="Zoom in">+</button>
-          <button type="button" id="admin_topo_zoom_out" class="btn btn-sm btn-light" title="Zoom out">−</button>
-          <button type="button" id="admin_topo_zoom_fit" class="btn btn-sm btn-light" title="Fit to view">&#x26F6;</button>
+          <button type="button" id="admin_topo_zoom_in"  class="btn btn-sm btn-light" title="<%= t("exercises.topology_viewer.zoom_in") %>">+</button>
+          <button type="button" id="admin_topo_zoom_out" class="btn btn-sm btn-light" title="<%= t("exercises.topology_viewer.zoom_out") %>">−</button>
+          <button type="button" id="admin_topo_zoom_fit" class="btn btn-sm btn-light" title="<%= t("exercises.topology_viewer.fit_to_view") %>">&#x26F6;</button>
         </div>
       </div>
       <div style="background:#f0f4f8; position:relative;">
@@ -76,42 +75,42 @@
              class="d-flex flex-column align-items-center justify-content-center text-muted"
              style="height:160px; display:none;">
           <i class="fas fa-project-diagram fa-2x mb-2"></i>
-          <span class="small">Add connections above to preview the network topology</span>
+          <span class="small"><%= t(".add_connections_hint") %></span>
         </div>
       </div>
       <div class="card-footer d-flex gap-3 small text-muted">
-        <span><span style="display:inline-block;width:14px;height:14px;background:#0d6efd;border-radius:2px;vertical-align:middle;"></span> P4 Switch</span>
-        <span><span style="display:inline-block;width:14px;height:14px;background:#198754;border-radius:50%;vertical-align:middle;"></span> Host</span>
-        <span class="text-muted">Click a node or edge for details.</span>
+        <span><span style="display:inline-block;width:14px;height:14px;background:#0d6efd;border-radius:2px;vertical-align:middle;"></span> <%= t("exercises.topology_viewer.js.p4_switch") %></span>
+        <span><span style="display:inline-block;width:14px;height:14px;background:#198754;border-radius:50%;vertical-align:middle;"></span> <%= t("exercises.topology_viewer.js.host") %></span>
+        <span class="text-muted"><%= t(".click_node_hint") %></span>
       </div>
     </div>
 
     <%# ── Control plane entries ───────────────────────────────────────────── %>
     <div class="card mb-3 border-info">
       <div class="card-header bg-info text-white">
-        <i class="fas fa-route me-1"></i> Control Plane Entries
+        <i class="fas fa-route me-1"></i> <%= t(".control_plane_entries") %>
       </div>
       <div class="card-body">
         <textarea class="form-control font-monospace form-control-sm" id="topo_rules" rows="4"
                   placeholder="table_add MyIngress.ipv4_lpm ipv4_forward 10.0.1.2 => 00:00:00:00:01:02 1&#10;table_add MyIngress.ipv4_lpm ipv4_forward 10.0.2.2 => 00:00:00:00:02:02 2"></textarea>
-        <div class="form-text">One rule per line — piped to <code>simple_switch_CLI --thrift-port &lt;port&gt;</code>. Semicolons are also accepted as separators.</div>
+        <div class="form-text"><%= t(".rules_hint_html", cmd: content_tag(:code, "simple_switch_CLI --thrift-port <port>")) %></div>
       </div>
     </div>
 
     <%# ── Traffic test ────────────────────────────────────────────────────── %>
     <div class="card mb-3 border-success">
       <div class="card-header bg-success text-white">
-        <i class="fas fa-paper-plane me-1"></i> Traffic Test
+        <i class="fas fa-paper-plane me-1"></i> <%= t(".traffic_test") %>
       </div>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-3">
-            <label class="form-label small fw-semibold">Sender host</label>
+            <label class="form-label small fw-semibold"><%= t(".sender_host") %></label>
             <input type="text" class="form-control form-control-sm" id="topo_traffic_from"
                    placeholder="h1">
           </div>
           <div class="col-md-9">
-            <label class="form-label small fw-semibold">Command (runs inside sender container)</label>
+            <label class="form-label small fw-semibold"><%= t(".command_label") %></label>
             <input type="text" class="form-control form-control-sm font-monospace" id="topo_traffic_cmd"
                    placeholder="ping -c 3 -W 2 10.0.2.2">
           </div>
@@ -122,10 +121,10 @@
     <%# ── Live JSON preview ───────────────────────────────────────────────── %>
     <div class="card mb-3 border-0 bg-light">
       <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
-        <small class="text-muted"><i class="fas fa-code me-1"></i> Generated JSON (read-only preview)</small>
+        <small class="text-muted"><i class="fas fa-code me-1"></i> <%= t(".generated_json") %></small>
         <button type="button" class="btn btn-sm btn-outline-secondary"
                 onclick="document.getElementById('topo_json_preview').classList.toggle('d-none')">
-          Toggle
+          <%= t(".toggle") %>
         </button>
       </div>
       <div class="d-none" id="topo_json_preview">
@@ -141,6 +140,18 @@
 <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 <script>
 (function () {
+  var I18N = {
+    port:              <%= raw t("exercises.topology_viewer.js.port").to_json %>,
+    host:              <%= raw t("exercises.topology_viewer.js.host").to_json %>,
+    remove:            <%= raw t(".remove").to_json %>,
+    hostImage:         <%= raw t(".host_image").to_json %>,
+    hostIpCidr:        <%= raw t(".host_ip_cidr").to_json %>,
+    hostMac:           <%= raw t(".host_mac").to_json %>,
+    switchPortIpCidr:  <%= raw t(".switch_port_ip_cidr").to_json %>,
+    switchPortMac:     <%= raw t(".switch_port_mac").to_json %>,
+    bandwidth:         <%= raw t("exercises.topology_viewer.js.bandwidth").to_json %>,
+    delay:             <%= raw t("exercises.topology_viewer.js.delay").to_json %>
+  };
   var HOST_IMAGES = ['dnredson/net', 'dnredson/trafficTools', 'dnredson/mqtt', 'ubuntu', 'alpine:3.19'];
 
   // ── Cytoscape preview instance ─────────────────────────────────────────────
@@ -234,7 +245,7 @@
         data:     { id: 'h_' + c.port, label: c.host_name, kind: 'host', raw: JSON.stringify(c) },
         position: { x: Math.round(Math.cos(angle) * radius), y: Math.round(Math.sin(angle) * radius) }
       });
-      elements.push({ data: { id: 'e_' + c.port, source: 'h_' + c.port, target: '__sw__', label: 'Port ' + c.port } });
+      elements.push({ data: { id: 'e_' + c.port, source: 'h_' + c.port, target: '__sw__', label: I18N.port + ' ' + c.port } });
     });
 
     if (_adminCy) { _adminCy.destroy(); }
@@ -324,52 +335,52 @@
     card.innerHTML =
       '<div class="card-header py-2 d-flex align-items-center justify-content-between bg-light">' +
         '<div class="d-flex align-items-center gap-2">' +
-          '<span class="text-muted small fw-semibold text-nowrap">Port</span>' +
+          '<span class="text-muted small fw-semibold text-nowrap">' + I18N.port + '</span>' +
           '<input type="number" class="form-control form-control-sm text-center fw-bold" data-f="port"' +
                  ' value="' + port + '" min="1" style="width:60px;">' +
           '<span class="mx-1 text-muted">—</span>' +
           '<input type="text" class="form-control form-control-sm fw-semibold" data-f="host_name"' +
                  ' value="' + (data.host_name || 'h' + port) + '" maxlength="11" placeholder="h1" style="width:90px;">' +
-          '<span class="badge bg-success ms-1">Host</span>' +
+          '<span class="badge bg-success ms-1">' + I18N.host + '</span>' +
         '</div>' +
         '<button type="button" class="btn btn-sm btn-outline-danger"' +
                 ' onclick="this.closest(\'.conn-row\').remove(); serialize();">' +
-          '<i class="fas fa-times me-1"></i>Remove' +
+          '<i class="fas fa-times me-1"></i>' + I18N.remove +
         '</button>' +
       '</div>' +
       '<div class="card-body py-3">' +
         '<div class="row g-3">' +
           '<div class="col-12 col-md-4">' +
-            '<label class="form-label small fw-semibold mb-1">Host Image</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.hostImage + '</label>' +
             '<select class="form-select form-select-sm" data-f="host_image">' + imgOptions + '</select>' +
           '</div>' +
           '<div class="col-6 col-md-4">' +
-            '<label class="form-label small fw-semibold mb-1">Host IP / CIDR</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.hostIpCidr + '</label>' +
             '<input type="text" class="form-control form-control-sm font-monospace" data-f="host_ip"' +
                    ' value="' + (data.host_ip || '') + '" placeholder="10.0.' + port + '.2/24">' +
           '</div>' +
           '<div class="col-6 col-md-4">' +
-            '<label class="form-label small fw-semibold mb-1">Host MAC</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.hostMac + '</label>' +
             '<input type="text" class="form-control form-control-sm font-monospace" data-f="host_mac"' +
                    ' value="' + (data.host_mac || '') + '" placeholder="00:00:00:00:0' + port + ':02">' +
           '</div>' +
           '<div class="col-6 col-md-4">' +
-            '<label class="form-label small fw-semibold mb-1">Switch Port IP / CIDR</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.switchPortIpCidr + '</label>' +
             '<input type="text" class="form-control form-control-sm font-monospace" data-f="sw_ip"' +
                    ' value="' + (data.sw_ip || '') + '" placeholder="10.0.' + port + '.1/24">' +
           '</div>' +
           '<div class="col-6 col-md-4">' +
-            '<label class="form-label small fw-semibold mb-1">Switch Port MAC</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.switchPortMac + '</label>' +
             '<input type="text" class="form-control form-control-sm font-monospace" data-f="sw_mac"' +
                    ' value="' + (data.sw_mac || '') + '" placeholder="00:00:00:00:0' + port + ':01">' +
           '</div>' +
           '<div class="col-6 col-md-2">' +
-            '<label class="form-label small fw-semibold mb-1">Bandwidth</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.bandwidth + '</label>' +
             '<input type="text" class="form-control form-control-sm" data-f="bandwidth"' +
                    ' value="' + (data.bandwidth || '') + '" placeholder="5mbit">' +
           '</div>' +
           '<div class="col-6 col-md-2">' +
-            '<label class="form-label small fw-semibold mb-1">Delay</label>' +
+            '<label class="form-label small fw-semibold mb-1">' + I18N.delay + '</label>' +
             '<input type="text" class="form-control form-control-sm" data-f="delay"' +
                    ' value="' + (data.delay || '') + '" placeholder="10ms">' +
           '</div>' +

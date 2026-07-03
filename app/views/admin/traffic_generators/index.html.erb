@@ -1,26 +1,26 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Traffic Generators</h1>
+  <h1><%= t(".title") %></h1>
   <%= link_to new_admin_traffic_generator_path, class: "btn btn-primary" do %>
-    <i class="fas fa-plus me-1"></i> New Generator
+    <i class="fas fa-plus me-1"></i> <%= t(".new_generator") %>
   <% end %>
 </div>
 
 <% if @traffic_generators.empty? %>
   <div class="alert alert-info text-center">
-    No generators registered yet.
+    <%= t(".no_generators") %>
   </div>
 <% else %>
   <div class="table-responsive">
     <table class="table table-hover align-middle">
       <thead class="table-dark">
         <tr>
-          <th>Name</th>
-          <th>Protocol</th>
-          <th>Duration</th>
-          <th>Port</th>
-          <th>Bandwidth</th>
-          <th>iperf3 Command</th>
-          <th>Exercises</th>
+          <th><%= t(".columns.name") %></th>
+          <th><%= t(".columns.protocol") %></th>
+          <th><%= t(".columns.duration") %></th>
+          <th><%= t(".columns.port") %></th>
+          <th><%= t(".columns.bandwidth") %></th>
+          <th><%= t(".columns.iperf3_command") %></th>
+          <th><%= t(".columns.exercises") %></th>
           <th></th>
         </tr>
       </thead>
@@ -44,7 +44,7 @@
               <% end %>
               <%= button_to admin_traffic_generator_path(tg), method: :delete,
                   class: "btn btn-sm btn-outline-danger",
-                  form: { data: { turbo_confirm: "Remove this generator?" } } do %>
+                  form: { data: { turbo_confirm: t(".confirm_remove") } } do %>
                 <i class="fas fa-trash"></i>
               <% end %>
             </td>

@@ -9,6 +9,8 @@ Rails.application.routes.draw do
 
   root to: 'home#index'
 
+  get 'locale/:locale', to: 'locales#update', as: :set_locale
+
   resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
   resources :users, path: 'admin/users', as: :admin_users, only: [:index, :new, :create, :edit, :update, :destroy]
   post 'admin/users/create', to: 'users#create', as: :admin_user_create

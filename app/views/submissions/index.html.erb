@@ -1,22 +1,22 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>My Submissions</h1>
-  <%= link_to "Browse Exercises", exercises_path, class: "btn btn-outline-primary" %>
+  <h1><%= t(".title") %></h1>
+  <%= link_to t(".browse_exercises"), exercises_path, class: "btn btn-outline-primary" %>
 </div>
 
 <% if @submissions.empty? %>
   <div class="alert alert-info text-center">
-    You haven't submitted any solutions yet.
-    <%= link_to "Start an exercise", exercises_path %> to get going!
+    <%= t(".no_submissions") %>
+    <%= link_to t(".start_an_exercise"), exercises_path %> <%= t(".to_get_going") %>
   </div>
 <% else %>
   <div class="table-responsive">
     <table class="table table-hover align-middle">
       <thead class="table-dark">
         <tr>
-          <th>Exercise</th>
-          <th>Language</th>
-          <th>Status</th>
-          <th>Submitted</th>
+          <th><%= t(".exercise") %></th>
+          <th><%= t(".language") %></th>
+          <th><%= t(".status") %></th>
+          <th><%= t(".submitted") %></th>
           <th></th>
         </tr>
       </thead>
@@ -32,10 +32,10 @@
                          when 'evaluating' then 'warning'
                          else                   'secondary'
                          end %>
-              <span class="badge bg-<%= badge %>"><%= submission.status.upcase %></span>
+              <span class="badge bg-<%= badge %>"><%= t("submissions.status.#{submission.status}").upcase %></span>
             </td>
-            <td class="text-muted small"><%= time_ago_in_words(submission.created_at) %> ago</td>
-            <td><%= link_to "View", submission, class: "btn btn-sm btn-outline-primary" %></td>
+            <td class="text-muted small"><%= t(".time_ago", time: time_ago_in_words(submission.created_at)) %></td>
+            <td><%= link_to t(".view"), submission, class: "btn btn-sm btn-outline-primary" %></td>
           </tr>
         <% end %>
       </tbody>

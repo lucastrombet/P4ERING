@@ -2,7 +2,7 @@
   <div class="col-12">
     <div class="card shadow-sm">
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <span><i class="fas fa-project-diagram me-2"></i><strong>Network Topology</strong></span>
+        <span><i class="fas fa-project-diagram me-2"></i><strong><%= t(".network_topology") %></strong></span>
         <span class="badge bg-secondary small font-monospace"><%= exercise.topology_config.then { |t| JSON.parse(t)['switch']['name'] rescue 'topology' } %></span>
       </div>
 
@@ -18,34 +18,34 @@
               <%# zoom controls (matching P4Docker's + / - buttons) %>
               <div style="position:absolute; top:10px; right:18px; display:flex; gap:4px; z-index:10;">
                 <button onclick="window._topoCy<%= exercise.id %>.zoom(window._topoCy<%= exercise.id %>.zoom()*1.25); window._topoCy<%= exercise.id %>.center();"
-                        class="btn btn-sm btn-light border" title="Zoom in">+</button>
+                        class="btn btn-sm btn-light border" title="<%= t(".zoom_in") %>">+</button>
                 <button onclick="window._topoCy<%= exercise.id %>.zoom(window._topoCy<%= exercise.id %>.zoom()/1.25); window._topoCy<%= exercise.id %>.center();"
-                        class="btn btn-sm btn-light border" title="Zoom out">−</button>
+                        class="btn btn-sm btn-light border" title="<%= t(".zoom_out") %>">−</button>
                 <button onclick="window._topoCy<%= exercise.id %>.fit(undefined, 40);"
-                        class="btn btn-sm btn-light border" title="Fit to view">&#x26F6;</button>
+                        class="btn btn-sm btn-light border" title="<%= t(".fit_to_view") %>">&#x26F6;</button>
               </div>
             </div>
 
             <%# ── Info panel (mirrors P4Docker's #info-box) ── %>
             <div class="col-md-3 p-3 d-flex flex-column">
               <div class="small text-muted fw-semibold mb-2">
-                <i class="fas fa-info-circle me-1"></i> Info
+                <i class="fas fa-info-circle me-1"></i> <%= t(".info") %>
               </div>
               <div id="topo-info-<%= exercise.id %>"
                    class="small p-2 rounded flex-grow-1"
                    style="background:#fff; border:1px solid #dee2e6; min-height:180px; overflow-y:auto;">
-                <span class="text-muted">Click a node or link…</span>
+                <span class="text-muted"><%= t(".click_hint") %></span>
               </div>
 
               <%# legend %>
               <div class="mt-3 small text-muted">
                 <div class="d-flex align-items-center gap-2 mb-1">
                   <span style="display:inline-block;width:18px;height:18px;background:#0d6efd;border-radius:3px;"></span>
-                  P4 Switch (BMv2)
+                  <%= t(".legend_switch") %>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                   <span style="display:inline-block;width:18px;height:18px;background:#198754;border-radius:50%;"></span>
-                  Host container
+                  <%= t(".legend_host") %>
                 </div>
               </div>
             </div>
@@ -61,6 +61,24 @@
 <script>
 (function () {
   var EX_ID = '<%= exercise.id %>';
+  var I18N = {
+    port:              <%= raw t(".js.port").to_json %>,
+    p4Switch:          <%= raw t(".js.p4_switch").to_json %>,
+    host:              <%= raw t(".js.host").to_json %>,
+    link:              <%= raw t(".js.link").to_json %>,
+    image:             <%= raw t(".js.image").to_json %>,
+    thriftPort:        <%= raw t(".js.thrift_port").to_json %>,
+    ipCidr:            <%= raw t(".js.ip_cidr").to_json %>,
+    mac:               <%= raw t(".js.mac").to_json %>,
+    connectedToSwitch: <%= raw t(".js.connected_to_switch").to_json %>,
+    swIp:              <%= raw t(".js.sw_ip").to_json %>,
+    swMac:             <%= raw t(".js.sw_mac").to_json %>,
+    hostSide:          <%= raw t(".js.host_side").to_json %>,
+    switchSide:        <%= raw t(".js.switch_side").to_json %>,
+    bandwidth:         <%= raw t(".js.bandwidth").to_json %>,
+    delay:             <%= raw t(".js.delay").to_json %>,
+    clickHint:         <%= raw t(".click_hint").to_json %>
+  };
   var topo;
 
   try {
@@ -110,7 +128,7 @@
         id:     'edge_p' + conn.port,
         source: conn.host_name,
         target: '__sw__',
-        label:  'Port ' + conn.port,
+        label:  I18N.port + ' ' + conn.port,
         raw:    JSON.stringify(conn)
       }
     });
@@ -219,9 +237,9 @@
     var d = JSON.parse(e.target.data('raw'));
     info.innerHTML =
       '<strong><i class="fas fa-server me-1" style="color:#0d6efd;"></i>' + (d.name || 'sw1') + '</strong>' +
-      '<span class="badge bg-primary ms-2 small">P4 Switch</span>' +
-      row('Image',       d.image || 'dnredson/p4d') +
-      row('Thrift port', String(d.thrift_port || 50001));
+      '<span class="badge bg-primary ms-2 small">' + I18N.p4Switch + '</span>' +
+      row(I18N.image,      d.image || 'dnredson/p4d') +
+      row(I18N.thriftPort, String(d.thrift_port || 50001));
   });
 
   // ── Click: host ──────────────────────────────────────────────────────────
@@ -229,36 +247,36 @@
     var c = JSON.parse(e.target.data('raw'));
     info.innerHTML =
       '<strong><i class="fas fa-desktop me-1" style="color:#198754;"></i>' + c.host_name + '</strong>' +
-      '<span class="badge bg-success ms-2 small">Host</span>' +
-      row('Image',     c.host_image || '') +
-      row('IP / CIDR', c.host_ip   || '') +
-      row('MAC',       c.host_mac  || '') +
-      section('Connected to switch') +
-      row('Port',      String(c.port || '')) +
-      row('SW IP',     c.sw_ip  || '') +
-      row('SW MAC',    c.sw_mac || '');
+      '<span class="badge bg-success ms-2 small">' + I18N.host + '</span>' +
+      row(I18N.image,  c.host_image || '') +
+      row(I18N.ipCidr, c.host_ip   || '') +
+      row(I18N.mac,    c.host_mac  || '') +
+      section(I18N.connectedToSwitch) +
+      row(I18N.port,   String(c.port || '')) +
+      row(I18N.swIp,   c.sw_ip  || '') +
+      row(I18N.swMac,  c.sw_mac || '');
   });
 
   // ── Click: edge ──────────────────────────────────────────────────────────
   cy.on('tap', 'edge', function (e) {
     var c = JSON.parse(e.target.data('raw'));
     info.innerHTML =
-      '<strong><i class="fas fa-ethernet me-1" style="color:#6c757d;"></i>Port ' + c.port + '</strong>' +
-      '<span class="badge bg-secondary ms-2 small">Link</span>' +
-      section('Host side') +
-      row('IP / CIDR', c.host_ip  || '') +
-      row('MAC',       c.host_mac || '') +
-      section('Switch side') +
-      row('IP / CIDR', c.sw_ip    || '') +
-      row('MAC',       c.sw_mac   || '') +
-      (c.bandwidth ? row('Bandwidth', c.bandwidth) : '') +
-      (c.delay     ? row('Delay',     c.delay)     : '');
+      '<strong><i class="fas fa-ethernet me-1" style="color:#6c757d;"></i>' + I18N.port + ' ' + c.port + '</strong>' +
+      '<span class="badge bg-secondary ms-2 small">' + I18N.link + '</span>' +
+      section(I18N.hostSide) +
+      row(I18N.ipCidr, c.host_ip  || '') +
+      row(I18N.mac,    c.host_mac || '') +
+      section(I18N.switchSide) +
+      row(I18N.ipCidr, c.sw_ip    || '') +
+      row(I18N.mac,    c.sw_mac   || '') +
+      (c.bandwidth ? row(I18N.bandwidth, c.bandwidth) : '') +
+      (c.delay     ? row(I18N.delay,     c.delay)     : '');
   });
 
   // ── Click: canvas background → clear info ───────────────────────────────
   cy.on('tap', function (e) {
     if (e.target === cy) {
-      info.innerHTML = '<span class="text-muted">Click a node or link…</span>';
+      info.innerHTML = '<span class="text-muted">' + I18N.clickHint + '</span>';
     }
   });
 })();

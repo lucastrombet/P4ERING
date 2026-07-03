@@ -2,12 +2,12 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h1 class="text-gradient">
-      <i class="fas fa-dumbbell me-2"></i>Exercise Management
+      <i class="fas fa-dumbbell me-2"></i><%= t(".title") %>
     </h1>
-    <p class="text-muted">Create, edit, and manage programming exercises</p>
+    <p class="text-muted"><%= t(".subtitle") %></p>
   </div>
   <%= link_to new_admin_exercise_path, class: "btn btn-primary btn-lg" do %>
-    <i class="fas fa-plus me-2"></i>Create New Exercise
+    <i class="fas fa-plus me-2"></i><%= t(".create_new_exercise") %>
   <% end %>
 </div>
 
@@ -18,12 +18,12 @@
         <thead class="table-dark">
           <tr>
             <th>ID</th>
-            <th>Title</th>
-            <th>Language</th>
-            <th>Difficulty</th>
-            <th>Submissions</th>
-            <th>Created</th>
-            <th>Actions</th>
+            <th><%= t(".columns.title") %></th>
+            <th><%= t(".columns.language") %></th>
+            <th><%= t(".columns.difficulty") %></th>
+            <th><%= t(".columns.submissions") %></th>
+            <th><%= t(".columns.created") %></th>
+            <th><%= t(".columns.actions") %></th>
           </tr>
         </thead>
         <tbody>
@@ -52,21 +52,21 @@
               </td>
               <td>
                 <span class="badge bg-secondary">
-                  <%= exercise.submissions.count %> submissions
+                  <%= t(".submissions_count", count: exercise.submissions.count) %>
                 </span>
               </td>
               <td>
-                <small><%= time_ago_in_words(exercise.created_at) %> ago</small>
+                <small><%= t("exercises.show.time_ago", time: time_ago_in_words(exercise.created_at)) %></small>
               </td>
               <td>
                 <div class="btn-group" role="group">
                   <%= link_to edit_admin_exercise_path(exercise), class: "btn btn-sm btn-warning" do %>
                     <i class="fas fa-edit"></i>
                   <% end %>
-                  <%= link_to admin_exercise_path(exercise), 
+                  <%= link_to admin_exercise_path(exercise),
                       method: :delete,
                       class: "btn btn-sm btn-danger",
-                      data: { confirm: "Delete '#{exercise.title}'? This will also delete all submissions." } do %>
+                      data: { confirm: t(".confirm_delete", title: exercise.title) } do %>
                     <i class="fas fa-trash"></i>
                   <% end %>
                 </div>
@@ -76,12 +76,12 @@
         </tbody>
       </table>
     </div>
-    
+
     <% if @exercises.empty? %>
       <div class="text-center py-5">
         <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-        <h3>No exercises yet</h3>
-        <p class="text-muted">Click the "Create New Exercise" button to get started.</p>
+        <h3><%= t(".no_exercises") %></h3>
+        <p class="text-muted"><%= t(".no_exercises_hint") %></p>
       </div>
     <% end %>
   </div>
