@@ -15,6 +15,16 @@ Rails.application.routes.draw do
   resources :users, path: 'admin/users', as: :admin_users, only: [:index, :new, :create, :edit, :update, :destroy]
   post 'admin/users/create', to: 'users#create', as: :admin_user_create
 
+  namespace :professor do
+    get 'dashboard', to: 'dashboard#index', as: :dashboard
+    resources :classrooms do
+      scope module: :classrooms do
+        resources :enrollments, only: [:create, :destroy]
+        resources :exercises,   only: [:create, :destroy, :show]
+      end
+    end
+  end
+
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
     resources :users, except: [:show]

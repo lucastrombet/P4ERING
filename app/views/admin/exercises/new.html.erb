@@ -141,6 +141,19 @@
 
             <%= render 'topology_form', f: f %>
 
+            <!-- Restricted -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="form-check form-switch">
+                  <%= f.check_box :restricted, class: "form-check-input", role: "switch", id: "exercise_restricted" %>
+                  <%= f.label :restricted, class: "form-check-label fw-bold" do %>
+                    <i class="fas fa-lock me-1"></i> <%= t("admin.exercises.form.restricted_label") %>
+                  <% end %>
+                  <div class="form-text"><%= t("admin.exercises.form.restricted_hint") %></div>
+                </div>
+              </div>
+            </div>
+
             <!-- Form Actions -->
             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
               <div>

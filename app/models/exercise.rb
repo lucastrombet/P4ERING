@@ -1,5 +1,7 @@
 class Exercise < ApplicationRecord
   has_many :submissions, dependent: :destroy
+  has_many :classroom_exercises, dependent: :destroy
+  has_many :classrooms, through: :classroom_exercises
   has_many :exercise_traffic_generators, dependent: :destroy
   has_many :traffic_generators, through: :exercise_traffic_generators
 

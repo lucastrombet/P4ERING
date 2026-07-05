@@ -25,6 +25,8 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     if resource.admin?
       admin_dashboard_path
+    elsif resource.professor?
+      professor_dashboard_path
     else
       exercises_path
     end

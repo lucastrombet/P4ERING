@@ -1,0 +1,118 @@
+<%# Breadcrumb %>
+<nav aria-label="breadcrumb" class="mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><%= link_to t("professor.classrooms.show.breadcrumb"), professor_classrooms_path %></li>
+    <li class="breadcrumb-item"><%= link_to @classroom.name, professor_classroom_path(@classroom) %></li>
+    <li class="breadcrumb-item active"><%= @exercise.title %></li>
+  </ol>
+</nav>
+
+<%# Header %>
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="mb-1"><i class="fas fa-book me-2"></i><%= @exercise.title %></h1>
+    <p class="text-muted mb-0">
+      <i class="fas fa-calendar me-1"></i>
+      <%= t(".deadline") %>:
+      <strong><%= @classroom_exercise.start_date.strftime('%d/%m/%Y') %></strong>
+      –
+      <strong><%= @classroom_exercise.end_date.strftime('%d/%m/%Y') %></strong>
+    </p>
+  </div>
+  <%# Summary badges %>
+  <div class="d-flex gap-2 flex-wrap justify-content-end">
+    <% completed_count = @submissions_by_student.count { |_, subs| subs.any? { |s| s.status == 'completed' } } %>
+    <% total = @students.count %>
+    <span class="badge bg-success fs-6 px-3 py-2"><%= completed_count %> <%= t(".completed") %></span>
+    <span class="badge bg-danger fs-6 px-3 py-2"><%= total - completed_count %> <%= t(".pending") %></span>
+    <span class="badge bg-secondary fs-6 px-3 py-2"><%= total %> <%= t(".total_students") %></span>
+  </div>
+</div>
+
+<%# Per-student submission history %>
+<% if @students.empty? %>
+  <div class="alert alert-info"><%= t(".no_students") %></div>
+<% else %>
+  <div class="accordion" id="submissionsAccordion">
+    <% @submissions_by_student.each_with_index do |(student, submissions), idx| %>
+      <% best_status = submissions.any? { |s| s.status == 'completed' } ? 'completed'
+                     : submissions.any? { |s| s.status == 'failed' } ? 'failed'
+                     : submissions.any? { |s| s.status.in?(%w[pending evaluating]) } ? 'evaluating'
+                     : 'none' %>
+      <% status_color = { 'completed' => 'success', 'failed' => 'danger', 'evaluating' => 'warning', 'none' => 'secondary' } %>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button <%= idx > 0 ? 'collapsed' : '' %>"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#student-<%= idx %>"
+                  aria-expanded="<%= idx == 0 ? 'true' : 'false' %>">
+            <div class="d-flex align-items-center gap-3 w-100 me-3">
+              <i class="fas fa-user-graduate text-muted"></i>
+              <strong><%= student.name || student.email %></strong>
+              <span class="badge bg-<%= status_color[best_status] %> ms-auto">
+                <% if best_status == 'none' %>
+                  <%= t(".no_attempts") %>
+                <% else %>
+                  <%= t("submissions.status.#{best_status}") %>
+                <% end %>
+              </span>
+              <span class="text-muted small">
+                <%= t(".attempts", count: submissions.count) %>
+              </span>
+            </div>
+          </button>
+        </h2>
+        <div id="student-<%= idx %>" class="accordion-collapse collapse <%= idx == 0 ? 'show' : '' %>">
+          <div class="accordion-body p-0">
+            <% if submissions.empty? %>
+              <p class="text-muted p-3 mb-0"><i class="fas fa-clock me-1"></i><%= t(".no_submissions_yet") %></p>
+            <% else %>
+              <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th><%= t(".col_submitted") %></th>
+                    <th><%= t(".col_status") %></th>
+                    <th><%= t(".col_type") %></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% submissions.each_with_index do |submission, i| %>
+                    <tr>
+                      <td class="text-muted small"><%= submissions.count - i %></td>
+                      <td>
+                        <span title="<%= submission.created_at.strftime('%d/%m/%Y %H:%M') %>">
+                          <%= time_ago_in_words(submission.created_at) %> <%= t(".ago") %>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge bg-<%= status_color.fetch(submission.status, 'secondary') %>">
+                          <%= t("submissions.status.#{submission.status}") %>
+                        </span>
+                      </td>
+                      <td>
+                        <% if submission.test_run? %>
+                          <span class="badge bg-info text-dark"><%= t(".test_run") %></span>
+                        <% else %>
+                          <span class="badge bg-light text-dark border"><%= t(".official") %></span>
+                        <% end %>
+                      </td>
+                      <td class="text-end">
+                        <%= link_to submission_path(submission), class: "btn btn-xs btn-outline-secondary btn-sm" do %>
+                          <i class="fas fa-eye"></i>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

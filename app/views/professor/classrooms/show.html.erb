@@ -1,0 +1,193 @@
+<%# Header %>
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to t(".breadcrumb"), professor_classrooms_path %></li>
+        <li class="breadcrumb-item active"><%= @classroom.name %></li>
+      </ol>
+    </nav>
+    <h1 class="mb-0"><i class="fas fa-chalkboard me-2"></i><%= @classroom.name %></h1>
+    <p class="text-muted mt-1"><%= @classroom.description %></p>
+    <small class="text-muted">
+      <i class="fas fa-calendar-alt me-1"></i>
+      <%= @classroom.start_date.strftime('%d/%m/%Y') %> – <%= @classroom.end_date.strftime('%d/%m/%Y') %>
+    </small>
+  </div>
+  <div class="d-flex gap-2">
+    <%= link_to edit_professor_classroom_path(@classroom), class: "btn btn-outline-secondary btn-sm" do %>
+      <i class="fas fa-edit me-1"></i> <%= t(".edit") %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <%# ── LEFT COLUMN: Students + Exercises ── %>
+  <div class="col-lg-5">
+
+    <%# Students card %>
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i><%= t(".students") %> (<%= @students.count %>)</h5>
+      </div>
+      <div class="card-body p-0">
+        <% if @students.any? %>
+          <ul class="list-group list-group-flush">
+            <% @students.each do |student| %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-user me-2 text-muted"></i><%= student.name || student.email %></span>
+                <%= button_to professor_classroom_enrollment_path(@classroom, @classroom.classroom_enrollments.find_by!(user: student)),
+                    method: :delete,
+                    class: "btn btn-sm btn-outline-danger",
+                    data: { turbo_confirm: t(".remove_student_confirm", name: student.name || student.email) } do %>
+                  <i class="fas fa-times"></i>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted p-3 mb-0"><%= t(".no_students") %></p>
+        <% end %>
+      </div>
+      <% if @available_students.any? %>
+        <div class="card-footer">
+          <%= form_with url: professor_classroom_enrollments_path(@classroom), method: :post, local: true, class: "d-flex gap-2" do |f| %>
+            <%= f.select :enrollment, options_for_select(@available_students.map { |u| [u.name || u.email, u.id] }),
+                { include_blank: t(".select_student") },
+                name: "enrollment[user_id]", class: "form-select form-select-sm" %>
+            <%= f.submit t(".add"), class: "btn btn-sm btn-success" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Exercises card %>
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-book me-2"></i><%= t(".exercises") %> (<%= @classroom_exercises.count %>)</h5>
+      </div>
+      <div class="card-body p-0">
+        <% if @classroom_exercises.any? %>
+          <ul class="list-group list-group-flush">
+            <% @classroom_exercises.each do |ce| %>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong><%= ce.exercise.title %></strong>
+                    <br>
+                    <small class="text-muted">
+                      <i class="fas fa-calendar me-1"></i>
+                      <%= ce.start_date.strftime('%d/%m/%Y') %> – <%= ce.end_date.strftime('%d/%m/%Y') %>
+                    </small>
+                  </div>
+                  <%= button_to professor_classroom_exercise_path(@classroom, ce),
+                      method: :delete,
+                      class: "btn btn-sm btn-outline-danger",
+                      data: { turbo_confirm: t(".remove_exercise_confirm") } do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted p-3 mb-0"><%= t(".no_exercises") %></p>
+        <% end %>
+      </div>
+      <% if @available_exercises.any? %>
+        <div class="card-footer">
+          <%= form_with url: professor_classroom_exercises_path(@classroom), method: :post, local: true do |f| %>
+            <div class="mb-2">
+              <%= f.select :classroom_exercise,
+                  options_for_select(@available_exercises.map { |e| [e.title, e.id] }),
+                  { include_blank: t(".select_exercise") },
+                  name: "classroom_exercise[exercise_id]", class: "form-select form-select-sm" %>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col">
+                <%= f.date_field :start_date, name: "classroom_exercise[start_date]",
+                    class: "form-control form-control-sm" %>
+              </div>
+              <div class="col">
+                <%= f.date_field :end_date, name: "classroom_exercise[end_date]",
+                    class: "form-control form-control-sm" %>
+              </div>
+            </div>
+            <%= f.submit t(".add_exercise"), class: "btn btn-sm btn-success w-100" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <%# ── RIGHT COLUMN: Completion Dashboard ── %>
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i><%= t(".completion_dashboard") %></h5>
+      </div>
+      <div class="card-body">
+        <% if @classroom_exercises.empty? %>
+          <p class="text-muted"><%= t(".no_exercises_msg") %></p>
+        <% elsif @students.empty? %>
+          <p class="text-muted"><%= t(".no_students_msg") %></p>
+        <% else %>
+          <% @classroom_exercises.each do |ce| %>
+            <% stats = @completion_stats[ce.exercise_id] || { completed: [], not_completed: @students.pluck(:id) } %>
+            <% total = @students.count %>
+            <% done  = stats[:completed].count %>
+            <% pct   = total > 0 ? (done.to_f / total * 100).round : 0 %>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong><%= ce.exercise.title %></strong>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="small text-muted"><%= done %>/<%= total %> <%= t(".completed_label").downcase %></span>
+                  <%= link_to professor_classroom_exercise_path(@classroom, ce), class: "btn btn-xs btn-outline-secondary btn-sm" do %>
+                    <i class="fas fa-list-ul me-1"></i><%= t(".view_history") %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-success" style="width: <%= pct %>%"></div>
+              </div>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <div class="p-2 bg-light rounded">
+                    <p class="small fw-semibold text-success mb-1"><i class="fas fa-check-circle me-1"></i><%= t(".completed_label") %> (<%= done %>)</p>
+                    <% if stats[:completed].any? %>
+                      <% @students.select { |s| stats[:completed].include?(s.id) }.each do |s| %>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle me-1 mb-1">
+                          <%= s.name || s.email %>
+                        </span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-muted small"><%= t(".none_yet") %></span>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="p-2 bg-light rounded">
+                    <p class="small fw-semibold text-danger mb-1"><i class="fas fa-times-circle me-1"></i><%= t(".pending_label") %> (<%= stats[:not_completed].count %>)</p>
+                    <% if stats[:not_completed].any? %>
+                      <% @students.select { |s| stats[:not_completed].include?(s.id) }.each do |s| %>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle me-1 mb-1">
+                          <%= s.name || s.email %>
+                        </span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-muted small"><%= t(".all_done") %></span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>

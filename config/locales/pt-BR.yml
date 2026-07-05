@@ -8,6 +8,8 @@ pt-BR:
       generators: "Geradores"
       admin: "Admin"
       users: "Usuários"
+      classrooms: "Turmas"
+      professor_dashboard: "Painel"
       profile_settings: "Configurações do Perfil"
       logout: "Sair"
       logout_confirm: "Tem certeza que deseja sair?"
@@ -86,6 +88,7 @@ pt-BR:
       time_ago: "há %{time}"
       view_details: "Ver Detalhes"
       no_submissions: "Nenhuma submissão ainda. Seja o primeiro a resolver este exercício!"
+      restricted_access: "Este exercício só está disponível através de uma atribuição em turma."
     topology_viewer:
       network_topology: "Topologia de Rede"
       zoom_in: "Aumentar zoom"
@@ -159,11 +162,87 @@ pt-BR:
         info: "Info"
       raw_tcpdump: "tcpdump bruto"
 
+  professor:
+    dashboard:
+      index:
+        title: "Painel do Professor"
+        exercises: "Exercícios"
+        total_submissions: "Total de Submissões"
+        completed: "Concluídas"
+        quick_actions: "Ações Rápidas"
+        manage_exercises: "Gerenciar Exercícios"
+        new_exercise: "Novo Exercício"
+        traffic_generators: "Geradores de Tráfego"
+        recent_submissions: "Submissões Recentes"
+        pending_badge: "pendentes"
+        time_ago: "há %{time}"
+    classrooms:
+      index:
+        title: "Minhas Turmas"
+        new_classroom: "Nova Turma"
+        no_classrooms: "Você ainda não criou nenhuma turma."
+        students: "alunos"
+        exercises: "exercícios"
+        view: "Ver"
+        edit: "Editar"
+        confirm_delete: "Excluir a turma \"%{name}\"?"
+      new:
+        title: "Nova Turma"
+      edit:
+        title: "Editar Turma"
+      form:
+        cancel: "Cancelar"
+      show:
+        breadcrumb: "Turmas"
+        edit: "Editar"
+        students: "Alunos"
+        no_students: "Nenhum aluno matriculado ainda."
+        select_student: "Selecione um aluno…"
+        add: "Adicionar"
+        exercises: "Exercícios"
+        no_exercises: "Nenhum exercício atribuído ainda."
+        select_exercise: "Selecione um exercício…"
+        add_exercise: "Adicionar Exercício"
+        remove_student_confirm: "Remover %{name} desta turma?"
+        remove_exercise_confirm: "Remover este exercício da turma?"
+        completion_dashboard: "Painel de Conclusão"
+        no_exercises_msg: "Nenhum exercício atribuído a esta turma ainda."
+        no_students_msg: "Nenhum aluno matriculado ainda."
+        completed_label: "Concluídos"
+        pending_label: "Pendentes"
+        none_yet: "Nenhum ainda"
+        all_done: "Todos concluíram!"
+        view_history: "Histórico"
+      exercises:
+        show:
+          deadline: "Prazo"
+          completed: "Concluíram"
+          pending: "Pendentes"
+          total_students: "alunos"
+          no_students: "Nenhum aluno matriculado nesta turma."
+          no_attempts: "Sem tentativas"
+          no_submissions_yet: "Nenhuma submissão ainda."
+          attempts:
+            one: "%{count} tentativa"
+            other: "%{count} tentativas"
+          ago: "atrás"
+          col_submitted: "Enviado"
+          col_status: "Status"
+          col_type: "Tipo"
+          test_run: "Teste"
+          official: "Oficial"
+
   activerecord:
     models:
       user: "Usuário"
+      classroom: "Turma"
     attributes:
       user:
+      classroom:
+        name: "Nome"
+        description: "Descrição"
+        start_date: "Data de Início"
+        end_date: "Data de Término"
         name: "Nome"
         email: "Email"
         password: "Senha"
@@ -200,6 +279,7 @@ pt-BR:
           one: "%{count} submissão"
           other: "%{count} submissões"
         confirm_delete: "Excluir '%{title}'? Isso também excluirá todas as submissões."
+        restricted: "Restrito"
         no_exercises: "Nenhum exercício ainda"
         no_exercises_hint: 'Clique no botão "Criar Novo Exercício" para começar.'
       new:
@@ -230,6 +310,8 @@ pt-BR:
         starter_code_label: "Código Inicial"
         starter_code_placeholder: 'Cole o código esqueleto que os alunos verão ao clicar em "Carregar Código Inicial".'
         starter_code_hint: "Os alunos podem carregar isso no editor com um clique na página do exercício."
+        restricted_label: "Exercício Restrito"
+        restricted_hint: "Exercícios restritos ficam ocultos na lista pública e só são acessíveis através de atribuições em turmas."
         cancel: "Cancelar"
       topology_form:
         title: "Topologia P4Docker"
@@ -316,12 +398,14 @@ pt-BR:
       title: "Criar Novo Usuário"
       errors_heading: "Erros impediram que este usuário fosse salvo:"
       admin_privileges: "Privilégios de Administrador"
+      professor_role: "Professor"
       default_password_html: "A senha padrão será definida como: %{password}"
       submit: "Criar Novo Usuário"
       cancel: "Cancelar"
     edit:
       title: "Editar Usuário"
       admin_privileges: "Privilégios de Administrador"
+      professor_role: "Professor"
       submit: "Atualizar Usuário"
       cancel: "Cancelar"
 

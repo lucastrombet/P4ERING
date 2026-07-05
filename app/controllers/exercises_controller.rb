@@ -4,10 +4,23 @@ class ExercisesController < ApplicationController
   before_action :set_exercise, only: [:show, :edit, :update, :destroy]
   
   def index
-    @exercises = Exercise.all.order(difficulty: :asc, created_at: :desc)
+    @exercises = if current_user.staff?
+                   Exercise.all
+                 else
+                   Exercise.where(restricted: false)
+                 end.order(difficulty: :asc, created_at: :desc)
   end
-  
+
   def show
+    if @exercise.restricted? && !current_user.staff?
+      enrolled_exercise_ids = Exercise.joins(:classroom_exercises => :classroom)
+                                      .where(classrooms: { id: current_user.classroom_ids })
+                                      .pluck(:id)
+      unless enrolled_exercise_ids.include?(@exercise.id)
+        redirect_to exercises_path, alert: t("exercises.show.restricted_access")
+        return
+      end
+    end
     @submission = Submission.new
     @previous_submissions = current_user.submissions.where(exercise: @exercise, test_run: false).order(created_at: :desc)
   end

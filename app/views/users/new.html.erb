@@ -29,6 +29,11 @@
         <%= f.label :admin, t(".admin_privileges"), class: "form-check-label" %>
       </div>
 
+      <div class="mb-3 form-check">
+        <%= f.check_box :professor, class: "form-check-input" %>
+        <%= f.label :professor, t(".professor_role"), class: "form-check-label" %>
+      </div>
+
       <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>
         <%= t(".default_password_html", password: content_tag(:strong, "password123")) %>

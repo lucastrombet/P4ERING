@@ -48,13 +48,13 @@ class Admin::ExercisesController < ApplicationController
   
   def exercise_params
     params.require(:exercise).permit(:title, :description, :language, :difficulty,
-                                     :starter_code, :topology_config,
+                                     :starter_code, :topology_config, :restricted,
                                      traffic_generator_ids: [])
   end
   
   def require_admin
-    unless current_user.admin?
-      redirect_to root_path, alert: 'Access denied. Admin privileges required.'
+    unless current_user.staff?
+      redirect_to root_path, alert: 'Access denied.'
     end
   end
 end

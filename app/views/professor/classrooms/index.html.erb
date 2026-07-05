@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="mb-0"><i class="fas fa-chalkboard me-2"></i><%= t(".title") %></h1>
+  <%= link_to new_professor_classroom_path, class: "btn btn-primary" do %>
+    <i class="fas fa-plus me-1"></i> <%= t(".new_classroom") %>
+  <% end %>
+</div>
+
+<% if @classrooms.empty? %>
+  <div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <%= t(".no_classrooms") %>
+  </div>
+<% else %>
+  <div class="row g-3">
+    <% @classrooms.each do |classroom| %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><%= classroom.name %></h5>
+            <p class="card-text text-muted small"><%= classroom.description %></p>
+            <div class="d-flex gap-3 small text-muted mb-3">
+              <span><i class="fas fa-calendar-alt me-1"></i><%= classroom.start_date.strftime('%d/%m/%Y') %> – <%= classroom.end_date.strftime('%d/%m/%Y') %></span>
+            </div>
+            <div class="d-flex gap-3 small mb-3">
+              <span><i class="fas fa-user-graduate me-1"></i><strong><%= classroom.students.count %></strong> <%= t(".students") %></span>
+              <span><i class="fas fa-book me-1"></i><strong><%= classroom.exercises.count %></strong> <%= t(".exercises") %></span>
+            </div>
+          </div>
+          <div class="card-footer d-flex gap-2">
+            <%= link_to professor_classroom_path(classroom), class: "btn btn-sm btn-primary" do %>
+              <i class="fas fa-eye me-1"></i> <%= t(".view") %>
+            <% end %>
+            <%= link_to edit_professor_classroom_path(classroom), class: "btn btn-sm btn-secondary" do %>
+              <i class="fas fa-edit me-1"></i> <%= t(".edit") %>
+            <% end %>
+            <%= button_to professor_classroom_path(classroom), method: :delete,
+                class: "btn btn-sm btn-outline-danger",
+                data: { turbo_confirm: t(".confirm_delete", name: classroom.name) } do %>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -8,6 +8,8 @@ en:
       generators: "Generators"
       admin: "Admin"
       users: "Users"
+      classrooms: "Classrooms"
+      professor_dashboard: "Dashboard"
       profile_settings: "Profile Settings"
       logout: "Logout"
       logout_confirm: "Are you sure you want to logout?"
@@ -86,6 +88,7 @@ en:
       time_ago: "%{time} ago"
       view_details: "View Details"
       no_submissions: "No submissions yet. Be the first to solve this exercise!"
+      restricted_access: "This exercise is only available through a classroom assignment."
     topology_viewer:
       network_topology: "Network Topology"
       zoom_in: "Zoom in"
@@ -188,6 +191,7 @@ en:
           one: "%{count} submission"
           other: "%{count} submissions"
         confirm_delete: "Delete '%{title}'? This will also delete all submissions."
+        restricted: "Restricted"
         no_exercises: "No exercises yet"
         no_exercises_hint: 'Click the "Create New Exercise" button to get started.'
       new:
@@ -218,6 +222,8 @@ en:
         starter_code_label: "Starter Code"
         starter_code_placeholder: 'Paste the skeleton code students will see when they click "Load Starter Code".'
         starter_code_hint: "Students can load this into the editor with one click on the exercise page."
+        restricted_label: "Restricted Exercise"
+        restricted_hint: "Restricted exercises are hidden from the public exercise list and only accessible through classroom assignments."
         cancel: "Cancel"
       topology_form:
         title: "P4Docker Topology"
@@ -286,6 +292,76 @@ en:
         generated_command: "Generated iperf3 command:"
         cancel: "Cancel"
 
+  professor:
+    dashboard:
+      index:
+        title: "Professor Dashboard"
+        exercises: "Exercises"
+        total_submissions: "Total Submissions"
+        completed: "Completed"
+        quick_actions: "Quick Actions"
+        manage_exercises: "Manage Exercises"
+        new_exercise: "New Exercise"
+        traffic_generators: "Traffic Generators"
+        recent_submissions: "Recent Submissions"
+        pending_badge: "pending"
+        time_ago: "%{time} ago"
+    classrooms:
+      index:
+        title: "My Classrooms"
+        new_classroom: "New Classroom"
+        no_classrooms: "You haven't created any classrooms yet."
+        students: "students"
+        exercises: "exercises"
+        view: "View"
+        edit: "Edit"
+        confirm_delete: "Delete classroom \"%{name}\"?"
+      new:
+        title: "New Classroom"
+      edit:
+        title: "Edit Classroom"
+      form:
+        cancel: "Cancel"
+      show:
+        breadcrumb: "Classrooms"
+        edit: "Edit"
+        students: "Students"
+        no_students: "No students enrolled yet."
+        select_student: "Select a student…"
+        add: "Add"
+        exercises: "Exercises"
+        no_exercises: "No exercises assigned yet."
+        select_exercise: "Select an exercise…"
+        add_exercise: "Add Exercise"
+        remove_student_confirm: "Remove %{name} from this classroom?"
+        remove_exercise_confirm: "Remove this exercise from the classroom?"
+        completion_dashboard: "Completion Dashboard"
+        no_exercises_msg: "No exercises assigned to this classroom yet."
+        no_students_msg: "No students enrolled yet."
+        completed_label: "Completed"
+        pending_label: "Pending"
+        none_yet: "None yet"
+        all_done: "All done!"
+        view_history: "History"
+      exercises:
+        show:
+          deadline: "Deadline"
+          completed: "Completed"
+          pending: "Pending"
+          total_students: "students"
+          no_students: "No students enrolled in this classroom."
+          no_attempts: "No attempts"
+          no_submissions_yet: "No submissions yet."
+          attempts:
+            one: "%{count} attempt"
+            other: "%{count} attempts"
+          ago: "ago"
+          col_submitted: "Submitted"
+          col_status: "Status"
+          col_type: "Type"
+          test_run: "Test run"
+          official: "Official"
+
   users:
     index:
       title: "User Management"
@@ -304,20 +380,28 @@ en:
       title: "Create New User"
       errors_heading: "Errors prevented this user from being saved:"
       admin_privileges: "Admin Privileges"
+      professor_role: "Professor"
       default_password_html: "Default password will be set to: %{password}"
       submit: "Create New User"
       cancel: "Cancel"
     edit:
       title: "Edit User"
       admin_privileges: "Admin Privileges"
+      professor_role: "Professor"
       submit: "Update User"
       cancel: "Cancel"
 
   activerecord:
     models:
       user: "User"
+      classroom: "Classroom"
     attributes:
       user:
+      classroom:
+        name: "Name"
+        description: "Description"
+        start_date: "Start Date"
+        end_date: "End Date"
         name: "Name"
         email: "Email"
         password: "Password"

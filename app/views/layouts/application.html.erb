@@ -41,7 +41,12 @@
                   <i class="fas fa-history me-1"></i> <%= t("layout.nav.my_submissions") %>
                 <% end %>
               </li>
-              <% if current_user.admin? %>
+              <% if current_user.staff? %>
+                <li class="nav-item">
+                  <%= link_to professor_classrooms_path, class: "nav-link" do %>
+                    <i class="fas fa-chalkboard me-1"></i> <%= t("layout.nav.classrooms") %>
+                  <% end %>
+                </li>
                 <li class="nav-item">
                   <%= link_to admin_exercises_path, class: "nav-link" do %>
                     <i class="fas fa-code me-1"></i> <%= t("layout.nav.exercise_management") %>
@@ -52,16 +57,26 @@
                     <i class="fas fa-network-wired me-1"></i> <%= t("layout.nav.generators") %>
                   <% end %>
                 </li>
-                <li class="nav-item">
-                  <%= link_to admin_dashboard_path, class: "nav-link" do %>
-                    <i class="fas fa-chart-line me-1"></i> <%= t("layout.nav.admin") %>
-                  <% end %>
-                </li>
-                <li class="nav-item">
-                  <%= link_to users_path, class: "nav-link" do %>
-                    <i class="fas fa-users me-1"></i> <%= t("layout.nav.users") %>
-                  <% end %>
-                </li>
+                <% if current_user.admin? %>
+                  <li class="nav-item">
+                    <%= link_to admin_dashboard_path, class: "nav-link" do %>
+                      <i class="fas fa-chart-line me-1"></i> <%= t("layout.nav.admin") %>
+                    <% end %>
+                  </li>
+                <% else %>
+                  <li class="nav-item">
+                    <%= link_to professor_dashboard_path, class: "nav-link" do %>
+                      <i class="fas fa-chalkboard-teacher me-1"></i> <%= t("layout.nav.professor_dashboard") %>
+                    <% end %>
+                  </li>
+                <% end %>
+                <% if current_user.admin? %>
+                  <li class="nav-item">
+                    <%= link_to users_path, class: "nav-link" do %>
+                      <i class="fas fa-users me-1"></i> <%= t("layout.nav.users") %>
+                    <% end %>
+                  </li>
+                <% end %>
               <% end %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">

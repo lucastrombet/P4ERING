@@ -32,6 +32,9 @@
               <td><%= exercise.id %></td>
               <td>
                 <strong><%= exercise.title %></strong>
+                <% if exercise.restricted? %>
+                  <span class="badge bg-warning text-dark ms-1"><i class="fas fa-lock me-1"></i><%= t("admin.exercises.index.restricted") %></span>
+                <% end %>
                 <br>
                 <small class="text-muted"><%= truncate(exercise.description, length: 50) %></small>
               </td>
