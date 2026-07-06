@@ -96,7 +96,7 @@
         function loadStarterCode() {
           var editor = document.getElementById('code-editor');
           if (editor.value.trim() !== '' &&
-              !confirm(<%= t(".confirm_replace_code").to_json %>)) {
+              !confirm(<%= raw t(".confirm_replace_code").to_json %>)) {
             return;
           }
           editor.value = <%= raw @exercise.starter_code.to_json %>;
