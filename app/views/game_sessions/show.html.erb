@@ -1,0 +1,74 @@
+<%= turbo_stream_from "game_session_#{@game_session.id}" %>
+
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="h4 mb-3"><%= t('.title', id: @game_session.id) %></h2>
+
+    <%= render 'status_card', game_session: @game_session %>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+           style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#game-instructions"
+           role="button" aria-expanded="true" aria-controls="game-instructions">
+        <span><i class="fas fa-circle-question me-2"></i><%= t('.instructions_title') %></span>
+        <i class="fas fa-chevron-up"></i>
+      </div>
+      <div id="game-instructions" class="collapse show">
+        <div class="card-body">
+          <%= t('.instructions_body_html') %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" data-controller="game-console" data-game-console-session-id-value="<%= @game_session.id %>">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-dark text-white"><i class="fas fa-terminal me-2"></i><%= t('.console_h1') %></div>
+      <div class="card-body p-0">
+        <pre data-game-console-target="scrollback" data-host="h1"
+             class="m-0 p-3 small font-monospace"
+             style="background:#1e1e1e; color:#d4d4d4; height:300px; overflow-y:auto; white-space:pre-wrap;"></pre>
+      </div>
+      <div class="card-footer">
+        <form data-action="submit->game-console#send" data-host="h1" class="d-flex gap-2">
+          <input type="text" class="form-control font-monospace" data-game-console-target="input"
+                 data-host="h1" placeholder="<%= t('.command_placeholder') %>" autocomplete="off">
+          <button type="submit" class="btn btn-outline-light border"><%= t('.send') %></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-dark text-white"><i class="fas fa-terminal me-2"></i><%= t('.console_h2') %></div>
+      <div class="card-body p-0">
+        <pre data-game-console-target="scrollback" data-host="h2"
+             class="m-0 p-3 small font-monospace"
+             style="background:#1e1e1e; color:#d4d4d4; height:300px; overflow-y:auto; white-space:pre-wrap;"></pre>
+      </div>
+      <div class="card-footer">
+        <form data-action="submit->game-console#send" data-host="h2" class="d-flex gap-2">
+          <input type="text" class="form-control font-monospace" data-game-console-target="input"
+                 data-host="h2" placeholder="<%= t('.command_placeholder') %>" autocomplete="off">
+          <button type="submit" class="btn btn-outline-light border"><%= t('.send') %></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-6">
+    <%= render 'packet_panel', host: 'h1', title: t('.packets_h1') %>
+  </div>
+  <div class="col-md-6">
+    <%= render 'packet_panel', host: 'h2', title: t('.packets_h2') %>
+  </div>
+</div>

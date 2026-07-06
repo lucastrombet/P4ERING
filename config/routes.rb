@@ -49,7 +49,10 @@ Rails.application.routes.draw do
   # Internal callback from p4exec execution service
   namespace :internal do
     post 'exec_callback', to: 'exec_callbacks#create'
+    post 'game_session_callback', to: 'game_session_callbacks#create'
   end
+
+  resources :game_sessions, only: [:new, :create, :show, :destroy]
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :submissions, dependent: :destroy
+  has_many :game_sessions, dependent: :destroy
   has_many :classrooms_as_professor, class_name: 'Classroom', foreign_key: :professor_id, dependent: :destroy
   has_many :classroom_enrollments, dependent: :destroy
   has_many :classrooms, through: :classroom_enrollments

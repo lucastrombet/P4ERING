@@ -1,11 +1,7 @@
 module Internal
   # Receives progress and done events from the p4exec execution service.
   # Every event is a JSON body posted to POST /internal/exec_callback.
-  class ExecCallbacksController < ApplicationController
-    skip_before_action :verify_authenticity_token
-    skip_before_action :authenticate_user!   if method_defined?(:authenticate_user!)
-    before_action :verify_internal_token
-
+  class ExecCallbacksController < BaseController
     def create
       event = JSON.parse(request.body.read)
       job_id = event["job_id"].to_s
@@ -80,12 +76,6 @@ module Internal
     end
 
     private
-
-    def verify_internal_token
-      expected = ENV.fetch("P4EXEC_INTERNAL_TOKEN", "p4exec-dev-token")
-      given    = request.headers["X-Internal-Token"]
-      head :unauthorized unless given == expected
-    end
 
     def build_feedback(feedback, error)
       parts = []

@@ -4,6 +4,7 @@ en:
     nav:
       exercises: "Exercises"
       my_submissions: "My Submissions"
+      p4checkers: "P4CHECKERS"
       exercise_management: "Exercise Management"
       generators: "Generators"
       admin: "Admin"
@@ -161,6 +162,65 @@ en:
         len: "Len"
         info: "Info"
       raw_tcpdump: "raw tcpdump"
+
+  game_sessions:
+    status:
+      pending: "Starting"
+      active: "Active"
+      ended: "Ended"
+      failed: "Failed"
+      expired: "Expired"
+    status_card:
+      pending: "Setting up your sandbox..."
+      active: "Sandbox is live"
+      ended: "Sandbox ended"
+      failed: "Sandbox failed to start: %{error}"
+      expired: "Sandbox expired due to inactivity"
+    new:
+      title: "P4CHECKERS Sandbox"
+      description: "Play an interactive checkers game running entirely in a P4 switch's data plane. Two emulated hosts (h1, h2) exchange UDP moves with a live BMv2 switch — you control both sides."
+      start: "Start Sandbox"
+      busy: "Sandbox is busy right now — please try again shortly."
+    show:
+      title: "P4CHECKERS Sandbox #%{id}"
+      instructions_title: "How to Play"
+      instructions_body_html: |
+        <p>P4CHECKERS is a real checkers game running entirely inside a P4
+        switch's data plane — no application server, just two hosts
+        exchanging UDP messages with a live BMv2 switch.</p>
+        <ul class="mb-0">
+          <li><strong>Starting the game:</strong> type <code>0 0 0 0</code> and press Enter
+          in either console to see the current board.</li>
+          <li><strong>Making a move:</strong> type
+          <code>row_from col_from row_to col_to</code> (e.g. <code>3 1 4 2</code>)
+          to move a piece diagonally.</li>
+          <li><strong>Turns:</strong> h1 (white, <code>1</code>) moves first, then
+          h2 (black, <code>2</code>). Moving out of turn is rejected.</li>
+          <li><strong>Board:</strong> rows and columns are numbered 1–8.
+          <code>0</code> is an empty playable square, <code>-</code> is an unused
+          light square.</li>
+          <li><strong>Captures:</strong> jump two squares diagonally over an
+          opponent's piece into an empty square to capture it.</li>
+          <li><strong>Live updates:</strong> a successful move is forwarded
+          directly to your opponent's console — you don't need to ask them to
+          check the board.</li>
+        </ul>
+      console_h1: "Host h1 (white)"
+      console_h2: "Host h2 (black)"
+      command_placeholder: "e.g. 0 0 0 0  or  3 1 4 2"
+      send: "Send"
+      leave: "Leave Sandbox"
+      leave_confirm: "End this sandbox? Both hosts and the switch will be stopped."
+      packets_h1: "Packets on h1"
+      packets_h2: "Packets on h2"
+      filter_placeholder: "Filter (IP, protocol, keyword...)"
+      columns:
+        time: "Time"
+        source: "Source"
+        destination: "Destination"
+        proto: "Proto"
+        len: "Len"
+        info: "Info"
 
   admin:
     dashboard:

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_05_191404) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_161608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -70,6 +70,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_191404) do
     t.index ["restricted"], name: "index_exercises_on_restricted"
   end
 
+  create_table "game_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "ended_at"
+    t.text "error"
+    t.datetime "last_seen_at"
+    t.datetime "started_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["status"], name: "index_game_sessions_on_status"
+    t.index ["user_id"], name: "index_game_sessions_on_user_id"
+  end
+
   create_table "submissions", force: :cascade do |t|
     t.text "code"
     t.datetime "created_at", null: false
@@ -122,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_191404) do
   add_foreign_key "classrooms", "users", column: "professor_id"
   add_foreign_key "exercise_traffic_generators", "exercises"
   add_foreign_key "exercise_traffic_generators", "traffic_generators"
+  add_foreign_key "game_sessions", "users"
   add_foreign_key "submissions", "exercises"
   add_foreign_key "submissions", "users"
 end

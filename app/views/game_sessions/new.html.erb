@@ -1,0 +1,15 @@
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h2 class="h4 mb-0"><i class="fas fa-chess-board me-2"></i><%= t('.title') %></h2>
+      </div>
+      <div class="card-body">
+        <p><%= t('.description') %></p>
+        <%= button_to game_sessions_path, method: :post, class: "btn btn-success" do %>
+          <i class="fas fa-play me-1"></i><%= t('.start') %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

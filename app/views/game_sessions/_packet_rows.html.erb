@@ -1,0 +1,10 @@
+<% packets.each do |pkt| %>
+  <tr class="<%= proto_row_class(pkt[:proto]) %>" style="cursor:default;">
+    <td class="ps-2 text-muted"><%= pkt[:time] %></td>
+    <td title="<%= pkt[:src_mac] %>"><%= pkt[:src] %></td>
+    <td title="<%= pkt[:dst_mac] %>"><%= pkt[:dst] %></td>
+    <td><span class="badge bg-dark text-light border"><%= pkt[:proto] %></span></td>
+    <td class="text-muted"><%= pkt[:length] %></td>
+    <td class="text-truncate" style="max-width:280px;" title="<%= pkt[:info] %>"><%= pkt[:info] %></td>
+  </tr>
+<% end %>

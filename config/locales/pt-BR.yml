@@ -4,6 +4,7 @@ pt-BR:
     nav:
       exercises: "Exercícios"
       my_submissions: "Minhas Submissões"
+      p4checkers: "P4CHECKERS"
       exercise_management: "Gerenciar Exercícios"
       generators: "Geradores"
       admin: "Admin"
@@ -161,6 +162,66 @@ pt-BR:
         len: "Tam"
         info: "Info"
       raw_tcpdump: "tcpdump bruto"
+
+  game_sessions:
+    status:
+      pending: "Iniciando"
+      active: "Ativo"
+      ended: "Encerrado"
+      failed: "Falhou"
+      expired: "Expirado"
+    status_card:
+      pending: "Preparando seu sandbox..."
+      active: "Sandbox está ativo"
+      ended: "Sandbox encerrado"
+      failed: "Sandbox falhou ao iniciar: %{error}"
+      expired: "Sandbox expirou por inatividade"
+    new:
+      title: "Sandbox P4CHECKERS"
+      description: "Jogue damas de forma interativa rodando inteiramente no plano de dados de um switch P4. Dois hosts emulados (h1, h2) trocam jogadas via UDP com um switch BMv2 real — você controla os dois lados."
+      start: "Iniciar Sandbox"
+      busy: "O sandbox está ocupado no momento — tente novamente em instantes."
+    show:
+      title: "Sandbox P4CHECKERS #%{id}"
+      instructions_title: "Como Jogar"
+      instructions_body_html: |
+        <p>O P4CHECKERS é um jogo de damas de verdade rodando inteiramente no
+        plano de dados de um switch P4 — sem servidor de aplicação, apenas
+        dois hosts trocando mensagens UDP com um switch BMv2 real.</p>
+        <ul class="mb-0">
+          <li><strong>Iniciar o jogo:</strong> digite <code>0 0 0 0</code> e
+          pressione Enter em qualquer console para ver o tabuleiro atual.</li>
+          <li><strong>Fazer uma jogada:</strong> digite
+          <code>linha_origem coluna_origem linha_destino coluna_destino</code>
+          (ex: <code>3 1 4 2</code>) para mover uma peça na diagonal.</li>
+          <li><strong>Turnos:</strong> h1 (brancas, <code>1</code>) joga
+          primeiro, depois h2 (pretas, <code>2</code>). Jogar fora de turno é
+          rejeitado.</li>
+          <li><strong>Tabuleiro:</strong> linhas e colunas são numeradas de 1
+          a 8. <code>0</code> é uma casa jogável vazia, <code>-</code> é uma
+          casa clara não utilizada.</li>
+          <li><strong>Capturas:</strong> pule duas casas na diagonal sobre uma
+          peça adversária para capturá-la.</li>
+          <li><strong>Atualização ao vivo:</strong> uma jogada bem-sucedida é
+          enviada diretamente para o console do seu oponente — não é
+          necessário pedir para ele conferir o tabuleiro.</li>
+        </ul>
+      console_h1: "Host h1 (brancas)"
+      console_h2: "Host h2 (pretas)"
+      command_placeholder: "ex: 0 0 0 0  ou  3 1 4 2"
+      send: "Enviar"
+      leave: "Sair do Sandbox"
+      leave_confirm: "Encerrar este sandbox? Ambos os hosts e o switch serão parados."
+      packets_h1: "Pacotes em h1"
+      packets_h2: "Pacotes em h2"
+      filter_placeholder: "Filtrar (IP, protocolo, palavra-chave...)"
+      columns:
+        time: "Tempo"
+        source: "Origem"
+        destination: "Destino"
+        proto: "Proto"
+        len: "Tam"
+        info: "Info"
 
   professor:
     dashboard:
