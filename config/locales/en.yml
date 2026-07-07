@@ -209,6 +209,12 @@ en:
       console_h2: "Host h2 (black)"
       command_placeholder: "e.g. 0 0 0 0  or  3 1 4 2"
       send: "Send"
+      connection:
+        connecting: "Connecting..."
+        connected: "Connected"
+        disconnected: "Disconnected — reconnecting..."
+        rejected: "Connection rejected — please reload the page."
+        blocked_notice: "[not connected — please wait a moment and try again]"
       leave: "Leave Sandbox"
       leave_confirm: "End this sandbox? Both hosts and the switch will be stopped."
       packets_h1: "Packets on h1"

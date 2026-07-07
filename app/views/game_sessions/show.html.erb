@@ -27,6 +27,17 @@
 </div>
 
 <div class="row" data-controller="game-console" data-game-console-session-id-value="<%= @game_session.id %>">
+  <div class="col-md-12 mb-2">
+    <span data-game-console-target="status" class="badge bg-secondary"
+          data-connecting-text="<%= t('.connection.connecting') %>"
+          data-connected-text="<%= t('.connection.connected') %>"
+          data-disconnected-text="<%= t('.connection.disconnected') %>"
+          data-rejected-text="<%= t('.connection.rejected') %>"
+          data-blocked-notice="<%= t('.connection.blocked_notice') %>">
+      <%= t('.connection.connecting') %>
+    </span>
+  </div>
+
   <div class="col-md-6">
     <div class="card">
       <div class="card-header bg-dark text-white"><i class="fas fa-terminal me-2"></i><%= t('.console_h1') %></div>
@@ -38,8 +49,8 @@
       <div class="card-footer">
         <form data-action="submit->game-console#send" data-host="h1" class="d-flex gap-2">
           <input type="text" class="form-control font-monospace" data-game-console-target="input"
-                 data-host="h1" placeholder="<%= t('.command_placeholder') %>" autocomplete="off">
-          <button type="submit" class="btn btn-outline-light border"><%= t('.send') %></button>
+                 data-host="h1" placeholder="<%= t('.command_placeholder') %>" autocomplete="off" disabled>
+          <button type="submit" class="btn btn-outline-light border" data-game-console-target="submit" disabled><%= t('.send') %></button>
         </form>
       </div>
     </div>
@@ -56,8 +67,8 @@
       <div class="card-footer">
         <form data-action="submit->game-console#send" data-host="h2" class="d-flex gap-2">
           <input type="text" class="form-control font-monospace" data-game-console-target="input"
-                 data-host="h2" placeholder="<%= t('.command_placeholder') %>" autocomplete="off">
-          <button type="submit" class="btn btn-outline-light border"><%= t('.send') %></button>
+                 data-host="h2" placeholder="<%= t('.command_placeholder') %>" autocomplete="off" disabled>
+          <button type="submit" class="btn btn-outline-light border" data-game-console-target="submit" disabled><%= t('.send') %></button>
         </form>
       </div>
     </div>

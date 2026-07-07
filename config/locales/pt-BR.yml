@@ -210,6 +210,12 @@ pt-BR:
       console_h2: "Host h2 (pretas)"
       command_placeholder: "ex: 0 0 0 0  ou  3 1 4 2"
       send: "Enviar"
+      connection:
+        connecting: "Conectando..."
+        connected: "Conectado"
+        disconnected: "Desconectado — reconectando..."
+        rejected: "Conexão rejeitada — recarregue a página."
+        blocked_notice: "[não conectado — aguarde um instante e tente novamente]"
       leave: "Sair do Sandbox"
       leave_confirm: "Encerrar este sandbox? Ambos os hosts e o switch serão parados."
       packets_h1: "Pacotes em h1"
