@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_161608) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_07_015738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_161608) do
     t.datetime "created_at", null: false
     t.text "description"
     t.integer "difficulty"
+    t.text "evaluation_criteria"
     t.string "language"
     t.boolean "restricted", default: false, null: false
     t.text "starter_code"
@@ -86,9 +87,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_161608) do
   create_table "submissions", force: :cascade do |t|
     t.text "code"
     t.datetime "created_at", null: false
+    t.text "evaluation_result"
     t.bigint "exercise_id", null: false
     t.text "feedback"
     t.text "packet_captures"
+    t.boolean "passed"
     t.string "status"
     t.boolean "test_run", default: false, null: false
     t.datetime "updated_at", null: false

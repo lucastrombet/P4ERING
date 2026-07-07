@@ -141,6 +141,21 @@
 
             <%= render 'topology_form', f: f %>
 
+            <!-- Evaluation Criteria Field -->
+            <div class="mb-4">
+              <%= f.label :evaluation_criteria, class: "form-label fw-bold" do %>
+                <i class="fas fa-check-double me-1"></i> <%= t("admin.exercises.form.evaluation_criteria_label") %>
+                <span class="text-muted fw-normal">(<%= t("admin.exercises.form.optional") %>)</span>
+              <% end %>
+              <%= f.text_area :evaluation_criteria,
+                  rows: 8,
+                  class: "form-control font-monospace",
+                  placeholder: t("admin.exercises.form.evaluation_criteria_placeholder") %>
+              <div class="form-text">
+                <%= t("admin.exercises.form.evaluation_criteria_hint") %>
+              </div>
+            </div>
+
             <!-- Restricted -->
             <div class="card mb-4">
               <div class="card-body">

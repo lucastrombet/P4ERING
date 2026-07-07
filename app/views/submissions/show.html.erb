@@ -72,6 +72,9 @@
     <%# Feedback sections — populated live via Turbo Streams on done %>
     <%= render 'feedback_sections', submission: @submission %>
 
+    <%# Automated evaluation result — populated live via Turbo Streams on done %>
+    <%= render 'evaluation_result', submission: @submission %>
+
     <div class="d-grid gap-2 mt-2">
       <%= link_to @submission.exercise, class: "btn btn-outline-secondary" do %>
         <i class="fas fa-redo me-1"></i> <%= t(".try_again") %>

@@ -12,6 +12,12 @@ class Submission < ApplicationRecord
     nil
   end
 
+  def parsed_evaluation_result
+    JSON.parse(evaluation_result) if evaluation_result.present?
+  rescue JSON::ParserError
+    nil
+  end
+
   # after_create_commit (not after_create) — EvaluateSubmissionJob queries this
   # row from a background thread, which can race the enclosing transaction's
   # commit under the :async adapter (development) and see nothing if this

@@ -162,6 +162,12 @@ pt-BR:
         len: "Tam"
         info: "Info"
       raw_tcpdump: "tcpdump bruto"
+    evaluation_result:
+      title: "Avaliação Automática"
+      passed: "Aprovado"
+      failed: "Reprovado"
+      expected: "Esperado"
+      actual: "Obtido"
 
   game_sessions:
     status:
@@ -377,6 +383,9 @@ pt-BR:
         starter_code_label: "Código Inicial"
         starter_code_placeholder: 'Cole o código esqueleto que os alunos verão ao clicar em "Carregar Código Inicial".'
         starter_code_hint: "Os alunos podem carregar isso no editor com um clique na página do exercício."
+        evaluation_criteria_label: "Critérios de Avaliação Automática"
+        evaluation_criteria_placeholder: '{ "checks": [ { "kind": "transformation", "from": "h1", "to": "h2", "layer": "ethernet", "field": "src_mac", "op": "equals", "value": "00:aa:bb:cc:dd:ff" } ] }'
+        evaluation_criteria_hint: "Critérios JSON usados para avaliar submissões automaticamente (verificações de transformation/count/checksum/duplication). Deixe em branco para revisão manual apenas."
         restricted_label: "Exercício Restrito"
         restricted_hint: "Exercícios restritos ficam ocultos na lista pública e só são acessíveis através de atribuições em turmas."
         cancel: "Cancelar"

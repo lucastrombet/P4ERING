@@ -48,7 +48,7 @@ class Admin::ExercisesController < ApplicationController
   
   def exercise_params
     params.require(:exercise).permit(:title, :description, :language, :difficulty,
-                                     :starter_code, :topology_config, :restricted,
+                                     :starter_code, :topology_config, :evaluation_criteria, :restricted,
                                      traffic_generator_ids: [])
   end
   

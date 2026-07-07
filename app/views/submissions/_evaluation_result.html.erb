@@ -1,0 +1,30 @@
+<div id="evaluation-result-<%= submission.id %>">
+  <% result = submission.parsed_evaluation_result %>
+  <% if result.present? %>
+    <div class="card mb-3">
+      <div class="card-header d-flex align-items-center gap-2 <%= result['passed'] ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <i class="fas <%= result['passed'] ? 'fa-check-circle' : 'fa-times-circle' %>"></i>
+        <span class="small fw-semibold"><%= t(".title") %></span>
+        <span class="badge bg-light text-dark ms-auto">
+          <%= t(".#{result['passed'] ? 'passed' : 'failed'}").upcase %>
+        </span>
+      </div>
+      <ul class="list-group list-group-flush">
+        <% result['checks'].each do |check| %>
+          <li class="list-group-item d-flex align-items-start gap-2">
+            <i class="fas <%= check['passed'] ? 'fa-check text-success' : 'fa-times text-danger' %> mt-1"></i>
+            <div>
+              <div class="small"><%= check['description'] %></div>
+              <% unless check['passed'] %>
+                <div class="text-muted small">
+                  <%= t(".expected") %>: <code><%= check['expected'].inspect %></code>
+                  &middot; <%= t(".actual") %>: <code><%= check['actual'].inspect %></code>
+                </div>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

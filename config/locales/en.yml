@@ -162,6 +162,12 @@ en:
         len: "Len"
         info: "Info"
       raw_tcpdump: "raw tcpdump"
+    evaluation_result:
+      title: "Automated Evaluation"
+      passed: "Passed"
+      failed: "Failed"
+      expected: "Expected"
+      actual: "Actual"
 
   game_sessions:
     status:
@@ -288,6 +294,9 @@ en:
         starter_code_label: "Starter Code"
         starter_code_placeholder: 'Paste the skeleton code students will see when they click "Load Starter Code".'
         starter_code_hint: "Students can load this into the editor with one click on the exercise page."
+        evaluation_criteria_label: "Automated Evaluation Criteria"
+        evaluation_criteria_placeholder: '{ "checks": [ { "kind": "transformation", "from": "h1", "to": "h2", "layer": "ethernet", "field": "src_mac", "op": "equals", "value": "00:aa:bb:cc:dd:ff" } ] }'
+        evaluation_criteria_hint: "JSON criteria used to automatically grade submissions (transformation/count/checksum/duplication checks). Leave blank for manual review only."
         restricted_label: "Restricted Exercise"
         restricted_hint: "Restricted exercises are hidden from the public exercise list and only accessible through classroom assignments."
         cancel: "Cancel"

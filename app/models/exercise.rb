@@ -8,6 +8,7 @@ class Exercise < ApplicationRecord
   validates :title, :description, :language, presence: true
   validates :difficulty, presence: true, inclusion: { in: 1..5 }
   validate :topology_config_valid_json
+  validate :evaluation_criteria_valid_json
 
   LANGUAGES = ['P4'].freeze
 
@@ -28,6 +29,16 @@ class Exercise < ApplicationRecord
     nil
   end
 
+  def has_evaluation_criteria?
+    evaluation_criteria.present?
+  end
+
+  def parsed_evaluation_criteria
+    JSON.parse(evaluation_criteria) if evaluation_criteria.present?
+  rescue JSON::ParserError
+    nil
+  end
+
   private
 
   def topology_config_valid_json
@@ -35,5 +46,12 @@ class Exercise < ApplicationRecord
     JSON.parse(topology_config)
   rescue JSON::ParserError => e
     errors.add(:topology_config, "is not valid JSON: #{e.message}")
+  end
+
+  def evaluation_criteria_valid_json
+    return if evaluation_criteria.blank?
+    JSON.parse(evaluation_criteria)
+  rescue JSON::ParserError => e
+    errors.add(:evaluation_criteria, "is not valid JSON: #{e.message}")
   end
 end

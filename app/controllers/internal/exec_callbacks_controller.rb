@@ -28,10 +28,21 @@ module Internal
       when "done"
         feedback = build_feedback(event["feedback"], event["error"])
         captures = event["packet_captures"]
+
+        evaluation = nil
+        if event["status"] == "completed" && submission.exercise.has_evaluation_criteria?
+          evaluation = SubmissionEvaluator.new(
+            criteria:            submission.exercise.parsed_evaluation_criteria,
+            structured_captures: event["structured_captures"]
+          ).evaluate
+        end
+
         submission.update!(
-          status:          event["status"] == "completed" ? "completed" : "failed",
-          feedback:        feedback,
-          packet_captures: captures&.to_json
+          status:            event["status"] == "completed" ? "completed" : "failed",
+          feedback:          feedback,
+          packet_captures:   captures&.to_json,
+          passed:            evaluation&.passed,
+          evaluation_result: evaluation && evaluation.as_json.to_json
         )
         Rails.logger.info("[p4exec] #{job_id} finished — #{event['status']}")
 
@@ -67,6 +78,16 @@ module Internal
           target: "packet-captures-#{submission.id}",
           html: ApplicationController.render(
             partial: "submissions/packet_captures",
+            locals:  { submission: submission }
+          )
+        )
+
+        # Inject automated evaluation result panel
+        Turbo::StreamsChannel.broadcast_replace_to(
+          stream,
+          target: "evaluation-result-#{submission.id}",
+          html: ApplicationController.render(
+            partial: "submissions/evaluation_result",
             locals:  { submission: submission }
           )
         )
