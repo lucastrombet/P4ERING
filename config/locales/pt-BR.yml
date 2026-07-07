@@ -309,6 +309,12 @@ pt-BR:
     models:
       user: "Usuário"
       classroom: "Turma"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              domain_not_allowed: "deve ser um e-mail institucional (@ufabc.edu.br, @uscsonline.com.br ou @online.uscs.edu.br)"
     attributes:
       user:
       classroom:

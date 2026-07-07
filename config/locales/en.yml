@@ -470,6 +470,12 @@ en:
     models:
       user: "User"
       classroom: "Classroom"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              domain_not_allowed: "must be an institutional email address (@ufabc.edu.br, @uscsonline.com.br, or @online.uscs.edu.br)"
     attributes:
       user:
       classroom:

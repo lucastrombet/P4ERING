@@ -1,25 +1,42 @@
-<h2><%= t(".change_your_password") %></h2>
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-lg border-0 mt-4">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <%= image_tag "p4-logo.svg", alt: "P4", height: "40" %>
+          <h2 class="h4 fw-bold mt-3 mb-0"><%= t(".change_your_password") %></h2>
+        </div>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
+        <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+          <%= render "devise/shared/error_messages", resource: resource %>
+          <%= f.hidden_field :reset_password_token %>
 
-  <div class="field">
-    <p><%= f.label :password, t(".new_password") %></p>
-    <% if @minimum_password_length %>
-      <p><em><%= t(".minimum_password_length", count: @minimum_password_length) %></em></p>
-    <% end %>
-    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
+          <div class="mb-3">
+            <%= f.label :password, t(".new_password"), class: "form-label fw-semibold" %>
+            <% if @minimum_password_length %>
+              <span class="text-muted small">(<%= t(".minimum_password_length", count: @minimum_password_length) %>)</span>
+            <% end %>
+            <%= f.password_field :password, autofocus: true, autocomplete: "new-password",
+                class: "form-control form-control-lg", required: true %>
+          </div>
+
+          <div class="mb-4">
+            <%= f.label :password_confirmation, t(".confirm_new_password"), class: "form-label fw-semibold" %>
+            <%= f.password_field :password_confirmation, autocomplete: "new-password",
+                class: "form-control form-control-lg", required: true %>
+          </div>
+
+          <div class="d-grid">
+            <%= f.submit t(".change_my_password"), class: "btn btn-primary btn-lg" %>
+          </div>
+        <% end %>
+
+        <hr class="my-4">
+
+        <div class="text-center small">
+          <%= render "devise/shared/links" %>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="field">
-    <p><%= f.label :password_confirmation, t(".confirm_new_password") %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
-  </div>
-
-  <div class="actions">
-    <%= f.submit t(".change_my_password") %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>
