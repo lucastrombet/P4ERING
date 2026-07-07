@@ -29,7 +29,8 @@
           </button>
         <% end %>
         <%= link_to root_path, class: "topbar-brand" do %>
-          <%= image_tag "p4-logo.svg", alt: "P4", height: "24", class: "navbar-brand-icon" %><span class="navbar-brand-suffix">ering</span>
+          <%= image_tag(I18n.locale == :"pt-BR" ? "/p4ering_navbar_dark_ptbr.svg" : "/p4ering_navbar_dark_en.svg",
+              alt: "P4ering", height: "60") %>
         <% end %>
       </div>
 
