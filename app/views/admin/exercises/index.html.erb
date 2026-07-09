@@ -20,7 +20,6 @@
             <th>ID</th>
             <th><%= t(".columns.title") %></th>
             <th><%= t(".columns.owner") %></th>
-            <th><%= t(".columns.language") %></th>
             <th><%= t(".columns.difficulty") %></th>
             <th><%= t(".columns.submissions") %></th>
             <th><%= t(".columns.created") %></th>
@@ -47,11 +46,6 @@
               </td>
               <td>
                 <small><%= exercise.owner&.name || exercise.owner&.email || "—" %></small>
-              </td>
-              <td>
-                <span class="badge bg-info">
-                  <i class="fas fa-code me-1"></i><%= exercise.language %>
-                </span>
               </td>
               <td>
                 <div class="difficulty-stars">
