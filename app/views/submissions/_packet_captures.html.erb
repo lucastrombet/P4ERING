@@ -70,7 +70,11 @@
                       <% detail_id = "pkt-detail-#{submission.id}-#{host_name}-#{pkt[:no]}" %>
                       <% colors = packet_row_colors(pkt[:proto], structured_pkt) %>
                       <% row_style = [] %>
-                      <% row_style += ["color:#{colors[:fg]}", "background-color:#{colors[:bg]}"] if colors %>
+                      <%# Bootstrap 5.3 paints color/background-color per-cell via
+    .table > :not(caption) > * > *, so a plain style on the <tr> is
+    covered by the cells — the row must set Bootstrap's own table
+    variables instead (same mechanism as .table-danger & friends). %>
+<% row_style += ["--bs-table-color:#{colors[:fg]}", "--bs-table-bg:#{colors[:bg]}"] if colors %>
                       <% row_style << "cursor:default" unless structured_pkt.present? %>
                       <tr class="<%= 'packet-row' if structured_pkt.present? %>"
                           style="<%= row_style.join('; ') %>"
@@ -78,14 +82,16 @@
                             data-bs-toggle="collapse" data-bs-target="#<%= detail_id %>"
                             aria-expanded="false" aria-controls="<%= detail_id %>"
                           <% end %>>
-                        <td class="ps-2 text-muted">
+                        <%# text-muted is !important and unreadable on the dark
+                            Wireshark row colors — colored rows tint uniformly. %>
+                        <td class="ps-2 <%= 'text-muted' unless colors %>">
                           <% if structured_pkt.present? %><i class="fas fa-chevron-right packet-row-chevron me-1"></i><% end %><%= pkt[:no] %>
                         </td>
-                        <td class="text-muted"><%= pkt[:time] %></td>
+                        <td class="<%= 'text-muted' unless colors %>"><%= pkt[:time] %></td>
                         <td title="<%= pkt[:src_mac] %>"><%= pkt[:src] %></td>
                         <td title="<%= pkt[:dst_mac] %>"><%= pkt[:dst] %></td>
                         <td><span class="badge bg-dark text-light border"><%= pkt[:proto] %></span></td>
-                        <td class="text-muted"><%= pkt[:length] %></td>
+                        <td class="<%= 'text-muted' unless colors %>"><%= pkt[:length] %></td>
                         <td class="text-truncate" style="max-width:280px;" title="<%= pkt[:info] %>"><%= pkt[:info] %></td>
                       </tr>
                       <% if structured_pkt.present? %>
