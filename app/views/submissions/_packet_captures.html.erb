@@ -50,12 +50,12 @@
               <p class="text-muted small p-3 mb-0"><%= t(".no_packets", host: host_name) %></p>
             <% else %>
               <div style="overflow-x:auto; max-height:340px; overflow-y:auto;">
-                <table class="table table-sm table-hover mb-0 font-monospace small"
+                <table class="table table-sm table-hover packet-capture-table mb-0 font-monospace small"
                        id="cap-table-<%= submission.id %>-<%= host_name %>"
                        style="font-size:0.72rem;">
                   <thead style="position:sticky; top:0; background:#2d2d2d; color:#ccc; z-index:1;">
                     <tr>
-                      <th class="ps-2" style="width:2.5rem;">#</th>
+                      <th class="ps-2" style="width:3.5rem;">#</th>
                       <th style="width:5rem;"><%= t(".columns.time") %></th>
                       <th><%= t(".columns.source") %></th>
                       <th><%= t(".columns.destination") %></th>
@@ -84,13 +84,13 @@
                           <% end %>>
                         <%# text-muted is !important and unreadable on the dark
                             Wireshark row colors — colored rows tint uniformly. %>
-                        <td class="ps-2 <%= 'text-muted' unless colors %>">
+                        <td class="ps-2 text-nowrap <%= 'text-muted' unless colors %>">
                           <% if structured_pkt.present? %><i class="fas fa-chevron-right packet-row-chevron me-1"></i><% end %><%= pkt[:no] %>
                         </td>
                         <td class="<%= 'text-muted' unless colors %>"><%= pkt[:time] %></td>
                         <td title="<%= pkt[:src_mac] %>"><%= pkt[:src] %></td>
                         <td title="<%= pkt[:dst_mac] %>"><%= pkt[:dst] %></td>
-                        <td><span class="badge bg-dark text-light border"><%= pkt[:proto] %></span></td>
+                        <td><%= pkt[:proto] %></td>
                         <td class="<%= 'text-muted' unless colors %>"><%= pkt[:length] %></td>
                         <td class="text-truncate" style="max-width:280px;" title="<%= pkt[:info] %>"><%= pkt[:info] %></td>
                       </tr>

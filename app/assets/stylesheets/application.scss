@@ -891,6 +891,17 @@ footer {
   }
 }
 
+// Dense, Wireshark-like row height for the capture summary table — the
+// generic .table rules above give every td/th 1rem padding, which makes
+// these rows far too tall. Doubled class keeps specificity above them.
+.table.packet-capture-table {
+  thead th { padding: 0.3rem 0.5rem; }
+
+  tbody tr td {
+    padding: 0.15rem 0.5rem;
+  }
+}
+
 // Packet capture detail rows (Wireshark-style expandable field tree) —
 // scoped narrowly so it doesn't interact with the generic .table rules
 // above, since the capture table already overrides most of that inline.
