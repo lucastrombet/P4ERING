@@ -1,10 +1,55 @@
-<% packets.each do |pkt| %>
-  <tr class="<%= proto_row_class(pkt[:proto]) %>" style="cursor:default;">
-    <td class="ps-2 text-muted"><%= pkt[:time] %></td>
+<%# Same Wireshark design as the submissions capture table: colorfilters
+    palette (PacketColoring), chevron + expandable per-packet header tree
+    (PacketDetailFormatter). Each pair is [text-parsed pkt, structured
+    decode] — see Internal::GameSessionCallbacksController#packet_batch.
+    Row numbers come from a CSS counter (.packet-autonumber) since rows
+    stream in stateless Turbo batches with no server-side numbering. %>
+<% packet_pairs.each do |pkt, structured_pkt| %>
+  <% colors = packet_row_colors(pkt[:proto], structured_pkt) %>
+  <% detail_id = "pkt-detail-game-#{host}-#{SecureRandom.hex(4)}" %>
+  <% row_style = [] %>
+  <% row_style += ["--bs-table-color:#{colors[:fg]}", "--bs-table-bg:#{colors[:bg]}"] if colors %>
+  <% row_style << "cursor:default" unless structured_pkt.present? %>
+  <tr class="pkt <%= 'packet-row' if structured_pkt.present? %>"
+      style="<%= row_style.join('; ') %>"
+      <% if structured_pkt.present? %>
+        data-bs-toggle="collapse" data-bs-target="#<%= detail_id %>"
+        aria-expanded="false" aria-controls="<%= detail_id %>"
+      <% end %>>
+    <td class="ps-2 text-nowrap <%= 'text-muted' unless colors %>">
+      <% if structured_pkt.present? %><i class="fas fa-chevron-right packet-row-chevron me-1"></i><% end %><span class="pkt-autono"></span>
+    </td>
+    <td class="<%= 'text-muted' unless colors %>"><%= pkt[:time] %></td>
     <td title="<%= pkt[:src_mac] %>"><%= pkt[:src] %></td>
     <td title="<%= pkt[:dst_mac] %>"><%= pkt[:dst] %></td>
-    <td><span class="badge bg-dark text-light border"><%= pkt[:proto] %></span></td>
-    <td class="text-muted"><%= pkt[:length] %></td>
+    <td><%= pkt[:proto] %></td>
+    <td class="<%= 'text-muted' unless colors %>"><%= pkt[:length] %></td>
     <td class="text-truncate" style="max-width:280px;" title="<%= pkt[:info] %>"><%= pkt[:info] %></td>
   </tr>
+  <% if structured_pkt.present? %>
+    <tr class="collapse" id="<%= detail_id %>">
+      <td colspan="7" class="p-0 packet-detail-pane">
+        <div class="p-2">
+          <% packet_detail_layers(structured_pkt).each do |layer| %>
+            <% layer_id = "#{detail_id}-#{layer[:key]}" %>
+            <div class="packet-detail-layer">
+              <div class="packet-detail-layer-label"
+                   data-bs-toggle="collapse" data-bs-target="#<%= layer_id %>"
+                   aria-expanded="false" aria-controls="<%= layer_id %>">
+                <i class="fas fa-chevron-right packet-detail-layer-chevron me-1"></i><%= layer[:label] %><% if layer[:summary].present? %>, <%= layer[:summary] %><% end %>
+              </div>
+              <div class="collapse" id="<%= layer_id %>">
+                <% layer[:fields].each do |field_label, field_value| %>
+                  <div class="packet-detail-field">
+                    <span class="packet-detail-field-label"><%= field_label %></span>
+                    <span class="packet-detail-field-value"><%= field_value %></span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </td>
+    </tr>
+  <% end %>
 <% end %>

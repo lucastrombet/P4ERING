@@ -1,11 +1,4 @@
 module TcpdumpParser
-  PROTO_ROW_CLASS = {
-    'ICMP'    => 'table-warning',
-    'TCP'     => 'table-primary',
-    'UDP'     => 'table-success',
-    'ARP'     => 'table-secondary',
-  }.freeze
-
   # Parse raw tcpdump text (from -n -e -tt flags) into an array of packet
   # hashes. By default the "time" column is relative to the first packet in
   # `raw` (fine for a one-shot capture parsed once). Pass `base_ts: false`
@@ -58,10 +51,6 @@ module TcpdumpParser
     end
 
     packets
-  end
-
-  def proto_row_class(proto)
-    PROTO_ROW_CLASS.fetch(proto.to_s.upcase, '')
   end
 
   private

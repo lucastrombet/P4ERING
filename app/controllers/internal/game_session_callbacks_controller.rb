@@ -51,17 +51,24 @@ module Internal
           # so "time since first packet" would restart at zero every batch.
           packets = ApplicationController.helpers.parse_tcpdump_output(lines.join("\n"), base_ts: false)
 
+          # Full header decodes, index-aligned with `lines` (both views of
+          # the same in-container pcap file — see game_session_executor.py).
+          # Paired via pkt[:no] the same way the submissions view pairs
+          # structured captures, and before filtering so indexes still match.
+          structured = Array(event["packets"])
+          pairs = packets.map { |pkt| [pkt, structured[pkt[:no] - 1]] }
+
           # The pseudo-Wireshark panels are meant to illustrate the game's
           # own traffic — filter out ARP and IPv6 (router solicitation, etc.)
           # noise from the containers' network stacks so only IPv4 shows.
-          packets = packets.select { |pkt| %w[ICMP UDP TCP IPv4].include?(pkt[:proto]) }
+          pairs = pairs.select { |pkt, _| %w[ICMP UDP TCP IPv4].include?(pkt[:proto]) }
 
-          if packets.any?
+          if pairs.any?
             Turbo::StreamsChannel.broadcast_append_to(
               stream,
               target: "packet-table-#{host}-body",
               partial: "game_sessions/packet_rows",
-              locals:  { packets: packets }
+              locals:  { packet_pairs: pairs, host: host }
             )
           end
         end

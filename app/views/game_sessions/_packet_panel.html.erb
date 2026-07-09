@@ -16,12 +16,13 @@
   </div>
 
   <div style="overflow-x:auto; max-height:280px; overflow-y:auto;">
-    <table class="table table-sm table-hover mb-0 font-monospace small"
+    <table class="table table-sm table-hover packet-capture-table packet-autonumber mb-0 font-monospace small"
            id="packet-table-<%= host %>"
            style="font-size:0.72rem;">
       <thead style="position:sticky; top:0; background:#2d2d2d; color:#ccc; z-index:1;">
         <tr>
-          <th class="ps-2" style="width:5rem;"><%= t('game_sessions.show.columns.time') %></th>
+          <th class="ps-2" style="width:3.5rem;">#</th>
+          <th style="width:5rem;"><%= t('game_sessions.show.columns.time') %></th>
           <th><%= t('game_sessions.show.columns.source') %></th>
           <th><%= t('game_sessions.show.columns.destination') %></th>
           <th style="width:4rem;"><%= t('game_sessions.show.columns.proto') %></th>

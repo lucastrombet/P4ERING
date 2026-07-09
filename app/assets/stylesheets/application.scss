@@ -902,6 +902,17 @@ footer {
   }
 }
 
+// Streaming variant of the capture table (P4Checkers): rows arrive in
+// stateless Turbo Stream batches with no server-side numbering, so the #
+// cell is filled by a CSS counter. Detail rows don't carry .pkt and are
+// skipped. (Nuance vs. the submissions table: filtering hides rows with
+// display:none, which un-counts them, so visible rows renumber.)
+.table.packet-autonumber {
+  tbody { counter-reset: pktno; }
+  tbody tr.pkt { counter-increment: pktno; }
+  .pkt-autono::before { content: counter(pktno); }
+}
+
 // Packet capture detail rows (Wireshark-style expandable field tree) —
 // scoped narrowly so it doesn't interact with the generic .table rules
 // above, since the capture table already overrides most of that inline.
