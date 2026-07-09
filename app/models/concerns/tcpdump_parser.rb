@@ -70,12 +70,19 @@ module TcpdumpParser
     return [nil, nil, 'ARP'] if ethertype =~ /ARP/i
 
     if ethertype =~ /IPv4|0x0800/i
-      if detail =~ /\A(\d+\.\d+\.\d+\.\d+)\s+>\s+(\d+\.\d+\.\d+\.\d+):\s+(.*)/
+      # TCP/UDP lines carry the port appended to each IP with a dot, same as
+      # the address octets (e.g. "10.0.1.2.5000 > 10.0.2.2.6000: UDP, length
+      # 20") — the trailing (?:\.\d+)? absorbs that without pulling it into
+      # the captured address. Plain ICMP lines have no port suffix at all.
+      if detail =~ /\A(\d+\.\d+\.\d+\.\d+)(?:\.\d+)?\s+>\s+(\d+\.\d+\.\d+\.\d+)(?:\.\d+)?:\s+(.*)/
         src, dst, rest = $1, $2, $3
         proto = case rest
                 when /ICMP/i then 'ICMP'
                 when /\bUDP\b/i then 'UDP'
-                when /\bTCP\b/i then 'TCP'
+                # TCP lines don't contain the literal word "TCP" in tcpdump's
+                # default (non -v) output — they're identified by the
+                # "Flags [...]" marker instead, e.g. "Flags [S], seq 123...".
+                when /\bFlags\s*\[/i then 'TCP'
                 else 'IPv4'
                 end
         return src, dst, proto

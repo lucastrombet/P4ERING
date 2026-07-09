@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_015738) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_09_153517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_015738) do
     t.text "packet_captures"
     t.boolean "passed"
     t.string "status"
+    t.text "structured_packet_captures"
     t.boolean "test_run", default: false, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false

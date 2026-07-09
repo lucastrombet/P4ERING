@@ -38,11 +38,12 @@ module Internal
         end
 
         submission.update!(
-          status:            event["status"] == "completed" ? "completed" : "failed",
-          feedback:          feedback,
-          packet_captures:   captures&.to_json,
-          passed:            evaluation&.passed,
-          evaluation_result: evaluation && evaluation.as_json.to_json
+          status:                     event["status"] == "completed" ? "completed" : "failed",
+          feedback:                   feedback,
+          packet_captures:            captures&.to_json,
+          structured_packet_captures: event["structured_captures"]&.to_json,
+          passed:                     evaluation&.passed,
+          evaluation_result:          evaluation && evaluation.as_json.to_json
         )
         Rails.logger.info("[p4exec] #{job_id} finished — #{event['status']}")
 

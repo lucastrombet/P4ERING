@@ -884,9 +884,123 @@ footer {
   .card-header {
     border-bottom: none;
   }
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
   }
+}
+
+// Packet capture detail rows (Wireshark-style expandable field tree) —
+// scoped narrowly so it doesn't interact with the generic .table rules
+// above, since the capture table already overrides most of that inline.
+.packet-row {
+  cursor: pointer;
+
+  .packet-row-chevron {
+    display: inline-block;
+    transition: transform 0.15s ease;
+    font-size: 0.65rem;
+    width: 0.8rem;
+  }
+
+  &[aria-expanded="true"] .packet-row-chevron {
+    transform: rotate(90deg);
+  }
+}
+
+// Light theme for the expanded packet's field tree — deliberately styled
+// to match Wireshark's own packet detail pane (white background, black
+// text), unlike the dark Wireshark-colorfilters theme used for the
+// summary table rows above it (PacketColoring): that's a different part
+// of the real Wireshark UI (the packet *list*, not the detail pane), so
+// there's no inconsistency in the two areas using different themes here.
+.packet-detail-pane {
+  background: #ffffff;
+  color: #212529;
+}
+
+.packet-detail-layer {
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.3rem 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .packet-detail-layer-label {
+    color: #212529;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    display: block;
+
+    &:hover {
+      background: #e9ecef;
+    }
+
+    .packet-detail-layer-chevron {
+      display: inline-block;
+      transition: transform 0.15s ease;
+      font-size: 0.65rem;
+      width: 0.8rem;
+      color: #6c757d;
+    }
+
+    &[aria-expanded="true"] .packet-detail-layer-chevron {
+      transform: rotate(90deg);
+    }
+  }
+
+  .packet-detail-field {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.15rem 0.3rem 0.15rem 1.4rem;
+    border-radius: 3px;
+
+    &:hover {
+      background: #f1f3f5;
+    }
+
+    .packet-detail-field-label {
+      color: #495057;
+      min-width: 9rem;
+      flex-shrink: 0;
+    }
+
+    .packet-detail-field-value {
+      color: #212529;
+      font-weight: 500;
+      word-break: break-all;
+    }
+  }
+}
+
+// Host tabs bar above the capture table — light gray instead of the
+// surrounding panel's black, so tab text needs to flip to dark to stay
+// legible (Bootstrap's default active-tab background is already
+// near-white, so this keeps active/inactive close in tone by design).
+.packet-host-tabs {
+  background: #d3d3d3;
+
+  .nav-link {
+    color: rgba(0, 0, 0, 0.6);
+
+    &.active {
+      color: #1a1a1a;
+    }
+
+    &:hover:not(.active) {
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+}
+
+// Same light gray as .packet-host-tabs, for the filter bar and the raw-
+// tcpdump footer bar — kept as a separate class since they don't share
+// .packet-host-tabs' .nav-link color rules, only the background itself.
+.packet-light-bar {
+  background: #d3d3d3;
 }
