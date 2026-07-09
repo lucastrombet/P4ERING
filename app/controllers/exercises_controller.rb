@@ -2,16 +2,23 @@ class ExercisesController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin, except: [:index, :show]
   before_action :set_exercise, only: [:show, :edit, :update, :destroy]
-  
+  before_action :require_editable, only: [:edit, :update, :destroy]
+
   def index
     @exercises = if current_user.staff?
-                   Exercise.all
+                   Exercise.visible_to(current_user)
                  else
                    Exercise.where(restricted: false)
                  end.order(difficulty: :asc, created_at: :desc)
   end
 
   def show
+    # A professor can't open another professor's unshared exercise (admins
+    # can — visible_to? is always true for them).
+    if current_user.staff? && !@exercise.visible_to?(current_user)
+      return redirect_to exercises_path, alert: t("exercises.show.restricted_access")
+    end
+
     if @exercise.restricted? && !current_user.staff?
       enrolled_exercise_ids = Exercise.joins(:classroom_exercises => :classroom)
                                       .where(classrooms: { id: current_user.classroom_ids })
@@ -31,7 +38,8 @@ class ExercisesController < ApplicationController
   
   def create
     @exercise = Exercise.new(exercise_params)
-    
+    @exercise.owner = current_user
+
     if @exercise.save
       redirect_to @exercise, notice: 'Exercise was successfully created.'
     else
@@ -60,7 +68,16 @@ class ExercisesController < ApplicationController
   def set_exercise
     @exercise = Exercise.find(params[:id])
   end
-  
+
+  # This controller's mutations are admin-only (require_admin above), but
+  # the classroom lock binds admins too — see Exercise#editable_by?.
+  def require_editable
+    return if @exercise.editable_by?(current_user)
+
+    reason = @exercise.in_use? ? :locked_in_classroom : :not_owner
+    redirect_to exercises_path, alert: t("admin.exercises.flash.#{reason}")
+  end
+
   def exercise_params
     params.require(:exercise).permit(:title, :description, :language, :difficulty, :starter_code)
   end

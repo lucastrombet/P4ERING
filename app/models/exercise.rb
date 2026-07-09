@@ -1,9 +1,18 @@
 class Exercise < ApplicationRecord
+  belongs_to :owner, class_name: 'User', foreign_key: :user_id, optional: true
   has_many :submissions, dependent: :destroy
   has_many :classroom_exercises, dependent: :destroy
   has_many :classrooms, through: :classroom_exercises
   has_many :exercise_traffic_generators, dependent: :destroy
   has_many :traffic_generators, through: :exercise_traffic_generators
+
+  # What a staff member can see and attach to their classrooms: admins see
+  # everything; a professor sees their own exercises plus the ones other
+  # professors chose to share. (Student visibility is a separate concern —
+  # that's the `restricted` flag.)
+  scope :visible_to, ->(user) {
+    user.admin? ? all : where(visible_by_other_professors: true).or(where(user_id: user.id))
+  }
 
   validates :title, :description, :language, presence: true
   validates :difficulty, presence: true, inclusion: { in: 1..5 }
@@ -17,6 +26,35 @@ class Exercise < ApplicationRecord
   def difficulty_label
     key = DIFFICULTY_KEYS[difficulty]
     key && I18n.t("exercises.difficulty.#{key}")
+  end
+
+  def owned_by?(user)
+    user_id.present? && user_id == user.id
+  end
+
+  def visible_to?(user)
+    user.admin? || owned_by?(user) || visible_by_other_professors?
+  end
+
+  # Attached to at least one classroom. While in use, the exercise is
+  # frozen for everyone — owner and admins alike — so it can't change (or
+  # vanish) under enrolled students; detach it from all classrooms first.
+  def in_use?
+    classroom_exercises.exists?
+  end
+
+  def editable_by?(user)
+    !in_use? && (user.admin? || owned_by?(user))
+  end
+
+  # A modifiable copy owned by `user` — how a professor builds on another
+  # professor's (or a locked) exercise instead of editing it in place.
+  def duplicate_for(user)
+    copy = dup
+    copy.owner = user
+    copy.title = "#{title} (#{I18n.t('exercises.copy_suffix')})"
+    copy.traffic_generator_ids = traffic_generator_ids
+    copy
   end
 
   def has_topology?

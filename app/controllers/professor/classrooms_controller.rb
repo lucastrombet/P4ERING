@@ -13,7 +13,9 @@ class Professor::ClassroomsController < ApplicationController
     @available_students  = User.where(admin: false, professor: false)
                                .where.not(id: @students.pluck(:id))
                                .order(:name)
-    @available_exercises = Exercise.where.not(id: @classroom.exercise_ids).order(:title)
+    @available_exercises = Exercise.visible_to(current_user)
+                                   .where.not(id: @classroom.exercise_ids)
+                                   .order(:title)
     @completion_stats    = build_completion_stats
   end
 

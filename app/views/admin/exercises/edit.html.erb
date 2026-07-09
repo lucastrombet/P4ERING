@@ -159,6 +159,14 @@
                   <% end %>
                   <div class="form-text"><%= t("admin.exercises.form.restricted_hint") %></div>
                 </div>
+                <hr>
+                <div class="form-check form-switch">
+                  <%= f.check_box :visible_by_other_professors, class: "form-check-input", role: "switch", id: "exercise_visible_by_other_professors" %>
+                  <%= f.label :visible_by_other_professors, class: "form-check-label fw-bold" do %>
+                    <i class="fas fa-share-alt me-1"></i> <%= t("admin.exercises.form.visible_label") %>
+                  <% end %>
+                  <div class="form-text"><%= t("admin.exercises.form.visible_hint") %></div>
+                </div>
               </div>
             </div>
 

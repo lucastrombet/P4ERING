@@ -62,6 +62,7 @@ pt-BR:
         create_account: "Criar Conta Grátis →"
 
   exercises:
+    copy_suffix: "cópia"
     difficulty:
       beginner: "Iniciante"
       easy: "Fácil"
@@ -384,6 +385,7 @@ pt-BR:
         create_new_exercise: "Criar Novo Exercício"
         columns:
           title: "Título"
+          owner: "Dono"
           language: "Linguagem"
           difficulty: "Dificuldade"
           submissions: "Submissões"
@@ -393,7 +395,12 @@ pt-BR:
           one: "%{count} submissão"
           other: "%{count} submissões"
         confirm_delete: "Excluir '%{title}'? Isso também excluirá todas as submissões."
+        confirm_duplicate: "Criar sua própria cópia editável de '%{title}'?"
+        duplicate: "Duplicar"
         restricted: "Restrito"
+        in_use: "Em uso"
+        in_use_hint: "Vinculado a uma turma — bloqueado contra edição e exclusão até ser removido de todas as turmas."
+        private: "Privado"
         no_exercises: "Nenhum exercício ainda"
         no_exercises_hint: 'Clique no botão "Criar Novo Exercício" para começar.'
       new:
@@ -429,7 +436,14 @@ pt-BR:
         evaluation_criteria_hint: "Critérios JSON usados para avaliar submissões automaticamente (verificações de transformation/count/checksum/duplication). Deixe em branco para revisão manual apenas."
         restricted_label: "Exercício Restrito"
         restricted_hint: "Exercícios restritos ficam ocultos na lista pública e só são acessíveis através de atribuições em turmas."
+        visible_label: "Visível para outros professores"
+        visible_hint: "Quando habilitado, outros professores podem usar este exercício em suas turmas e duplicá-lo. Eles nunca podem editar o seu original."
         cancel: "Cancelar"
+      flash:
+        duplicated: "Cópia criada — ela é sua para editar."
+        locked_in_classroom: "Este exercício está vinculado a uma turma e não pode ser editado ou excluído. Remova-o de todas as turmas primeiro, ou duplique-o."
+        not_owner: "Apenas o dono do exercício pode editá-lo ou excluí-lo. Duplique-o para criar a sua própria versão."
+        not_visible: "Este exercício não está disponível para você."
       topology_form:
         title: "Topologia P4Docker"
         subtitle: "opcional — habilita o sandbox da Fase 2"

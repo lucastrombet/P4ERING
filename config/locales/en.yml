@@ -62,6 +62,7 @@ en:
         create_account: "Create Free Account →"
 
   exercises:
+    copy_suffix: "copy"
     difficulty:
       beginner: "Beginner"
       easy: "Easy"
@@ -289,6 +290,7 @@ en:
         create_new_exercise: "Create New Exercise"
         columns:
           title: "Title"
+          owner: "Owner"
           language: "Language"
           difficulty: "Difficulty"
           submissions: "Submissions"
@@ -298,7 +300,12 @@ en:
           one: "%{count} submission"
           other: "%{count} submissions"
         confirm_delete: "Delete '%{title}'? This will also delete all submissions."
+        confirm_duplicate: "Create your own editable copy of '%{title}'?"
+        duplicate: "Duplicate"
         restricted: "Restricted"
+        in_use: "In use"
+        in_use_hint: "Attached to a classroom — locked against editing and deletion until removed from all classrooms."
+        private: "Private"
         no_exercises: "No exercises yet"
         no_exercises_hint: 'Click the "Create New Exercise" button to get started.'
       new:
@@ -334,7 +341,14 @@ en:
         evaluation_criteria_hint: "JSON criteria used to automatically grade submissions (transformation/count/checksum/duplication checks). Leave blank for manual review only."
         restricted_label: "Restricted Exercise"
         restricted_hint: "Restricted exercises are hidden from the public exercise list and only accessible through classroom assignments."
+        visible_label: "Visible to other professors"
+        visible_hint: "When enabled, other professors can use this exercise in their classrooms and duplicate it. They can never edit your original."
         cancel: "Cancel"
+      flash:
+        duplicated: "Copy created — it's yours to edit."
+        locked_in_classroom: "This exercise is attached to a classroom and can't be edited or deleted. Remove it from all classrooms first, or duplicate it."
+        not_owner: "Only the exercise's owner can edit or delete it. Duplicate it to make your own version."
+        not_visible: "This exercise isn't available to you."
       topology_form:
         title: "P4Docker Topology"
         subtitle: "optional — enables Phase 2 sandbox"

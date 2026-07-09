@@ -18,6 +18,13 @@ class Professor::Classrooms::ExercisesController < ApplicationController
   end
 
   def create
+    # Not just any exercise id — it must be one this professor can see
+    # (their own or one shared by its owner). Guards against forged ids.
+    unless Exercise.visible_to(current_user).exists?(id: exercise_params[:exercise_id])
+      return redirect_to professor_classroom_path(@classroom),
+                         alert: t('admin.exercises.flash.not_visible')
+    end
+
     @classroom_exercise = @classroom.classroom_exercises.build(exercise_params)
     if @classroom_exercise.save
       redirect_to professor_classroom_path(@classroom), notice: 'Exercise added to classroom.'

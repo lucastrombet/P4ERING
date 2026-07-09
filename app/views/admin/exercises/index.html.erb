@@ -19,6 +19,7 @@
           <tr>
             <th>ID</th>
             <th><%= t(".columns.title") %></th>
+            <th><%= t(".columns.owner") %></th>
             <th><%= t(".columns.language") %></th>
             <th><%= t(".columns.difficulty") %></th>
             <th><%= t(".columns.submissions") %></th>
@@ -35,8 +36,17 @@
                 <% if exercise.restricted? %>
                   <span class="badge bg-warning text-dark ms-1"><i class="fas fa-lock me-1"></i><%= t("admin.exercises.index.restricted") %></span>
                 <% end %>
+                <% if exercise.in_use? %>
+                  <span class="badge bg-danger ms-1" title="<%= t(".in_use_hint") %>"><i class="fas fa-chalkboard-teacher me-1"></i><%= t(".in_use") %></span>
+                <% end %>
+                <% unless exercise.visible_by_other_professors? %>
+                  <span class="badge bg-secondary ms-1"><i class="fas fa-eye-slash me-1"></i><%= t(".private") %></span>
+                <% end %>
                 <br>
                 <small class="text-muted"><%= truncate(exercise.description, length: 50) %></small>
+              </td>
+              <td>
+                <small><%= exercise.owner&.name || exercise.owner&.email || "—" %></small>
               </td>
               <td>
                 <span class="badge bg-info">
@@ -63,14 +73,23 @@
               </td>
               <td>
                 <div class="btn-group" role="group">
-                  <%= link_to edit_admin_exercise_path(exercise), class: "btn btn-sm btn-warning" do %>
-                    <i class="fas fa-edit"></i>
+                  <%= button_to duplicate_admin_exercise_path(exercise),
+                      method: :post,
+                      class: "btn btn-sm btn-info",
+                      title: t(".duplicate"),
+                      form: { data: { turbo_confirm: t(".confirm_duplicate", title: exercise.title) } } do %>
+                    <i class="fas fa-copy"></i>
                   <% end %>
-                  <%= link_to admin_exercise_path(exercise),
-                      method: :delete,
-                      class: "btn btn-sm btn-danger",
-                      data: { confirm: t(".confirm_delete", title: exercise.title) } do %>
-                    <i class="fas fa-trash"></i>
+                  <% if exercise.editable_by?(current_user) %>
+                    <%= link_to edit_admin_exercise_path(exercise), class: "btn btn-sm btn-warning" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                    <%= link_to admin_exercise_path(exercise),
+                        method: :delete,
+                        class: "btn btn-sm btn-danger",
+                        data: { confirm: t(".confirm_delete", title: exercise.title) } do %>
+                      <i class="fas fa-trash"></i>
+                    <% end %>
                   <% end %>
                 </div>
               </td>

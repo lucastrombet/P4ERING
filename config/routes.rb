@@ -28,7 +28,9 @@ Rails.application.routes.draw do
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
     resources :users, except: [:show]
-    resources :exercises, except: [:show]
+    resources :exercises, except: [:show] do
+      post :duplicate, on: :member
+    end
     resources :traffic_generators, except: [:show]
   end
 
