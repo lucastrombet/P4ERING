@@ -1,0 +1,38 @@
+<%# Traffic mappings: generator profile + from/to topology hosts per row.
+    Replaces the old bare multi-select (which linked generators without
+    saying who talks to whom, so they could never actually run). %>
+<div class="mb-4"
+     data-controller="traffic-mappings"
+     data-traffic-mappings-commands-value="<%= TrafficGenerator.order(:name).to_h { |g| [g.id, g.to_iperf_command('{to}')] }.to_json %>">
+  <label class="form-label fw-bold">
+    <i class="fas fa-network-wired me-1"></i> <%= t("admin.exercises.form.traffic_generators_label") %>
+    <span class="text-muted fw-normal">(<%= t("admin.exercises.form.optional") %>)</span>
+  </label>
+
+  <% if TrafficGenerator.any? %>
+    <div class="border rounded p-3">
+      <div data-traffic-mappings-target="rows">
+        <%= f.fields_for :exercise_traffic_generators do |ff| %>
+          <%= render "traffic_generator_fields", ff: ff %>
+        <% end %>
+      </div>
+
+      <template data-traffic-mappings-target="template">
+        <%= f.fields_for :exercise_traffic_generators, ExerciseTrafficGenerator.new, child_index: "NEW_RECORD" do |ff| %>
+          <%= render "traffic_generator_fields", ff: ff %>
+        <% end %>
+      </template>
+
+      <button type="button" class="btn btn-sm btn-outline-primary"
+              data-action="traffic-mappings#add">
+        <i class="fas fa-plus me-1"></i><%= t("admin.exercises.form.add_generator") %>
+      </button>
+      <div class="form-text"><%= t("admin.exercises.form.traffic_mapping_hint") %></div>
+    </div>
+  <% else %>
+    <div class="alert alert-warning py-2 mb-0">
+      <%= t("admin.exercises.form.no_generators") %>
+      <%= link_to t("admin.exercises.form.create_a_generator"), new_admin_traffic_generator_path %> <%= t("admin.exercises.form.first") %>.
+    </div>
+  <% end %>
+</div>

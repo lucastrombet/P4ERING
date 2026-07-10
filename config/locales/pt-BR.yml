@@ -351,6 +351,14 @@ pt-BR:
           attributes:
             email:
               domain_not_allowed: "deve ser um e-mail institucional (@ufabc.edu.br, @uscsonline.com.br ou @online.uscs.edu.br)"
+        exercise_traffic_generator:
+          no_topology_hosts: "o exercício não tem hosts na topologia — monte a topologia antes de mapear geradores de tráfego"
+          attributes:
+            from_host:
+              not_in_topology: "'%{host}' não é um host da topologia deste exercício"
+            to_host:
+              not_in_topology: "'%{host}' não é um host da topologia deste exercício"
+              same_as_from: "deve ser diferente do host de origem"
     attributes:
       user:
       classroom:
@@ -425,6 +433,12 @@ pt-BR:
         description_hint: "Use Markdown para formatação. Inclua exemplos e restrições."
         traffic_generators_label: "Geradores de Tráfego"
         optional: "opcional"
+        select_generator: "Selecione um gerador…"
+        from_host: "De"
+        to_host: "Para"
+        add_generator: "Adicionar mapeamento de tráfego"
+        remove_generator: "Remover"
+        traffic_mapping_hint: "Cada mapeamento executa o fluxo iperf3 do gerador de um host da topologia para outro durante a avaliação. As listas de hosts seguem a topologia acima."
         no_generators: "Nenhum gerador cadastrado."
         create_a_generator: "Crie um gerador"
         first: "primeiro"

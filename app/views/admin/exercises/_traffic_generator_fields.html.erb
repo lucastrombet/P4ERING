@@ -1,0 +1,39 @@
+<%# One traffic-mapping row: which generator profile runs from which host
+    to which host. Host <select>s are (re)populated by the traffic-mappings
+    Stimulus controller from the topology builder's JSON, on focus. %>
+<div class="row g-2 align-items-center mb-2 traffic-mapping-row" data-traffic-mappings-target="row">
+  <div class="col-5">
+    <%= ff.collection_select :traffic_generator_id,
+        TrafficGenerator.order(:name), :id, :name,
+        { include_blank: t("admin.exercises.form.select_generator") },
+        class: "form-select form-select-sm",
+        data: { action: "change->traffic-mappings#preview" } %>
+  </div>
+  <div class="col-2">
+    <%= ff.select :from_host,
+        options_for_select([ff.object.from_host].compact, ff.object.from_host),
+        { include_blank: t("admin.exercises.form.from_host") },
+        class: "form-select form-select-sm",
+        data: { traffic_mappings_target: "hostSelect",
+                action: "focus->traffic-mappings#refreshHosts change->traffic-mappings#preview" } %>
+  </div>
+  <div class="col-2">
+    <%= ff.select :to_host,
+        options_for_select([ff.object.to_host].compact, ff.object.to_host),
+        { include_blank: t("admin.exercises.form.to_host") },
+        class: "form-select form-select-sm",
+        data: { traffic_mappings_target: "hostSelect",
+                action: "focus->traffic-mappings#refreshHosts change->traffic-mappings#preview" } %>
+  </div>
+  <div class="col-2">
+    <code class="small text-muted" data-traffic-mappings-target="preview"></code>
+  </div>
+  <div class="col-1 text-end">
+    <%= ff.hidden_field :_destroy, data: { traffic_mappings_target: "destroyFlag" } %>
+    <button type="button" class="btn btn-sm btn-outline-danger"
+            title="<%= t("admin.exercises.form.remove_generator") %>"
+            data-action="traffic-mappings#remove">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>

@@ -90,32 +90,7 @@
             </div>
 
             <!-- Traffic Generators Field -->
-            <div class="mb-4">
-              <%= f.label :traffic_generator_ids, class: "form-label fw-bold" do %>
-                <i class="fas fa-network-wired me-1"></i> <%= t("admin.exercises.form.traffic_generators_label") %>
-                <span class="text-muted fw-normal">(<%= t("admin.exercises.form.optional") %>)</span>
-              <% end %>
-              <% if TrafficGenerator.any? %>
-                <div class="border rounded p-3" style="max-height: 220px; overflow-y: auto;">
-                  <%= f.collection_check_boxes :traffic_generator_ids,
-                      TrafficGenerator.order(:name), :id, :name do |b| %>
-                    <div class="form-check">
-                      <%= b.check_box class: "form-check-input" %>
-                      <%= b.label class: "form-check-label" do %>
-                        <span class="fw-semibold"><%= b.object.name %></span>
-                        <span class="badge <%= b.object.protocol == 'UDP' ? 'bg-warning text-dark' : 'bg-primary' %> ms-1"><%= b.object.protocol %></span>
-                        <code class="small text-muted ms-2"><%= b.object.to_iperf_command("<server>") %></code>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <div class="alert alert-warning py-2 mb-0">
-                  <%= t("admin.exercises.form.no_generators") %>
-                  <%= link_to t("admin.exercises.form.create_a_generator"), new_admin_traffic_generator_path %> <%= t("admin.exercises.form.first") %>.
-                </div>
-              <% end %>
-            </div>
+            <%= render "traffic_generators_section", f: f %>
 
             <!-- Starter Code Field -->
             <div class="mb-4">

@@ -330,6 +330,12 @@ en:
         description_hint: "Use Markdown for formatting. Include examples and constraints."
         traffic_generators_label: "Traffic Generators"
         optional: "optional"
+        select_generator: "Select a generator…"
+        from_host: "From"
+        to_host: "To"
+        add_generator: "Add traffic mapping"
+        remove_generator: "Remove"
+        traffic_mapping_hint: "Each mapping runs the generator's iperf3 flow from one topology host to another during evaluation. Host lists follow the topology above."
         no_generators: "No generators registered."
         create_a_generator: "Create a generator"
         first: "first"
@@ -525,6 +531,14 @@ en:
           attributes:
             email:
               domain_not_allowed: "must be an institutional email address (@ufabc.edu.br, @uscsonline.com.br, or @online.uscs.edu.br)"
+        exercise_traffic_generator:
+          no_topology_hosts: "the exercise has no topology hosts — build the topology before mapping traffic generators"
+          attributes:
+            from_host:
+              not_in_topology: "'%{host}' is not a host in this exercise's topology"
+            to_host:
+              not_in_topology: "'%{host}' is not a host in this exercise's topology"
+              same_as_from: "must be different from the source host"
     attributes:
       user:
       classroom:

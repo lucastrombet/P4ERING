@@ -3,8 +3,13 @@ class Exercise < ApplicationRecord
   has_many :submissions, dependent: :destroy
   has_many :classroom_exercises, dependent: :destroy
   has_many :classrooms, through: :classroom_exercises
-  has_many :exercise_traffic_generators, dependent: :destroy
+  has_many :exercise_traffic_generators, -> { order(:position, :id) },
+           dependent: :destroy, inverse_of: :exercise
   has_many :traffic_generators, through: :exercise_traffic_generators
+
+  accepts_nested_attributes_for :exercise_traffic_generators,
+                                allow_destroy: true,
+                                reject_if: ->(attrs) { attrs['traffic_generator_id'].blank? }
 
   # What a staff member can see and attach to their classrooms: admins see
   # everything; a professor sees their own exercises plus the ones other
@@ -53,12 +58,16 @@ class Exercise < ApplicationRecord
     copy = dup
     copy.owner = user
     copy.title = "#{title} (#{I18n.t('exercises.copy_suffix')})"
-    copy.traffic_generator_ids = traffic_generator_ids
+    copy.exercise_traffic_generators = exercise_traffic_generators.map(&:dup)
     copy
   end
 
   def has_topology?
     topology_config.present?
+  end
+
+  def topology_host_names
+    (parsed_topology&.dig('connections') || []).filter_map { |c| c['host_name'].presence }
   end
 
   def parsed_topology

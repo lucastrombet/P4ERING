@@ -4,9 +4,13 @@ class TrafficGenerator < ApplicationRecord
 
   PROTOCOLS = %w[TCP UDP].freeze
 
+  # p4exec kills the traffic step at its traffic_timeout (20s) — leave
+  # headroom for iperf's connection setup so runs never hit the axe.
+  MAX_DURATION = 15
+
   validates :name,     presence: true, uniqueness: true
   validates :protocol, inclusion: { in: PROTOCOLS }
-  validates :duration, numericality: { greater_than: 0 }
+  validates :duration, numericality: { greater_than: 0, less_than_or_equal_to: MAX_DURATION }
   validates :port,     numericality: { in: 1..65535 }
   validates :parallel_streams, numericality: { greater_than: 0 }, allow_nil: true
 

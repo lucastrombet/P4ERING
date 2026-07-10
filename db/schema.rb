@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_214402) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_10_031127) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_214402) do
   create_table "exercise_traffic_generators", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "exercise_id", null: false
+    t.string "from_host", null: false
+    t.integer "position", default: 0, null: false
+    t.string "to_host", null: false
     t.bigint "traffic_generator_id", null: false
     t.datetime "updated_at", null: false
     t.index ["exercise_id", "traffic_generator_id"], name: "index_exercise_traffic_generators_unique", unique: true
