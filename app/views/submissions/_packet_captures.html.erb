@@ -4,7 +4,7 @@
   <% if caps.present? %>
     <div class="card mb-3">
       <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
-        <i class="fas fa-fish"></i>
+        <%= image_tag "shark_icon.png", alt: "", "aria-hidden": true, style: "height:1.7em; width:auto;" %>
         <span class="small fw-semibold"><%= t(".packet_captures") %></span>
         <span class="badge bg-secondary ms-auto small"><%= t(".packets_count", count: caps.values.sum { |t| t.lines.count { |l| l =~ /\A\d+\.\d+/ } }) %></span>
       </div>
