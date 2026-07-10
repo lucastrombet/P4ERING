@@ -55,7 +55,7 @@ class EvaluateSubmissionJob < ApplicationJob
       job_id:       job_id,
       callback_url: callback_url,
       code:         submission.code,
-      topology:     submission.exercise.parsed_topology
+      topology:     topology_with_traffic_tests(submission.exercise)
     }.to_json
 
     uri  = URI("#{exec_service_url}/execute")
@@ -77,6 +77,37 @@ class EvaluateSubmissionJob < ApplicationJob
 
     Rails.logger.info("[p4exec] Job #{job_id} accepted by execution service")
     # Result will arrive asynchronously via POST /internal/exec_callback
+  end
+
+  # The exercise's traffic-generator mappings, rendered into concrete
+  # commands and injected as `traffic_tests` alongside the topology's own
+  # legacy `traffic_test` (which p4exec still runs first if present). Both
+  # commands are built here so p4exec stays a dumb executor with no iperf
+  # knowledge: the one-shot server (-1) on the target host, and the client
+  # on the source host aimed at the target's topology IP.
+  def topology_with_traffic_tests(exercise)
+    topo = exercise.parsed_topology
+    return topo unless topo
+
+    host_ips = (topo['connections'] || []).to_h do |c|
+      [c['host_name'], c['host_ip'].to_s.split('/').first]
+    end
+
+    tests = exercise.exercise_traffic_generators.includes(:traffic_generator).filter_map do |m|
+      gen       = m.traffic_generator
+      target_ip = host_ips[m.to_host]
+      next if target_ip.blank?
+
+      {
+        'from'           => m.from_host,
+        'to'             => m.to_host,
+        'label'          => "#{gen.name} (#{m.from_host} -> #{m.to_host})",
+        'server_command' => "iperf3 -s -p #{gen.port} -1",
+        'client_command' => gen.to_iperf_command(target_ip)
+      }
+    end
+
+    tests.any? ? topo.merge('traffic_tests' => tests) : topo
   end
 
   private
