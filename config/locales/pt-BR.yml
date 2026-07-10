@@ -142,6 +142,8 @@ pt-BR:
       back_to_exercise: "Voltar ao exercício"
       submission_number: "Submissão #%{id}"
       submitted_code: "Código Enviado"
+      download_code: "Baixar"
+      download_code_title: "Baixar o código enviado como arquivo .p4"
       live_output: "Saída ao Vivo"
       running: "Executando"
       reconnect_stream: "Reconectar transmissão"
@@ -164,6 +166,8 @@ pt-BR:
         len: "Tam"
         info: "Info"
       raw_tcpdump: "tcpdump bruto"
+      download: "Baixar"
+      download_capture: "Baixar a captura bruta como arquivo de texto"
       detail:
         byte_count:
           one: "%{count} byte"
@@ -199,6 +203,9 @@ pt-BR:
           length: "Tamanho"
           bytes: "Tamanho"
           hex: "Bytes (hex)"
+    bmv2_log:
+      download: "Baixar"
+      download_title: "Baixar o log do switch como arquivo"
     evaluation_result:
       title: "Avaliação Automática"
       passed: "Aprovado"

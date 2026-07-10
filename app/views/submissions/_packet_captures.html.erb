@@ -126,7 +126,7 @@
               </div>
             <% end %>
 
-            <%# Raw output toggle %>
+            <%# Raw output toggle + download %>
             <div class="px-2 py-2 border-top packet-light-bar">
               <button class="btn btn-sm btn-outline-secondary py-0 px-2"
                       style="font-size:0.72rem;"
@@ -134,8 +134,18 @@
                       data-bs-target="#raw-cap-<%= submission.id %>-<%= host_name %>">
                 <i class="fas fa-code me-1"></i><%= t(".raw_tcpdump") %>
               </button>
+              <button class="btn btn-sm btn-outline-secondary py-0 px-2 ms-1"
+                      style="font-size:0.72rem;"
+                      data-controller="download"
+                      data-download-from-value="#raw-cap-pre-<%= submission.id %>-<%= host_name %>"
+                      data-download-filename-value="submission-<%= submission.id %>-capture-<%= host_name %>.txt"
+                      data-action="download#save"
+                      title="<%= t(".download_capture") %>">
+                <i class="fas fa-download me-1"></i><%= t(".download") %>
+              </button>
               <div class="collapse" id="raw-cap-<%= submission.id %>-<%= host_name %>">
                 <pre class="m-0 p-2 small font-monospace"
+                     id="raw-cap-pre-<%= submission.id %>-<%= host_name %>"
                      style="background:#111; color:#8bc34a; max-height:200px; overflow-y:auto; white-space:pre-wrap;"><%= raw %></pre>
               </div>
             </div>

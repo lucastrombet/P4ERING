@@ -913,6 +913,17 @@ footer {
   .pkt-autono::before { content: counter(pktno); }
 }
 
+// Generic rotating chevron for any [data-bs-toggle="collapse"] header
+// (e.g. the submitted-code card) — same affordance as the packet rows.
+.collapse-chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 0.75rem;
+}
+[data-bs-toggle="collapse"][aria-expanded="true"] > .collapse-chevron {
+  transform: rotate(90deg);
+}
+
 // Packet capture detail rows (Wireshark-style expandable field tree) —
 // scoped narrowly so it doesn't interact with the generic .table rules
 // above, since the capture table already overrides most of that inline.

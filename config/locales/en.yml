@@ -142,6 +142,8 @@ en:
       back_to_exercise: "Back to exercise"
       submission_number: "Submission #%{id}"
       submitted_code: "Submitted Code"
+      download_code: "Download"
+      download_code_title: "Download the submitted code as a .p4 file"
       live_output: "Live Output"
       running: "Running"
       reconnect_stream: "Reconnect stream"
@@ -164,6 +166,8 @@ en:
         len: "Len"
         info: "Info"
       raw_tcpdump: "raw tcpdump"
+      download: "Download"
+      download_capture: "Download the raw capture as a text file"
       detail:
         byte_count:
           one: "%{count} byte"
@@ -199,6 +203,9 @@ en:
           length: "Length"
           bytes: "Length"
           hex: "Bytes (hex)"
+    bmv2_log:
+      download: "Download"
+      download_title: "Download the switch log as a file"
     evaluation_result:
       title: "Automated Evaluation"
       passed: "Passed"

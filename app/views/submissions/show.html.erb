@@ -29,12 +29,33 @@
     <%= render 'bmv2_log', submission: @submission %>
 
     <div class="card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><%= t(".submitted_code") %></h5>
-        <span class="badge bg-secondary"><%= @submission.exercise.language %></span>
+      <div class="card-header d-flex align-items-center gap-2">
+        <%# toggle area limited to title+chevron so the download button
+            never fights the collapse for the same click %>
+        <span class="d-flex align-items-center gap-2 flex-grow-1"
+              style="cursor:pointer;"
+              data-bs-toggle="collapse"
+              data-bs-target="#submitted-code-<%= @submission.id %>"
+              aria-expanded="false"
+              aria-controls="submitted-code-<%= @submission.id %>">
+          <i class="fas fa-chevron-right collapse-chevron"></i>
+          <h5 class="mb-0"><%= t(".submitted_code") %></h5>
+          <span class="badge bg-secondary"><%= @submission.exercise.language %></span>
+        </span>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2"
+                style="font-size:0.72rem;"
+                data-controller="download"
+                data-download-from-value="#submitted-code-pre-<%= @submission.id %>"
+                data-download-filename-value="submission-<%= @submission.id %>-code.p4"
+                data-action="download#save"
+                title="<%= t(".download_code_title") %>">
+          <i class="fas fa-download me-1"></i><%= t(".download_code") %>
+        </button>
       </div>
-      <div class="card-body p-0">
-        <pre class="m-0 p-3 font-monospace" style="background:#1e1e1e; color:#d4d4d4; border-radius: 0 0 .375rem .375rem; overflow-x:auto;"><%= @submission.code %></pre>
+      <div class="collapse" id="submitted-code-<%= @submission.id %>">
+        <div class="card-body p-0">
+          <pre class="m-0 p-3 font-monospace" id="submitted-code-pre-<%= @submission.id %>" style="background:#1e1e1e; color:#d4d4d4; border-radius: 0 0 .375rem .375rem; overflow-x:auto;"><%= @submission.code %></pre>
+        </div>
       </div>
     </div>
   </div>
