@@ -238,7 +238,7 @@
     info.innerHTML =
       '<strong><i class="fas fa-server me-1" style="color:#0d6efd;"></i>' + (d.name || 'sw1') + '</strong>' +
       '<span class="badge bg-primary ms-2 small">' + I18N.p4Switch + '</span>' +
-      row(I18N.image,      d.image || 'dnredson/p4d') +
+      row(I18N.image,      d.image || 'ghcr.io/lucastrombet/p4ering/p4d:1.0') +
       row(I18N.thriftPort, String(d.thrift_port || 50001));
   });
 

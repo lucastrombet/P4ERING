@@ -34,7 +34,7 @@
           <div class="col-md-4">
             <label class="form-label small fw-semibold"><%= t(".image") %></label>
             <input type="text" class="form-control form-control-sm" id="topo_sw_image"
-                   placeholder="dnredson/p4d" value="dnredson/p4d">
+                   placeholder="ghcr.io/lucastrombet/p4ering/p4d:1.0" value="ghcr.io/lucastrombet/p4ering/p4d:1.0">
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@
     bandwidth:         <%= raw t("exercises.topology_viewer.js.bandwidth").to_json %>,
     delay:             <%= raw t("exercises.topology_viewer.js.delay").to_json %>
   };
-  var HOST_IMAGES = ['dnredson/net', 'dnredson/trafficTools', 'dnredson/mqtt', 'ubuntu', 'alpine:3.19'];
+  var HOST_IMAGES = ['ghcr.io/lucastrombet/p4ering/net:1.0', 'dnredson/trafficTools', 'dnredson/mqtt', 'ubuntu', 'alpine:3.19'];
 
   // ── Cytoscape preview instance ─────────────────────────────────────────────
   var _adminCy = null;
@@ -301,7 +301,7 @@
       switch: {
         name:        document.getElementById('topo_sw_name').value.trim()  || 'sw1',
         thrift_port: parseInt(document.getElementById('topo_sw_thrift').value) || 50001,
-        image:       document.getElementById('topo_sw_image').value.trim() || 'dnredson/p4d'
+        image:       document.getElementById('topo_sw_image').value.trim() || 'ghcr.io/lucastrombet/p4ering/p4d:1.0'
       },
       connections:      connections,
       forwarding_rules: rules,
@@ -325,7 +325,7 @@
     var port   = data.port || rowNum;
 
     var imgOptions = HOST_IMAGES.map(function (img) {
-      var sel = ((data.host_image || 'dnredson/net') === img) ? ' selected' : '';
+      var sel = ((data.host_image || 'ghcr.io/lucastrombet/p4ering/net:1.0') === img) ? ' selected' : '';
       return '<option value="' + img + '"' + sel + '>' + img + '</option>';
     }).join('');
 
@@ -408,7 +408,7 @@
     var sw = topo.switch || {};
     document.getElementById('topo_sw_name').value   = sw.name        || 'sw1';
     document.getElementById('topo_sw_thrift').value = sw.thrift_port || 50001;
-    document.getElementById('topo_sw_image').value  = sw.image       || 'dnredson/p4d';
+    document.getElementById('topo_sw_image').value  = sw.image       || 'ghcr.io/lucastrombet/p4ering/p4d:1.0';
 
     (topo.connections || []).forEach(topoAddConnection);
 

@@ -15,12 +15,12 @@ class GameSession < ApplicationRecord
   # exactly one topology for this feature, so unlike Exercise#topology_config
   # this isn't admin-editable JSON — just a constant reusing the same shape.
   TOPOLOGY = {
-    switch: { name: 'sw1', thrift_port: 50001, image: 'dnredson/p4d' },
+    switch: { name: 'sw1', thrift_port: 50001, image: 'ghcr.io/lucastrombet/p4ering/p4d:1.0' },
     connections: [
-      { port: 1, host_name: 'h1', host_image: 'dnredson/net',
+      { port: 1, host_name: 'h1', host_image: 'ghcr.io/lucastrombet/p4ering/net:1.0',
         host_ip: '10.0.1.1/24', host_mac: '08:00:00:01:01:01',
         sw_ip: '10.0.1.254/24', sw_mac: '08:00:00:01:00:01' },
-      { port: 2, host_name: 'h2', host_image: 'dnredson/net',
+      { port: 2, host_name: 'h2', host_image: 'ghcr.io/lucastrombet/p4ering/net:1.0',
         host_ip: '10.0.1.2/24', host_mac: '08:00:00:01:01:02',
         sw_ip: '10.0.1.253/24', sw_mac: '08:00:00:01:00:02' }
     ]

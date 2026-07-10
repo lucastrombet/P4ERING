@@ -7,7 +7,7 @@ require 'uri'
 class EvaluateSubmissionJob < ApplicationJob
   queue_as :default
 
-  P4C_IMAGE = 'p4lang/p4c'
+  P4C_IMAGE = 'ghcr.io/lucastrombet/p4ering/p4c:1.0'
 
   COMPILE_TIMEOUT  = 30
   TOPOLOGY_TIMEOUT = 90   # seconds the topology containers stay alive
@@ -180,7 +180,7 @@ class EvaluateSubmissionJob < ApplicationJob
         'docker', 'run', '--rm',
         '--network=none', '--memory=128m', '--cpus=0.5',
         '-v', "#{out_dir}:/workspace:ro",
-        'p4lang/behavioral-model',
+        'ghcr.io/lucastrombet/p4ering/behavioral-model:1.0',
         'timeout', timeout.to_s,
         'simple_switch', '--log-console', '--log-level', 'info',
         "/workspace/#{json_name}"
@@ -227,13 +227,13 @@ class EvaluateSubmissionJob < ApplicationJob
         capture3!('docker', 'run', '-itd', '--name', cname, '--rm',
                   '--network', 'none', '--privileged',
                   '-v', "shared:/codes", '--workdir', '/codes',
-                  conn['host_image'] || 'dnredson/net')
+                  conn['host_image'] || 'ghcr.io/lucastrombet/p4ering/net:1.0')
         host_pids[name] = container_pid(cname)
       end
 
       # ── Start switch container ─────────────────────────────────────────
       sw_cname     = "#{prefix}_#{sw['name']}"
-      sw_image     = sw['image'] || 'dnredson/p4d'
+      sw_image     = sw['image'] || 'ghcr.io/lucastrombet/p4ering/p4d:1.0'
       thrift_port  = (sw['thrift_port'] || 50001).to_i
       containers  << sw_cname
       capture3!('docker', 'run', '-itd', '--name', sw_cname, '--rm',
