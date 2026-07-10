@@ -137,8 +137,11 @@
   </div><%# /topology_fields %>
 </div>
 
-<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-<script>
+<%# type="module" + importmap: cytoscape resolves from the app's vendored
+    copy (no CDN), and module evaluation waits for the import — so this
+    code can never run before the library exists, Turbo visits included. %>
+<script type="module">
+import cytoscape from "cytoscape";
 (function () {
   var I18N = {
     port:              <%= raw t("exercises.topology_viewer.js.port").to_json %>,
