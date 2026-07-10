@@ -338,6 +338,8 @@ en:
       form:
         errors_heading: "Please fix the following errors:"
         title_label: "Exercise Title"
+        translation_missing: "Translation missing for this language"
+        translations_hint: "Fill each language's tab — students see the version matching their interface language, falling back to the other when one is missing."
         title_placeholder: "e.g., Two Sum Problem"
         title_hint: "Give your exercise a clear, descriptive title."
         language_label: "Programming Language"

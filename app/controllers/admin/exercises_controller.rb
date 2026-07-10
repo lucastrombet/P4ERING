@@ -74,6 +74,7 @@ class Admin::ExercisesController < ApplicationController
     params.require(:exercise).permit(:title, :description, :language, :difficulty,
                                      :starter_code, :topology_config, :evaluation_criteria, :restricted,
                                      :visible_by_other_professors,
+                                     title_translations: {}, description_translations: {},
                                      exercise_traffic_generators_attributes: [
                                        :id, :traffic_generator_id, :from_host, :to_host, :position, :_destroy
                                      ])

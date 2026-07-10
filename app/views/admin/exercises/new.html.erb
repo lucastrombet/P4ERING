@@ -26,17 +26,8 @@
               </div>
             <% end %>
 
-            <!-- Title Field -->
-            <div class="mb-4">
-              <%= f.label :title, class: "form-label fw-bold" do %>
-                <i class="fas fa-heading me-1"></i> <%= t("admin.exercises.form.title_label") %>
-              <% end %>
-              <%= f.text_field :title,
-                  class: "form-control form-control-lg",
-                  placeholder: t("admin.exercises.form.title_placeholder"),
-                  required: true %>
-              <div class="form-text"><%= t("admin.exercises.form.title_hint") %></div>
-            </div>
+            <!-- Title & Description (per language) -->
+            <%= render "translated_fields", f: f %>
 
             <!-- Language Field -->
             <div class="mb-4">
@@ -77,22 +68,6 @@
                     <% end %>
                   </div>
                 <% end %>
-              </div>
-            </div>
-
-            <!-- Description Field -->
-            <div class="mb-4">
-              <%= f.label :description, class: "form-label fw-bold" do %>
-                <i class="fas fa-align-left me-1"></i> <%= t("admin.exercises.form.description_label") %>
-              <% end %>
-              <%= f.text_area :description,
-                  rows: 10,
-                  class: "form-control description-textarea",
-                  placeholder: t("admin.exercises.form.description_placeholder"),
-                  required: true %>
-              <div class="form-text">
-                <i class="fas fa-info-circle me-1"></i>
-                <%= t("admin.exercises.form.description_hint") %>
               </div>
             </div>
 

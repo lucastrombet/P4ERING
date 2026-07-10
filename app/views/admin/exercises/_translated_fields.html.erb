@@ -1,0 +1,60 @@
+<%# Title + description per language, one tab per configured locale.
+    Loops I18n.available_locales so adding a locale to application.rb
+    grows a tab here with zero changes. Values post as
+    exercise[title_translations][<locale>] straight into the jsonb. %>
+<% form_locales = Translatable.fallback_order.map(&:to_sym) %>
+<div class="card mb-4">
+  <div class="card-header p-0">
+    <ul class="nav nav-tabs card-header-tabs m-2" role="tablist">
+      <% form_locales.each_with_index do |locale, i| %>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link <%= 'active' if i.zero? %>" type="button"
+                  data-bs-toggle="tab" data-bs-target="#exercise-lang-<%= locale.to_s.parameterize %>"
+                  role="tab">
+            <i class="fas fa-language me-1"></i><%= t("layout.nav.locale.#{locale}") %>
+            <% if f.object.persisted? && (f.object.translation_missing?(:title, locale) || f.object.translation_missing?(:description, locale)) %>
+              <span class="badge bg-warning text-dark ms-1" title="<%= t("admin.exercises.form.translation_missing") %>">!</span>
+            <% end %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="card-body tab-content">
+    <% form_locales.each_with_index do |locale, i| %>
+      <div class="tab-pane fade <%= 'show active' if i.zero? %>"
+           id="exercise-lang-<%= locale.to_s.parameterize %>" role="tabpanel">
+        <div class="mb-4">
+          <label class="form-label fw-bold" for="exercise_title_<%= locale.to_s.parameterize %>">
+            <i class="fas fa-heading me-1"></i> <%= t("admin.exercises.form.title_label") %>
+          </label>
+          <%= text_field_tag "exercise[title_translations][#{locale}]",
+              f.object.title_in(locale),
+              id: "exercise_title_#{locale.to_s.parameterize}",
+              class: "form-control form-control-lg",
+              placeholder: t("admin.exercises.form.title_placeholder", locale: locale) %>
+          <div class="form-text"><%= t("admin.exercises.form.title_hint") %></div>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-bold" for="exercise_description_<%= locale.to_s.parameterize %>">
+            <i class="fas fa-align-left me-1"></i> <%= t("admin.exercises.form.description_label") %>
+          </label>
+          <%= text_area_tag "exercise[description_translations][#{locale}]",
+              f.object.description_in(locale),
+              id: "exercise_description_#{locale.to_s.parameterize}",
+              rows: 10,
+              class: "form-control description-textarea",
+              placeholder: t("admin.exercises.form.description_placeholder", locale: locale) %>
+          <div class="form-text">
+            <i class="fas fa-info-circle me-1"></i>
+            <%= t("admin.exercises.form.description_hint") %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="card-footer form-text py-2">
+    <i class="fas fa-globe me-1"></i><%= t("admin.exercises.form.translations_hint") %>
+  </div>
+</div>

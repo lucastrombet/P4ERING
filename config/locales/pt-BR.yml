@@ -463,6 +463,8 @@ pt-BR:
       form:
         errors_heading: "Corrija os seguintes erros:"
         title_label: "Título do Exercício"
+        translation_missing: "Tradução faltando para este idioma"
+        translations_hint: "Preencha a aba de cada idioma — os alunos veem a versão correspondente ao idioma da interface, com fallback para o outro quando faltar."
         title_placeholder: "ex: Problema da Soma de Dois Números"
         title_hint: "Dê ao seu exercício um título claro e descritivo."
         language_label: "Linguagem de Programação"

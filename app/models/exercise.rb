@@ -1,4 +1,7 @@
 class Exercise < ApplicationRecord
+  include Translatable
+  translates :title, :description
+
   belongs_to :owner, class_name: 'User', foreign_key: :user_id, optional: true
   has_many :submissions, dependent: :destroy
   has_many :classroom_exercises, dependent: :destroy
@@ -57,7 +60,12 @@ class Exercise < ApplicationRecord
   def duplicate_for(user)
     copy = dup
     copy.owner = user
-    copy.title = "#{title} (#{I18n.t('exercises.copy_suffix')})"
+    # Suffix every language's title with that language's word for "copy";
+    # legacy-only records (no translations) get the plain-column suffix.
+    copy.title_translations = title_translations.to_h do |locale, value|
+      [locale, "#{value} (#{I18n.t('exercises.copy_suffix', locale: locale)})"]
+    end
+    copy.title = "#{read_attribute(:title)} (#{I18n.t('exercises.copy_suffix')})"
     copy.exercise_traffic_generators = exercise_traffic_generators.map(&:dup)
     copy
   end
