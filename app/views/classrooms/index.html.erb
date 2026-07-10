@@ -1,0 +1,70 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="text-gradient"><i class="fas fa-chalkboard me-2"></i><%= t(".title") %></h1>
+    <p class="text-muted"><%= t(".subtitle") %></p>
+  </div>
+</div>
+
+<% if @enrolled.any? %>
+  <h5 class="fw-semibold mb-3"><i class="fas fa-user-check me-2 text-success"></i><%= t(".my_classrooms") %></h5>
+  <div class="row g-3 mb-4">
+    <% @enrolled.each do |classroom| %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100 border-success border-opacity-25">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <h5 class="card-title mb-1"><%= classroom.name %></h5>
+              <span class="badge bg-success"><%= t(".enrolled_badge") %></span>
+            </div>
+            <div class="small text-muted mb-2">
+              <i class="fas fa-user-tie me-1"></i><%= classroom.professor.name || classroom.professor.email %>
+            </div>
+            <p class="card-text small"><%= truncate(classroom.description, length: 120) %></p>
+          </div>
+          <div class="card-footer bg-transparent small text-muted">
+            <i class="fas fa-calendar me-1"></i><%= l(classroom.start_date) %> – <%= l(classroom.end_date) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<h5 class="fw-semibold mb-3"><i class="fas fa-door-open me-2 text-primary"></i><%= t(".open_classrooms") %></h5>
+<% if @open.any? %>
+  <div class="row g-3">
+    <% @open.each do |classroom| %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title mb-1"><%= classroom.name %></h5>
+            <div class="small text-muted mb-2">
+              <i class="fas fa-user-tie me-1"></i><%= classroom.professor.name || classroom.professor.email %>
+            </div>
+            <p class="card-text small"><%= truncate(classroom.description, length: 120) %></p>
+            <div class="small text-muted">
+              <div><i class="fas fa-calendar me-1"></i><%= l(classroom.start_date) %> – <%= l(classroom.end_date) %></div>
+              <div class="text-warning-emphasis">
+                <i class="fas fa-hourglass-half me-1"></i><%= t(".enroll_until", date: l(classroom.date_enrollment)) %>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer bg-transparent">
+            <% if classroom.professor_id == current_user.id %>
+              <span class="text-muted small"><i class="fas fa-user-tie me-1"></i><%= t(".own_classroom_hint") %></span>
+            <% else %>
+              <%= button_to t(".join"), enroll_classroom_path(classroom), method: :post,
+                  class: "btn btn-sm btn-primary w-100",
+                  form: { data: { turbo_confirm: t(".join_confirm", name: classroom.name) } } %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-5 text-muted">
+    <i class="fas fa-inbox fa-3x mb-3"></i>
+    <p><%= t(".no_open_classrooms") %></p>
+  </div>
+<% end %>

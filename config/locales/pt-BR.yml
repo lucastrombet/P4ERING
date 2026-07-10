@@ -9,6 +9,7 @@ pt-BR:
       generators: "Geradores"
       admin: "Admin"
       users: "Usuários"
+      join_classrooms: "Inscrever-se em Turma"
       classrooms: "Turmas"
       professor_dashboard: "Painel"
       profile_settings: "Configurações do Perfil"
@@ -271,6 +272,20 @@ pt-BR:
         len: "Tam"
         info: "Info"
 
+  classrooms:
+    index:
+      title: "Turmas"
+      subtitle: "Suas turmas e turmas abertas para auto-inscrição"
+      my_classrooms: "Minhas turmas"
+      open_classrooms: "Abertas para inscrição"
+      enrolled_badge: "Inscrito"
+      enroll_until: "Inscrições até %{date}"
+      join: "Entrar na turma"
+      join_confirm: "Entrar em '%{name}'?"
+      own_classroom_hint: "Você é o professor desta turma."
+      no_open_classrooms: "Nenhuma turma aberta para auto-inscrição no momento."
+      not_enrollable: "Esta turma não está aberta para auto-inscrição."
+      enrolled: "Bem-vindo(a) à turma '%{name}'! Sua inscrição foi realizada."
   professor:
     dashboard:
       index:
@@ -301,6 +316,10 @@ pt-BR:
         title: "Editar Turma"
       form:
         cancel: "Cancelar"
+        self_enrollment_label: "Auto-inscrição"
+        self_enrollment_hint: "Quando habilitado, os alunos podem entrar nesta turma sozinhos pela página pública de Turmas — sem necessidade de inscrição manual."
+        date_enrollment_label: "Prazo de inscrição"
+        date_enrollment_hint: "Os alunos podem se inscrever até esta data (inclusive). Obrigatório quando a auto-inscrição está ativa."
       show:
         breadcrumb: "Turmas"
         edit: "Editar"
@@ -351,6 +370,10 @@ pt-BR:
           attributes:
             email:
               domain_not_allowed: "deve ser um e-mail institucional (@ufabc.edu.br, @uscsonline.com.br ou @online.uscs.edu.br)"
+        classroom:
+          attributes:
+            date_enrollment:
+              after_course_end: "não pode ser depois do fim da turma"
         exercise_traffic_generator:
           no_topology_hosts: "o exercício não tem hosts na topologia — monte a topologia antes de mapear geradores de tráfego"
           attributes:

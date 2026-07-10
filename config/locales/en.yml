@@ -9,6 +9,7 @@ en:
       generators: "Generators"
       admin: "Admin"
       users: "Users"
+      join_classrooms: "Join a Classroom"
       classrooms: "Classrooms"
       professor_dashboard: "Dashboard"
       profile_settings: "Profile Settings"
@@ -456,6 +457,20 @@ en:
         generated_command: "Generated iperf3 command:"
         cancel: "Cancel"
 
+  classrooms:
+    index:
+      title: "Classrooms"
+      subtitle: "Your classes and open self-enrollment classrooms"
+      my_classrooms: "My classrooms"
+      open_classrooms: "Open for enrollment"
+      enrolled_badge: "Enrolled"
+      enroll_until: "Enrollment until %{date}"
+      join: "Join classroom"
+      join_confirm: "Join '%{name}'?"
+      own_classroom_hint: "You teach this classroom."
+      no_open_classrooms: "No classrooms open for self-enrollment right now."
+      not_enrollable: "This classroom isn't open for self-enrollment."
+      enrolled: "Welcome to '%{name}'! You are now enrolled."
   professor:
     dashboard:
       index:
@@ -486,6 +501,10 @@ en:
         title: "Edit Classroom"
       form:
         cancel: "Cancel"
+        self_enrollment_label: "Self-enrollment"
+        self_enrollment_hint: "When enabled, students can join this classroom themselves through the public Classrooms page — no manual enrollment needed."
+        date_enrollment_label: "Enrollment deadline"
+        date_enrollment_hint: "Students can self-enroll up to and including this date. Required when self-enrollment is on."
       show:
         breadcrumb: "Classrooms"
         edit: "Edit"
@@ -565,6 +584,10 @@ en:
           attributes:
             email:
               domain_not_allowed: "must be an institutional email address (@ufabc.edu.br, @uscsonline.com.br, or @online.uscs.edu.br)"
+        classroom:
+          attributes:
+            date_enrollment:
+              after_course_end: "can't be after the course end date"
         exercise_traffic_generator:
           no_topology_hosts: "the exercise has no topology hosts — build the topology before mapping traffic generators"
           attributes:

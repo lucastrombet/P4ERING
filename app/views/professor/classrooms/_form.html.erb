@@ -30,6 +30,23 @@
     </div>
   </div>
 
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="form-check form-switch">
+        <%= f.check_box :self_enrollment, class: "form-check-input", role: "switch", id: "classroom_self_enrollment" %>
+        <%= f.label :self_enrollment, class: "form-check-label fw-semibold" do %>
+          <i class="fas fa-door-open me-1"></i><%= t("professor.classrooms.form.self_enrollment_label") %>
+        <% end %>
+        <div class="form-text"><%= t("professor.classrooms.form.self_enrollment_hint") %></div>
+      </div>
+      <div class="mt-2">
+        <%= f.label :date_enrollment, t("professor.classrooms.form.date_enrollment_label"), class: "form-label fw-semibold" %>
+        <%= f.date_field :date_enrollment, class: "form-control" %>
+        <div class="form-text"><%= t("professor.classrooms.form.date_enrollment_hint") %></div>
+      </div>
+    </div>
+  </div>
+
   <div class="d-flex gap-2">
     <%= f.submit class: "btn btn-primary" %>
     <%= link_to t("professor.classrooms.form.cancel"), professor_classrooms_path, class: "btn btn-secondary" %>

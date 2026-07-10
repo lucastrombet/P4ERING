@@ -57,7 +57,8 @@ class Professor::ClassroomsController < ApplicationController
   end
 
   def classroom_params
-    params.require(:classroom).permit(:name, :description, :start_date, :end_date)
+    params.require(:classroom).permit(:name, :description, :start_date, :end_date,
+                                      :self_enrollment, :date_enrollment)
   end
 
   def require_professor

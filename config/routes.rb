@@ -42,6 +42,11 @@ Rails.application.routes.draw do
   end
   resources :submissions, only: [:index, :show]
 
+  # Student-facing: self-enrollment classrooms listing + join
+  resources :classrooms, only: [:index] do
+    post :enroll, on: :member
+  end
+
   #get 'admin/dashboard', to: 'admin#dashboard'
   get 'exercises/:exercise_id/run', to: 'submissions#run', as: 'run_exercise'
 
