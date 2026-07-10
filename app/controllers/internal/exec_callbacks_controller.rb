@@ -85,6 +85,16 @@ module Internal
           )
         )
 
+        # Inject BMv2 switch log (sits right below the captures)
+        Turbo::StreamsChannel.broadcast_replace_to(
+          stream,
+          target: "bmv2-log-#{submission.id}",
+          html: ApplicationController.render(
+            partial: "submissions/bmv2_log",
+            locals:  { submission: submission }
+          )
+        )
+
         # Inject automated evaluation result panel
         Turbo::StreamsChannel.broadcast_replace_to(
           stream,

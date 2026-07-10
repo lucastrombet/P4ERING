@@ -1,6 +1,7 @@
 <div id="submission-feedback-<%= submission.id %>">
   <% if submission.feedback.present? %>
-    <% submission.feedback.split(/(?=── )/).reject(&:blank?).each do |block| %>
+    <%# BMv2 switch log excluded — rendered by _bmv2_log under the packet captures %>
+    <% submission.feedback.split(/(?=── )/).reject(&:blank?).reject { |b| b =~ /\A──\s*BMv2/i }.each do |block| %>
       <% title = block.match(/──\s(.+?)\s──/)&.[](1) %>
       <% body  = block.sub(/──.+──\n?\n?/, '').strip %>
       <% is_error = title&.downcase&.include?('error') || (submission.status == 'failed' && title&.downcase&.include?('compil')) %>

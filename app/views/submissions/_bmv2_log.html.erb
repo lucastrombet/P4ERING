@@ -1,0 +1,23 @@
+<%# The BMv2 switch log, pulled out of the feedback blob so it can sit
+    directly under the packet captures (same column) — the two are read
+    together when tracing how the pipeline handled each packet.
+    _feedback_sections skips this section to avoid rendering it twice. %>
+<div id="bmv2-log-<%= submission.id %>">
+  <% block = submission.feedback.to_s.split(/(?=── )/).find { |b| b =~ /\A──\s*BMv2/i } %>
+  <% if block.present? %>
+    <% title = block.match(/──\s(.+?)\s──/)&.[](1) %>
+    <% body  = block.sub(/──.+──\n?\n?/, '').strip %>
+    <div class="card mb-4">
+      <div class="card-header d-flex align-items-center gap-2 bg-dark text-white">
+        <i class="fas fa-microchip"></i>
+        <span class="small fw-semibold"><%= title %></span>
+      </div>
+      <% if body.present? %>
+        <div class="card-body p-0">
+          <pre class="m-0 p-3 small font-monospace"
+               style="background:#1e1e1e; color:#d4d4d4; white-space:pre-wrap; word-break:break-word; border-radius: 0 0 .375rem .375rem; max-height:400px; overflow-y:auto;"><%= body %></pre>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -25,6 +25,9 @@
     <%# Packet captures — empty placeholder replaced live via Turbo Streams on done %>
     <%= render 'packet_captures', submission: @submission %>
 
+    <%# BMv2 switch log — right below the captures; live-updated via Turbo Streams %>
+    <%= render 'bmv2_log', submission: @submission %>
+
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><%= t(".submitted_code") %></h5>
