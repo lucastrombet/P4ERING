@@ -213,6 +213,17 @@ en:
       expected: "Expected"
       actual: "Actual"
 
+  test_runs:
+    show:
+      title: "Test Run"
+      tested_code: "Tested Code"
+      ephemeral_note: "this is not a submission and won't be saved. Results stay available for %{ttl} minutes — download anything you want to keep."
+    flash:
+      started: "Test started — results will stream in below."
+      code_required: "Write some code before testing."
+      service_unavailable: "The execution service is unavailable right now — please try again in a moment."
+      expired: "This test run has expired (results are kept for a limited time). Run a new test."
+      not_yours: "This test run belongs to another user."
   game_sessions:
     status:
       pending: "Starting"

@@ -70,6 +70,38 @@ class Exercise < ApplicationRecord
     (parsed_topology&.dig('connections') || []).filter_map { |c| c['host_name'].presence }
   end
 
+  # The topology as sent to p4exec: the exercise's traffic-generator
+  # mappings rendered into concrete commands and injected as
+  # `traffic_tests` alongside the topology's own legacy `traffic_test`
+  # (which p4exec still runs first if present). Both commands are built
+  # here so p4exec stays a dumb executor with no iperf knowledge: the
+  # one-shot server (-1) on the target host, and the client on the source
+  # host aimed at the target's topology IP (-J for the metrics report).
+  def topology_for_execution
+    topo = parsed_topology
+    return topo unless topo
+
+    host_ips = (topo['connections'] || []).to_h do |c|
+      [c['host_name'], c['host_ip'].to_s.split('/').first]
+    end
+
+    tests = exercise_traffic_generators.includes(:traffic_generator).filter_map do |m|
+      gen       = m.traffic_generator
+      target_ip = host_ips[m.to_host]
+      next if target_ip.blank?
+
+      {
+        'from'           => m.from_host,
+        'to'             => m.to_host,
+        'label'          => "#{gen.name} (#{m.from_host} -> #{m.to_host})",
+        'server_command' => "iperf3 -s -p #{gen.port} -1",
+        'client_command' => "#{gen.to_iperf_command(target_ip)} -J"
+      }
+    end
+
+    tests.any? ? topo.merge('traffic_tests' => tests) : topo
+  end
+
   def parsed_topology
     JSON.parse(topology_config) if topology_config.present?
   rescue JSON::ParserError

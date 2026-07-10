@@ -13,10 +13,8 @@ class EvaluateSubmissionJob < ApplicationJob
   TOPOLOGY_TIMEOUT = 90   # seconds the topology containers stay alive
   TRAFFIC_TIMEOUT  = 20   # seconds allowed for the traffic_test command
 
-  EXEC_INTERNAL_TOKEN = ENV.fetch('P4EXEC_INTERNAL_TOKEN', 'p4exec-dev-token')
-
   # Read at job-run time so development.rb ||= assignments take effect.
-  def exec_service_url = ENV['P4EXEC_SERVICE_URL']
+  def exec_service_url = P4execClient.service_url
 
   def perform(submission_id)
     submission = Submission.find_by(id: submission_id)
@@ -44,72 +42,18 @@ class EvaluateSubmissionJob < ApplicationJob
   # ── Execution service delegation (Phase A+) ────────────────────────────────
 
   def delegate_to_exec_service(submission)
-    job_id       = "p4t_#{submission.id}"
-    callback_url = Rails.application.routes.url_helpers
-                        .internal_exec_callback_url(
-                          host:     ENV.fetch('RAILS_CALLBACK_HOST', 'localhost:3000'),
-                          protocol: 'http'
-                        )
-
-    body = {
+    job_id = "p4t_#{submission.id}"
+    P4execClient.execute(
       job_id:       job_id,
-      callback_url: callback_url,
-      code:         submission.code,
-      topology:     topology_with_traffic_tests(submission.exercise)
-    }.to_json
-
-    uri  = URI("#{exec_service_url}/execute")
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.open_timeout = 5
-    http.read_timeout = 10
-
-    req = Net::HTTP::Post.new(uri.path, {
-      'Content-Type'      => 'application/json',
-      'X-Internal-Token'  => EXEC_INTERNAL_TOKEN
-    })
-    req.body = body
-
-    resp = http.request(req)
-
-    unless resp.code.to_i == 202
-      raise "Execution service returned HTTP #{resp.code}: #{resp.body}"
-    end
-
+      callback_url: Rails.application.routes.url_helpers.internal_exec_callback_url(
+        host:     ENV.fetch('RAILS_CALLBACK_HOST', 'localhost:3000'),
+        protocol: 'http'
+      ),
+      code:     submission.code,
+      topology: submission.exercise.topology_for_execution
+    )
     Rails.logger.info("[p4exec] Job #{job_id} accepted by execution service")
     # Result will arrive asynchronously via POST /internal/exec_callback
-  end
-
-  # The exercise's traffic-generator mappings, rendered into concrete
-  # commands and injected as `traffic_tests` alongside the topology's own
-  # legacy `traffic_test` (which p4exec still runs first if present). Both
-  # commands are built here so p4exec stays a dumb executor with no iperf
-  # knowledge: the one-shot server (-1) on the target host, and the client
-  # on the source host aimed at the target's topology IP.
-  def topology_with_traffic_tests(exercise)
-    topo = exercise.parsed_topology
-    return topo unless topo
-
-    host_ips = (topo['connections'] || []).to_h do |c|
-      [c['host_name'], c['host_ip'].to_s.split('/').first]
-    end
-
-    tests = exercise.exercise_traffic_generators.includes(:traffic_generator).filter_map do |m|
-      gen       = m.traffic_generator
-      target_ip = host_ips[m.to_host]
-      next if target_ip.blank?
-
-      {
-        'from'           => m.from_host,
-        'to'             => m.to_host,
-        'label'          => "#{gen.name} (#{m.from_host} -> #{m.to_host})",
-        'server_command' => "iperf3 -s -p #{gen.port} -1",
-        # -J: machine-readable report — the callback parses it into metrics
-        # for traffic_metric evaluation checks and a human summary.
-        'client_command' => "#{gen.to_iperf_command(target_ip)} -J"
-      }
-    end
-
-    tests.any? ? topo.merge('traffic_tests' => tests) : topo
   end
 
   private

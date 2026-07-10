@@ -38,8 +38,9 @@ Rails.application.routes.draw do
 
   resources :exercises do
     resources :submissions, only: [:new, :create]
-    post 'test', to: 'submissions#test_run', as: :test_run
+    post 'test', to: 'test_runs#create', as: :test_run
   end
+  get 'test_runs/:uuid', to: 'test_runs#show', as: :test_run
   resources :submissions, only: [:index, :show]
 
   # Student-facing: self-enrollment classrooms listing + join

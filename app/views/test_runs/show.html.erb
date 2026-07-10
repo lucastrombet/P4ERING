@@ -1,0 +1,89 @@
+<% content_for :title, t(".title") %>
+<%= turbo_stream_from @test_run.stream_name %>
+
+<div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+  <i class="fas fa-flask"></i>
+  <div>
+    <strong><%= t("submissions.show.test_run") %></strong> — <%= t(".ephemeral_note", ttl: TestRun::TTL / 1.minute) %>
+    <%= link_to t("submissions.show.back_to_exercise"), @test_run.exercise, class: "alert-link ms-1" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <%# Same partials as the submission page — rendered from the ephemeral
+        run's in-memory submission; live-updated via Turbo Streams %>
+    <%= render 'submissions/packet_captures', submission: @submission %>
+    <%= render 'submissions/bmv2_log', submission: @submission %>
+
+    <div class="card mb-4">
+      <div class="card-header d-flex align-items-center gap-2">
+        <span class="d-flex align-items-center gap-2 flex-grow-1"
+              style="cursor:pointer;"
+              data-bs-toggle="collapse"
+              data-bs-target="#submitted-code-<%= @submission.id %>"
+              aria-expanded="false"
+              aria-controls="submitted-code-<%= @submission.id %>">
+          <i class="fas fa-chevron-right collapse-chevron"></i>
+          <h5 class="mb-0"><%= t(".tested_code") %></h5>
+          <span class="badge bg-secondary"><%= @test_run.exercise.language %></span>
+        </span>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2"
+                style="font-size:0.72rem;"
+                data-controller="download"
+                data-download-from-value="#submitted-code-pre-<%= @submission.id %>"
+                data-download-filename-value="test-<%= @test_run.uuid.first(8) %>-code.p4"
+                data-action="download#save"
+                title="<%= t("submissions.show.download_code_title") %>">
+          <i class="fas fa-download me-1"></i><%= t("submissions.show.download_code") %>
+        </button>
+      </div>
+      <div class="collapse" id="submitted-code-<%= @submission.id %>">
+        <div class="card-body p-0">
+          <pre class="m-0 p-3 font-monospace" id="submitted-code-pre-<%= @submission.id %>" style="background:#1e1e1e; color:#d4d4d4; border-radius: 0 0 .375rem .375rem; overflow-x:auto;"><%= @submission.code %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <%= render 'submissions/status_card', submission: @submission %>
+
+    <% unless @test_run.done? %>
+      <div id="exec-live-log-<%= @submission.id %>" class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2 bg-dark text-white">
+          <i class="fas fa-terminal"></i>
+          <span class="small fw-semibold"><%= t("submissions.show.live_output") %></span>
+          <span class="ms-auto d-flex align-items-center gap-2">
+            <span class="badge bg-warning text-dark small">
+              <i class="fas fa-circle-notch fa-spin me-1"></i><%= t("submissions.show.running") %>
+            </span>
+            <button type="button"
+                    class="btn btn-sm btn-outline-light py-0 px-1"
+                    title="<%= t("submissions.show.reconnect_stream") %>"
+                    data-action="click->exec-log#refresh">
+              <i class="fas fa-sync-alt" style="font-size:0.7rem;"></i>
+            </button>
+          </span>
+        </div>
+        <div class="card-body p-0">
+          <pre data-controller="exec-log"
+               id="exec-log-<%= @submission.id %>"
+               class="m-0 p-3 small font-monospace"
+               style="background:#1e1e1e; color:#d4d4d4; height:320px; overflow-y:auto;
+                      border-radius: 0 0 .375rem .375rem; white-space:pre-wrap;
+                      word-break:break-word;"></pre>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render 'submissions/feedback_sections', submission: @submission %>
+    <%= render 'submissions/evaluation_result', submission: @submission %>
+
+    <div class="d-grid gap-2 mt-2">
+      <%= link_to @test_run.exercise, class: "btn btn-outline-secondary" do %>
+        <i class="fas fa-redo me-1"></i> <%= t("submissions.show.try_again") %>
+      <% end %>
+    </div>
+  </div>
+</div>

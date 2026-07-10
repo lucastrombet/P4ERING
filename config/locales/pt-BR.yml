@@ -213,6 +213,17 @@ pt-BR:
       expected: "Esperado"
       actual: "Obtido"
 
+  test_runs:
+    show:
+      title: "Execução de Teste"
+      tested_code: "Código Testado"
+      ephemeral_note: "isto não é uma submissão e não será salvo. Os resultados ficam disponíveis por %{ttl} minutos — baixe o que quiser guardar."
+    flash:
+      started: "Teste iniciado — os resultados aparecerão abaixo."
+      code_required: "Escreva algum código antes de testar."
+      service_unavailable: "O serviço de execução está indisponível no momento — tente novamente em instantes."
+      expired: "Esta execução de teste expirou (os resultados são mantidos por tempo limitado). Rode um novo teste."
+      not_yours: "Esta execução de teste pertence a outro usuário."
   game_sessions:
     status:
       pending: "Iniciando"

@@ -5,6 +5,14 @@ module Internal
     def create
       event = JSON.parse(request.body.read)
       job_id = event["job_id"].to_s
+
+      # Ephemeral test runs (p4test_<uuid>) have no Submission row — they
+      # live in the cache and stream to their own channel. See TestRun.
+      if job_id.start_with?("p4test_")
+        handle_test_run(job_id.delete_prefix("p4test_"), event)
+        return head :ok
+      end
+
       submission_id = job_id.delete_prefix("p4t_").to_i
       submission = Submission.find_by(id: submission_id)
 
@@ -110,6 +118,65 @@ module Internal
     end
 
     private
+
+    # Mirror of the submission "done" flow for ephemeral test runs: same
+    # partials, same Turbo targets — but rendered from an unsaved
+    # Submission (TestRun#to_submission, fake DOM id) and persisted only
+    # to the cache with a TTL, never to the database.
+    def handle_test_run(uuid, event)
+      test_run = TestRun.find(uuid)
+      return if test_run.nil?  # expired mid-run — nothing to update
+
+      stream = test_run.stream_name
+
+      case event["type"]
+      when "progress"
+        phase = ERB::Util.html_escape(event["phase"].to_s)
+        line  = ERB::Util.html_escape(event["line"].to_s)
+        Turbo::StreamsChannel.broadcast_append_to(
+          stream,
+          target: "exec-log-#{test_run.dom_id}",
+          html:   "<span class=\"log-#{phase}\">[#{phase}] #{line}</span>\n"
+        )
+
+      when "done"
+        traffic_metrics = build_traffic_metrics(event["traffic_results"])
+
+        evaluation = nil
+        if event["status"] == "completed" && test_run.exercise.has_evaluation_criteria?
+          evaluation = SubmissionEvaluator.new(
+            criteria:            test_run.exercise.parsed_evaluation_criteria,
+            structured_captures: event["structured_captures"],
+            traffic_metrics:     traffic_metrics
+          ).evaluate
+        end
+
+        test_run.store_result!(
+          status:              event["status"] == "completed" ? "completed" : "failed",
+          feedback:            build_feedback(event["feedback"], event["error"], traffic_metrics),
+          packet_captures:     event["packet_captures"],
+          structured_captures: event["structured_captures"],
+          evaluation:          evaluation
+        )
+
+        submission = test_run.to_submission
+        replace = ->(target, partial) {
+          Turbo::StreamsChannel.broadcast_replace_to(
+            stream,
+            target: target,
+            html: ApplicationController.render(partial: partial, locals: { submission: submission })
+          )
+        }
+        replace.call("submission-status-card-#{submission.id}", "submissions/status_card")
+        Turbo::StreamsChannel.broadcast_remove_to(stream, target: "exec-live-log-#{submission.id}")
+        replace.call("submission-feedback-#{submission.id}",   "submissions/feedback_sections")
+        replace.call("packet-captures-#{submission.id}",       "submissions/packet_captures")
+        replace.call("bmv2-log-#{submission.id}",              "submissions/bmv2_log")
+        replace.call("evaluation-result-#{submission.id}",     "submissions/evaluation_result")
+
+        Rails.logger.info("[p4test] #{uuid} finished — #{event['status']} (ephemeral, no record)")
+      end
+    end
 
     # One entry per traffic test, in run order (legacy traffic_test first,
     # then the generator mappings — same order p4exec ran them). `metrics`

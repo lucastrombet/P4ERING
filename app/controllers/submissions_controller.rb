@@ -1,6 +1,6 @@
 class SubmissionsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_exercise, only: [:new, :create, :test_run]
+  before_action :set_exercise, only: [:new, :create]
   before_action :set_submission, only: [:show, :run]
 
   def index
@@ -26,19 +26,6 @@ class SubmissionsController < ApplicationController
       redirect_to @submission, notice: 'Code submitted successfully!'
     else
       render :new, status: :unprocessable_entity
-    end
-  end
-
-  def test_run
-    @submission = current_user.submissions.new(submission_params)
-    @submission.exercise = @exercise
-    @submission.status   = 'pending'
-    @submission.test_run = true
-
-    if @submission.save
-      redirect_to @submission, notice: 'Test run started — results will appear below.'
-    else
-      redirect_to @exercise, alert: @submission.errors.full_messages.to_sentence
     end
   end
 
