@@ -1,0 +1,67 @@
+<%# Structured editor for the evaluation_criteria JSON. The textarea below
+    remains the real form field (what the model validates and stores); the
+    criteria-builder Stimulus controller renders it as check rows and
+    serializes every edit back into it. If the stored JSON contains
+    anything the builder can't represent, it stays in raw-JSON mode and
+    never rewrites what it doesn't understand. %>
+<div class="mb-4"
+     data-controller="criteria-builder"
+     data-criteria-builder-labels-value="<%= {
+       kinds: {
+         transformation: t('admin.exercises.criteria.kinds.transformation'),
+         count:          t('admin.exercises.criteria.kinds.count'),
+         checksum:       t('admin.exercises.criteria.kinds.checksum'),
+         duplication:    t('admin.exercises.criteria.kinds.duplication')
+       },
+       ops: {
+         equals:    t('admin.exercises.criteria.ops.equals'),
+         unchanged: t('admin.exercises.criteria.ops.unchanged'),
+         changed:   t('admin.exercises.criteria.ops.changed'),
+         lte:       t('admin.exercises.criteria.ops.lte'),
+         gte:       t('admin.exercises.criteria.ops.gte')
+       },
+       fields: {
+         from:    t('admin.exercises.criteria.fields.from'),
+         to:      t('admin.exercises.criteria.fields.to'),
+         capture: t('admin.exercises.criteria.fields.capture'),
+         layer:   t('admin.exercises.criteria.fields.layer'),
+         field:   t('admin.exercises.criteria.fields.field'),
+         op:      t('admin.exercises.criteria.fields.op'),
+         value:   t('admin.exercises.criteria.fields.value'),
+         filter:  t('admin.exercises.criteria.fields.filter'),
+         no_filter: t('admin.exercises.criteria.fields.no_filter')
+       },
+       remove: t('admin.exercises.criteria.remove_check')
+     }.to_json %>">
+
+  <label class="form-label fw-bold">
+    <i class="fas fa-check-double me-1"></i> <%= t("admin.exercises.form.evaluation_criteria_label") %>
+    <span class="text-muted fw-normal">(<%= t("admin.exercises.form.optional") %>)</span>
+  </label>
+
+  <div class="alert alert-warning py-2 d-none" data-criteria-builder-target="warning">
+    <%= t("admin.exercises.criteria.unrepresentable_warning") %>
+  </div>
+
+  <div data-criteria-builder-target="builder">
+    <div data-criteria-builder-target="checks"></div>
+    <button type="button" class="btn btn-sm btn-outline-primary"
+            data-action="criteria-builder#addCheck">
+      <i class="fas fa-plus me-1"></i><%= t("admin.exercises.criteria.add_check") %>
+    </button>
+  </div>
+
+  <div class="mt-2">
+    <a href="#" class="small" data-action="criteria-builder#toggleRaw"
+       data-criteria-builder-target="rawToggle"><%= t("admin.exercises.criteria.edit_raw") %></a>
+  </div>
+
+  <%= f.text_area :evaluation_criteria,
+      rows: 8,
+      class: "form-control font-monospace mt-2",
+      data: { criteria_builder_target: "json" },
+      placeholder: t("admin.exercises.form.evaluation_criteria_placeholder") %>
+  <div class="form-text">
+    <%= t("admin.exercises.form.evaluation_criteria_hint") %>
+  </div>
+</div>

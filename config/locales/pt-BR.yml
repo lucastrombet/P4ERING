@@ -453,6 +453,32 @@ pt-BR:
         visible_label: "Visível para outros professores"
         visible_hint: "Quando habilitado, outros professores podem usar este exercício em suas turmas e duplicá-lo. Eles nunca podem editar o seu original."
         cancel: "Cancelar"
+      criteria:
+        add_check: "Adicionar verificação"
+        remove_check: "Remover verificação"
+        edit_raw: "Editar como JSON bruto"
+        unrepresentable_warning: "O JSON de critérios deste exercício usa recursos que o editor visual não suporta (chaves personalizadas ou filtros com vários campos), então é exibido como JSON bruto para não perder nada."
+        kinds:
+          transformation: "Transformação (campo antes → depois)"
+          count: "Contagem de pacotes"
+          checksum: "Validade de checksum"
+          duplication: "Duplicação"
+        ops:
+          equals: "igual a"
+          unchanged: "inalterado"
+          changed: "alterado"
+          lte: "no máximo"
+          gte: "no mínimo"
+        fields:
+          from: "Host de origem"
+          to: "Host de destino"
+          capture: "Captura (host)"
+          layer: "Camada"
+          field: "Campo"
+          op: "Condição"
+          value: "Valor"
+          filter: "Filtro (camada)"
+          no_filter: "sem filtro"
       flash:
         duplicated: "Cópia criada — ela é sua para editar."
         locked_in_classroom: "Este exercício está vinculado a uma turma e não pode ser editado ou excluído. Remova-o de todas as turmas primeiro, ou duplique-o."

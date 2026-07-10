@@ -350,6 +350,32 @@ en:
         visible_label: "Visible to other professors"
         visible_hint: "When enabled, other professors can use this exercise in their classrooms and duplicate it. They can never edit your original."
         cancel: "Cancel"
+      criteria:
+        add_check: "Add check"
+        remove_check: "Remove check"
+        edit_raw: "Edit as raw JSON"
+        unrepresentable_warning: "This exercise's criteria JSON uses features the visual editor doesn't support (custom keys or multi-field filters), so it's shown as raw JSON to avoid losing anything."
+        kinds:
+          transformation: "Transformation (field before → after)"
+          count: "Packet count"
+          checksum: "Checksum validity"
+          duplication: "Duplication"
+        ops:
+          equals: "equals"
+          unchanged: "unchanged"
+          changed: "changed"
+          lte: "at most"
+          gte: "at least"
+        fields:
+          from: "From host"
+          to: "To host"
+          capture: "Capture (host)"
+          layer: "Layer"
+          field: "Field"
+          op: "Condition"
+          value: "Value"
+          filter: "Filter (layer)"
+          no_filter: "no filter"
       flash:
         duplicated: "Copy created — it's yours to edit."
         locked_in_classroom: "This exercise is attached to a classroom and can't be edited or deleted. Remove it from all classrooms first, or duplicate it."
