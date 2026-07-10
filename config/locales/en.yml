@@ -360,6 +360,12 @@ en:
           count: "Packet count"
           checksum: "Checksum validity"
           duplication: "Duplication"
+          traffic_metric: "Traffic performance (iperf)"
+        metrics:
+          throughput_mbps: "throughput (Mbits/s)"
+          loss_percent: "packet loss (%)"
+          jitter_ms: "jitter (ms)"
+          retransmits: "TCP retransmissions"
         ops:
           equals: "equals"
           unchanged: "unchanged"
@@ -376,6 +382,8 @@ en:
           value: "Value"
           filter: "Filter (layer)"
           no_filter: "no filter"
+          flow: "Traffic flow"
+          metric: "Metric"
       flash:
         duplicated: "Copy created — it's yours to edit."
         locked_in_classroom: "This exercise is attached to a classroom and can't be edited or deleted. Remove it from all classrooms first, or duplicate it."

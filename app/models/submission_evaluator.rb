@@ -24,9 +24,10 @@ class SubmissionEvaluator
     end
   end
 
-  def initialize(criteria:, structured_captures:)
+  def initialize(criteria:, structured_captures:, traffic_metrics: nil)
     @criteria = criteria || {}
     @captures = structured_captures || {}
+    @traffic_metrics = Array(traffic_metrics)
   end
 
   def evaluate
@@ -44,6 +45,7 @@ class SubmissionEvaluator
     when 'count'          then count_check(check)
     when 'checksum'       then checksum_check(check)
     when 'duplication'    then duplication_check(check)
+    when 'traffic_metric' then traffic_metric_check(check)
     else
       CheckResult.new(kind: check['kind'], description: "Unknown check kind: #{check['kind']}",
                        passed: false, expected: nil, actual: nil)
@@ -130,6 +132,39 @@ class SubmissionEvaluator
     description = "duplication count #{op} #{value} (#{check['from']} -> #{check['to']})"
     CheckResult.new(kind: 'duplication', description: description, passed: worst.empty?,
                     expected: "#{op} #{value}", actual: worst.empty? ? counts.max || 0 : worst.max)
+  end
+
+  # { "kind": "traffic_metric", "flow": 1 (1-based index into the run's
+  #   traffic tests — legacy traffic_test is flow 1 when present, generator
+  #   mappings follow in position order),
+  #   "metric": "throughput_mbps"|"loss_percent"|"jitter_ms"|"retransmits",
+  #   "op": "gte"|"lte"|"equals", "value": number }
+  #
+  # Metrics come from the iperf3 -J client report parsed by IperfReport in
+  # the exec callback — performance grading (QoS/rate limiting/ECMP), which
+  # packet-capture checks can't express.
+  def traffic_metric_check(check)
+    flow_idx, metric, op, value = check['flow'], check['metric'], check['op'], check['value']
+    flow = @traffic_metrics[flow_idx.to_i - 1]
+
+    description = "flow #{flow_idx}#{flow ? " (#{flow['label']})" : ''}: #{metric} #{op} #{value}"
+
+    if flow.nil?
+      return CheckResult.new(kind: 'traffic_metric', description: description, passed: false,
+                             expected: "traffic flow ##{flow_idx} to have run",
+                             actual: "run produced #{@traffic_metrics.size} traffic test(s)")
+    end
+
+    actual = flow['metrics'] && flow['metrics'][metric]
+    if actual.nil?
+      return CheckResult.new(kind: 'traffic_metric', description: description, passed: false,
+                             expected: "#{metric} to be measured",
+                             actual: flow['metrics'] ? "metric not present (protocol #{flow['metrics']['protocol']})" : 'no iperf metrics for this flow')
+    end
+
+    CheckResult.new(kind: 'traffic_metric', description: description,
+                    passed: compare(actual, op, value),
+                    expected: "#{op} #{value}", actual: actual)
   end
 
   # ── Correlation / filtering helpers ────────────────────────────────────────

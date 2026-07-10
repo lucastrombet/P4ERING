@@ -463,6 +463,12 @@ pt-BR:
           count: "Contagem de pacotes"
           checksum: "Validade de checksum"
           duplication: "Duplicação"
+          traffic_metric: "Desempenho de tráfego (iperf)"
+        metrics:
+          throughput_mbps: "vazão (Mbits/s)"
+          loss_percent: "perda de pacotes (%)"
+          jitter_ms: "jitter (ms)"
+          retransmits: "retransmissões TCP"
         ops:
           equals: "igual a"
           unchanged: "inalterado"
@@ -479,6 +485,8 @@ pt-BR:
           value: "Valor"
           filter: "Filtro (camada)"
           no_filter: "sem filtro"
+          flow: "Fluxo de tráfego"
+          metric: "Métrica"
       flash:
         duplicated: "Cópia criada — ela é sua para editar."
         locked_in_classroom: "Este exercício está vinculado a uma turma e não pode ser editado ou excluído. Remova-o de todas as turmas primeiro, ou duplique-o."

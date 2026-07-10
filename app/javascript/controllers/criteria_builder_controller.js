@@ -23,16 +23,19 @@ const KNOWN_KEYS = {
   count:          ["kind", "capture", "filter", "op", "value"],
   checksum:       ["kind", "capture", "layer"],
   duplication:    ["kind", "from", "to", "op", "value", "filter"],
+  traffic_metric: ["kind", "flow", "metric", "op", "value"],
 }
 const KIND_OPS = {
   transformation: ["equals", "unchanged", "changed"],
   count:          ["equals", "lte", "gte"],
   duplication:    ["equals", "lte", "gte"],
+  traffic_metric: ["gte", "lte", "equals"],
 }
+const TRAFFIC_METRICS = ["throughput_mbps", "loss_percent", "jitter_ms", "retransmits"]
 
 export default class extends Controller {
   static targets = ["json", "builder", "checks", "warning", "rawToggle"]
-  static values = { labels: Object }
+  static values = { labels: Object, flows: Array }
 
   connect() {
     this.checks = this.parseChecks()
@@ -148,6 +151,14 @@ export default class extends Controller {
     if (kind === "checksum") {
       row.appendChild(this.select(L.layer, CHECKSUM_LAYERS, check.layer, (v) => { check.layer = v }))
     }
+    if (kind === "traffic_metric") {
+      const flowIdxs = this.flowsValue.map((_, i) => String(i + 1))
+      row.appendChild(this.select(L.flow, flowIdxs, String(check.flow ?? ""), (v) => {
+        check.flow = parseInt(v, 10)
+      }, (i) => (i ? `${i} — ${this.flowsValue[parseInt(i, 10) - 1]}` : i)))
+      row.appendChild(this.select(L.metric, TRAFFIC_METRICS, check.metric, (v) => { check.metric = v },
+                                  (m) => this.labelsValue.metrics[m] || m))
+    }
     if (KIND_OPS[kind]) {
       const ops = KIND_OPS[kind]
       const opCol = this.select(L.op, ops, check.op, (v) => {
@@ -157,7 +168,7 @@ export default class extends Controller {
       }, (op) => this.labelsValue.ops[op])
       row.appendChild(opCol)
     }
-    const needsValue = (kind === "count" || kind === "duplication" ||
+    const needsValue = (kind === "count" || kind === "duplication" || kind === "traffic_metric" ||
                         (kind === "transformation" && check.op === "equals"))
     if (needsValue) {
       row.appendChild(this.input(L.value, check.value, (v) => { check.value = this.coerce(v) },
@@ -166,7 +177,7 @@ export default class extends Controller {
 
     body.appendChild(row)
 
-    if (kind !== "checksum") {
+    if (kind !== "checksum" && kind !== "traffic_metric") {
       body.appendChild(this.filterRow(check))
     }
   }
@@ -256,6 +267,7 @@ export default class extends Controller {
   input(labelText, current, onChange, type = "text") {
     const inp = document.createElement("input")
     inp.type = type
+    if (type === "number") inp.step = "any"  // allow decimals (e.g. 0.5 Mbps)
     inp.className = "form-control form-control-sm"
     inp.value = current ?? ""
     inp.addEventListener("input", (e) => { onChange(e.target.value); this.serialize() })
@@ -288,6 +300,9 @@ export default class extends Controller {
         Object.assign(check, { from: hosts[0] || "h1", to: hosts[1] || "h2",
                                op: "lte", value: 1 })
         break
+      case "traffic_metric":
+        Object.assign(check, { flow: 1, metric: "throughput_mbps", op: "gte", value: 1 })
+        break
     }
   }
 
@@ -298,7 +313,10 @@ export default class extends Controller {
   }
 
   coerce(value) {
-    return /^-?\d+$/.test(String(value).trim()) ? parseInt(value, 10) : value
+    const s = String(value).trim()
+    if (/^-?\d+$/.test(s)) return parseInt(s, 10)
+    if (/^-?\d+\.\d+$/.test(s)) return parseFloat(s)  // keeps 0.5 numeric in the JSON
+    return value
   }
 
   topologyHosts() {

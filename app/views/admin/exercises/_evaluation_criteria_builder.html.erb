@@ -4,14 +4,28 @@
     serializes every edit back into it. If the stored JSON contains
     anything the builder can't represent, it stays in raw-JSON mode and
     never rewrites what it doesn't understand. %>
+<%# Flow labels for traffic_metric checks: the legacy traffic_test (if the
+    topology has one) is flow 1, generator mappings follow in position
+    order — must mirror the run order in EvaluateSubmissionJob/p4exec. %>
+<% flow_labels = [] %>
+<% flow_labels << "traffic_test (#{f.object.parsed_topology&.dig('traffic_test', 'command')})" if f.object.parsed_topology&.dig('traffic_test', 'from').present? %>
+<% f.object.exercise_traffic_generators.each { |m| flow_labels << "#{m.traffic_generator.name} (#{m.from_host} -> #{m.to_host})" } %>
 <div class="mb-4"
      data-controller="criteria-builder"
+     data-criteria-builder-flows-value="<%= flow_labels.to_json %>"
      data-criteria-builder-labels-value="<%= {
        kinds: {
          transformation: t('admin.exercises.criteria.kinds.transformation'),
          count:          t('admin.exercises.criteria.kinds.count'),
          checksum:       t('admin.exercises.criteria.kinds.checksum'),
-         duplication:    t('admin.exercises.criteria.kinds.duplication')
+         duplication:    t('admin.exercises.criteria.kinds.duplication'),
+         traffic_metric: t('admin.exercises.criteria.kinds.traffic_metric')
+       },
+       metrics: {
+         throughput_mbps: t('admin.exercises.criteria.metrics.throughput_mbps'),
+         loss_percent:    t('admin.exercises.criteria.metrics.loss_percent'),
+         jitter_ms:       t('admin.exercises.criteria.metrics.jitter_ms'),
+         retransmits:     t('admin.exercises.criteria.metrics.retransmits')
        },
        ops: {
          equals:    t('admin.exercises.criteria.ops.equals'),
@@ -29,7 +43,9 @@
          op:      t('admin.exercises.criteria.fields.op'),
          value:   t('admin.exercises.criteria.fields.value'),
          filter:  t('admin.exercises.criteria.fields.filter'),
-         no_filter: t('admin.exercises.criteria.fields.no_filter')
+         no_filter: t('admin.exercises.criteria.fields.no_filter'),
+         flow:    t('admin.exercises.criteria.fields.flow'),
+         metric:  t('admin.exercises.criteria.fields.metric')
        },
        remove: t('admin.exercises.criteria.remove_check')
      }.to_json %>">

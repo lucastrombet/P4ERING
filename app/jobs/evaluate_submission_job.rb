@@ -103,7 +103,9 @@ class EvaluateSubmissionJob < ApplicationJob
         'to'             => m.to_host,
         'label'          => "#{gen.name} (#{m.from_host} -> #{m.to_host})",
         'server_command' => "iperf3 -s -p #{gen.port} -1",
-        'client_command' => gen.to_iperf_command(target_ip)
+        # -J: machine-readable report — the callback parses it into metrics
+        # for traffic_metric evaluation checks and a human summary.
+        'client_command' => "#{gen.to_iperf_command(target_ip)} -J"
       }
     end
 

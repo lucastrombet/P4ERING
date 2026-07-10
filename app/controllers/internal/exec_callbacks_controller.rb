@@ -26,14 +26,16 @@ module Internal
         )
 
       when "done"
-        feedback = build_feedback(event["feedback"], event["error"])
+        traffic_metrics = build_traffic_metrics(event["traffic_results"])
+        feedback = build_feedback(event["feedback"], event["error"], traffic_metrics)
         captures = event["packet_captures"]
 
         evaluation = nil
         if event["status"] == "completed" && submission.exercise.has_evaluation_criteria?
           evaluation = SubmissionEvaluator.new(
             criteria:            submission.exercise.parsed_evaluation_criteria,
-            structured_captures: event["structured_captures"]
+            structured_captures: event["structured_captures"],
+            traffic_metrics:     traffic_metrics
           ).evaluate
         end
 
@@ -99,16 +101,53 @@ module Internal
 
     private
 
-    def build_feedback(feedback, error)
+    # One entry per traffic test, in run order (legacy traffic_test first,
+    # then the generator mappings — same order p4exec ran them). `metrics`
+    # is nil for non-iperf tests (ping) and for failed/timed-out runs.
+    def build_traffic_metrics(traffic_results)
+      Array(traffic_results).map do |r|
+        {
+          "label"   => r["label"],
+          "from"    => r["from"],
+          "to"      => r["to"],
+          "metrics" => IperfReport.parse(r["output"])
+        }
+      end
+    end
+
+    def build_feedback(feedback, error, traffic_metrics = [])
       parts = []
       if feedback.is_a?(Hash)
         parts << section("Compilation",      feedback["compile"])
         parts << section("Forwarding rules", feedback["rules"])
-        parts << section("Traffic test",     feedback["traffic"])
+        parts << section("Traffic test",     traffic_section(feedback["traffic"], traffic_metrics))
         parts << section("BMv2 switch log",  feedback["switch_log"])
       end
       parts << section("Error", error) if error.present?
       parts.compact.join("\n\n")
+    end
+
+    # The raw traffic log now contains iperf3 JSON documents for generator
+    # flows — unreadable in the UI. When metrics were parsed, show one
+    # summary line per flow instead; tests without metrics (ping and
+    # friends) keep their raw output via the log fallback.
+    def traffic_section(raw_log, traffic_metrics)
+      with_metrics = traffic_metrics.select { |t| t["metrics"] }
+      return raw_log if with_metrics.empty?
+
+      lines = traffic_metrics.each_with_index.map do |t, i|
+        if t["metrics"]
+          "[#{i + 1}] #{t['label']}: #{IperfReport.summary(t['metrics'])}"
+        else
+          "[#{i + 1}] #{t['label']}: see log below"
+        end
+      end
+
+      raw_without_json = raw_log.to_s.split("\n\n").reject { |chunk|
+        chunk.include?('"start"') || chunk.lstrip.start_with?("{")
+      }.join("\n\n")
+
+      [lines.join("\n"), raw_without_json.presence].compact.join("\n\n")
     end
 
     def section(title, body)
