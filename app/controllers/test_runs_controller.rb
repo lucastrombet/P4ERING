@@ -17,12 +17,9 @@ class TestRunsController < ApplicationController
 
     P4execClient.execute(
       job_id:       "p4test_#{test_run.uuid}",
-      callback_url: internal_exec_callback_url(
-        host:     ENV.fetch('RAILS_CALLBACK_HOST', 'localhost:3000'),
-        protocol: 'http'
-      ),
-      code:     code,
-      topology: exercise.topology_for_execution
+      callback_url: P4execClient.callback_url,
+      code:         code,
+      topology:     exercise.topology_for_execution
     )
 
     redirect_to test_run_path(test_run.uuid), notice: t('test_runs.flash.started')

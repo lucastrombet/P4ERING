@@ -45,12 +45,9 @@ class EvaluateSubmissionJob < ApplicationJob
     job_id = "p4t_#{submission.id}"
     P4execClient.execute(
       job_id:       job_id,
-      callback_url: Rails.application.routes.url_helpers.internal_exec_callback_url(
-        host:     ENV.fetch('RAILS_CALLBACK_HOST', 'localhost:3000'),
-        protocol: 'http'
-      ),
-      code:     submission.code,
-      topology: submission.exercise.topology_for_execution
+      callback_url: P4execClient.callback_url,
+      code:         submission.code,
+      topology:     submission.exercise.topology_for_execution
     )
     Rails.logger.info("[p4exec] Job #{job_id} accepted by execution service")
     # Result will arrive asynchronously via POST /internal/exec_callback
