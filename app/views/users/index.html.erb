@@ -23,6 +23,8 @@
           <td>
             <% if user.admin? %>
               <span class="badge bg-danger"><%= t(".admin") %></span>
+            <% elsif user.professor? %>
+              <span class="badge bg-info text-dark"><%= t(".professor") %></span>
             <% else %>
               <span class="badge bg-secondary"><%= t(".user") %></span>
             <% end %>

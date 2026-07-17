@@ -575,6 +575,7 @@ en:
       actions: "Actions"
       not_set: "Not set"
       admin: "Admin"
+      professor: "Professor"
       user: "User"
       edit: "Edit"
       delete: "Delete"

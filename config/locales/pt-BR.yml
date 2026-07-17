@@ -612,6 +612,7 @@ pt-BR:
       actions: "Ações"
       not_set: "Não definido"
       admin: "Admin"
+      professor: "Professor"
       user: "Usuário"
       edit: "Editar"
       delete: "Excluir"
