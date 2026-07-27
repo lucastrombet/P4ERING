@@ -13,6 +13,13 @@ class ClassroomsController < ApplicationController
                      .order(:date_enrollment)
   end
 
+  # Only the classroom's own enrolled students may view it here — scoping
+  # through current_user.classrooms both authorizes and 404s in one step.
+  def show
+    @classroom = current_user.classrooms.find(params[:id])
+    @exercises = @classroom.classroom_exercises.order(:id).includes(:exercise).map(&:exercise)
+  end
+
   def enroll
     classroom = Classroom.find(params[:id])
 

@@ -22,6 +22,11 @@ class Exercise < ApplicationRecord
     user.admin? ? all : where(visible_by_other_professors: true).or(where(user_id: user.id))
   }
 
+  # Exercises attached to no classroom — the general catalog students browse
+  # outside a specific classroom. Once an exercise joins a classroom it's
+  # reached from that classroom's exercise list instead (see ClassroomsController#show).
+  scope :not_in_any_classroom, -> { where.not(id: ClassroomExercise.select(:exercise_id)) }
+
   validates :title, :description, :language, presence: true
   validates :difficulty, presence: true, inclusion: { in: 1..5 }
   validate :topology_config_valid_json

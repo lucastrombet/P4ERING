@@ -44,7 +44,7 @@ Rails.application.routes.draw do
   resources :submissions, only: [:index, :show]
 
   # Student-facing: self-enrollment classrooms listing + join
-  resources :classrooms, only: [:index] do
+  resources :classrooms, only: [:index, :show] do
     post :enroll, on: :member
   end
 

@@ -496,6 +496,11 @@ en:
       no_open_classrooms: "No classrooms open for self-enrollment right now."
       not_enrollable: "This classroom isn't open for self-enrollment."
       enrolled: "Welcome to '%{name}'! You are now enrolled."
+      view_exercises: "View exercises"
+    show:
+      breadcrumb: "← Back to Classrooms"
+      exercises_title: "Classroom exercises"
+      no_exercises: "No exercises attached to this classroom yet."
   professor:
     dashboard:
       index:

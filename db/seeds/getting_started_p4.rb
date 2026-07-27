@@ -441,9 +441,9 @@ ActiveRecord::Base.transaction do
     description:     "A beginner-friendly, self-paced introduction to P4 programming — " \
                      "from a pass-through switch to a working IPv4 router, one small step at a time.",
     start_date:      Date.current,
-    end_date:        Date.current + 1.year,
+    end_date:        Date.new(2026, 8, 31),
     self_enrollment: true,
-    date_enrollment: Date.current + 1.year,
+    date_enrollment: Date.new(2026, 8, 31),
   )
   classroom.save!
 

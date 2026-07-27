@@ -309,6 +309,11 @@ pt-BR:
       no_open_classrooms: "Nenhuma turma aberta para auto-inscrição no momento."
       not_enrollable: "Esta turma não está aberta para auto-inscrição."
       enrolled: "Bem-vindo(a) à turma '%{name}'! Sua inscrição foi realizada."
+      view_exercises: "Ver exercícios"
+    show:
+      breadcrumb: "← Voltar para Turmas"
+      exercises_title: "Exercícios da turma"
+      no_exercises: "Nenhum exercício vinculado a esta turma ainda."
   professor:
     dashboard:
       index:

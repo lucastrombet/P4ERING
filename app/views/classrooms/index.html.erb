@@ -20,6 +20,7 @@
               <i class="fas fa-user-tie me-1"></i><%= classroom.professor.name || classroom.professor.email %>
             </div>
             <p class="card-text small"><%= truncate(classroom.description, length: 120) %></p>
+            <%= link_to t(".view_exercises"), classroom_path(classroom), class: "btn btn-sm btn-outline-success" %>
           </div>
           <div class="card-footer bg-transparent small text-muted">
             <i class="fas fa-calendar me-1"></i><%= l(classroom.start_date) %> – <%= l(classroom.end_date) %>

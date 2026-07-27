@@ -8,7 +8,7 @@ class ExercisesController < ApplicationController
     @exercises = if current_user.staff?
                    Exercise.visible_to(current_user)
                  else
-                   Exercise.where(restricted: false)
+                   Exercise.where(restricted: false).not_in_any_classroom
                  end.order(difficulty: :asc, created_at: :desc)
   end
 
