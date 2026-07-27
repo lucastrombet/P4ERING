@@ -1,4 +1,9 @@
 pt-BR:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d de %b"
+      long: "%d de %B de %Y"
   layout:
     title: "P4ering - Aprenda Planos de Dados Programáveis com P4"
     nav:

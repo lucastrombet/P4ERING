@@ -1,4 +1,9 @@
 en:
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
   layout:
     title: "P4ering - Learn P4 Programmable Data Planes"
     nav:
