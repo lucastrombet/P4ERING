@@ -9,9 +9,6 @@
 # passwords are printed once, only when the account is first created.
 
 CORE_EXERCISE_TITLES = [
-  "Forwarding Básico",
-  "Tunneling Básico",
-  "Source Routing",
   "Packet Spoofing",
   "Redirecionamento de Endereço MAC",
 ].freeze
