@@ -39,8 +39,8 @@ PROFESSORS.each do |data|
   classroom = Classroom.find_or_initialize_by(name: data[:classroom])
   classroom.assign_attributes(
     professor:       professor,
-    description:     "Turma de avaliação da plataforma P4ering para o TG — inclui todos os " \
-                      "exercícios atualmente disponíveis.",
+    description:     "Turma de avaliação da plataforma P4ering para o TG — Packet Spoofing e " \
+                      "Redirecionamento de Endereço MAC.",
     start_date:      Date.current,
     end_date:        Date.current + 2.weeks,
     self_enrollment: true,
